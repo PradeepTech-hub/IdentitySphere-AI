@@ -16,6 +16,7 @@ import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 import ChartContainer from '../../components/shared/ChartContainer';
 import { getIdentities as getStoredIdentities, getRiskEvents, getLifecycleEvents, getReviewHistory } from '../../services/storageService';
+import { getIdentityById, fetchScore, getRiskEventsAsync } from '../../services/dataService';
 
 /* ── Platform colors for correlation graph ─────────────────────────── */
 const PLATFORM_COLORS = {
@@ -115,96 +116,73 @@ export default function IdentityDetail() {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    const all = getStoredIdentities();
-    const found = all.find(i => i.person_id === personId) || null;
-    if (!found) { setError('Identity not found'); setIdentity(null); setLoading(false); return; }
+    let cancelled = false;
+    async function loadIdentity() {
+      setLoading(true);
+      setError(null);
+      try {
+        const [detail, score, allRisks] = await Promise.all([
+          getIdentityById(personId).catch(() => null),
+          fetchScore(personId).catch(() => null),
+          getRiskEventsAsync().catch(() => getRiskEvents()),
+        ]);
+        if (cancelled) return;
 
-    const riskEvent = getRiskEvents().find(r => r.identityId === found.person_id);
-    const platforms = found.platforms || [];
-    const isAdmin = found.is_admin;
+        const found = detail || getStoredIdentities().find((i) => i.person_id === personId) || null;
+        if (!found) {
+          setError('Identity not found');
+          setIdentity(null);
+          return;
+        }
 
-    if (!found.entitlements || found.entitlements.length === 0) {
-      found.entitlements = platforms.map(p => ({
-        platform: p,
-        role_name: isAdmin ? (PLATFORM_ROLES[p]?.admin || 'Admin') : (PLATFORM_ROLES[p]?.standard || 'User'),
-        is_admin_role: isAdmin && ['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(p),
-        is_sensitive: isAdmin,
-        privilege_level: isAdmin ? 'high' : 'standard',
-        permission_id: `${p}:${isAdmin ? 'admin' : 'user'}:access`,
-        resource: `${p.replace('_', '-')}-resources`,
-        action: isAdmin ? 'full-control' : 'read-only',
-      }));
-      found.admin_entitlement_count = found.entitlements.filter(e => e.is_admin_role).length;
-      found.sensitive_permission_count = found.entitlements.filter(e => e.is_sensitive).length;
-    }
+        if (score) {
+          found.risk_score = score.final_score ?? found.risk_score;
+          found.severity = score.severity ?? found.severity;
+          found.score_breakdown = (score.factors || []).map((f) => ({
+            factor: (f.name || '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+            value: Math.round((f.weighted_value ?? f.raw_value ?? 0) * 100) / 100,
+            description: f.description || f.name,
+          }));
+          found.suppressions = score.suppressions || [];
+        }
 
-    if (!found.score_breakdown || found.score_breakdown.length === 0) {
-      const factors = riskEvent?.factors || {};
-      if (Object.keys(factors).length > 0) {
-        found.score_breakdown = Object.entries(factors).map(([k, v]) => ({
-          factor: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-          value: Math.round(v * 100) / 100,
-          description: k === 'privilege_breadth' ? `Privilege score across ${platforms.length} platforms`
-            : k === 'cross_platform_exposure' ? `Admin on ${platforms.length} platform(s)`
-            : k === 'dormancy' ? `${found.max_dormancy_days || 0} days max dormancy`
-            : k === 'detector_severity' ? `${riskEvent?.severity || 'medium'} severity findings`
-            : `Behavioral anomaly indicator`,
-        }));
-      } else {
-        const score = found.risk_score || 0;
-        found.score_breakdown = [
-          { factor: 'Privilege Breadth', value: Math.round(score * 0.3), description: `Access across ${platforms.length} platforms` },
-          { factor: 'Cross-Platform Exposure', value: isAdmin ? Math.round(platforms.length * 4) : Math.round(platforms.length * 2), description: `${isAdmin ? 'Admin' : 'User'} on ${platforms.length} platform(s)` },
-          { factor: 'Dormancy Risk', value: Math.min(Math.round((found.max_dormancy_days || 0) / 10), 15), description: `${found.max_dormancy_days || 0} days inactive` },
-          { factor: 'MFA Coverage', value: found.mfa_complete ? 0 : 10, description: found.mfa_complete ? 'MFA enabled' : 'MFA not enabled' },
-          { factor: 'Admin Privileges', value: isAdmin ? 20 : 0, description: isAdmin ? 'Has admin access' : 'No admin access' },
-        ].filter(f => f.value > 0);
+        const identityRisks = allRisks.filter((r) => r.identityId === found.person_id);
+        const riskEvent = identityRisks.sort((a, b) => (b.score || 0) - (a.score || 0))[0];
+        const platforms = found.platforms || [];
+        const isAdmin = found.is_admin;
+
+        if (!found.score_breakdown?.length) {
+          const factors = riskEvent?.factors || {};
+          if (Object.keys(factors).length > 0) {
+            found.score_breakdown = Object.entries(factors).map(([k, v]) => ({
+              factor: k.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+              value: Math.round(v * 100) / 100,
+              description: k,
+            }));
+          }
+        }
+
+        if (!found.remediation_steps?.length) {
+          const steps = [];
+          identityRisks.forEach((r) => (r.remediation_steps || []).forEach((s) => steps.push(s)));
+          if (riskEvent?.remediation_steps) steps.push(...riskEvent.remediation_steps);
+          found.remediation_steps = [...new Set(steps)].slice(0, 8);
+        }
+
+        if (!found.compliance_refs?.length && riskEvent?.compliance_refs) {
+          found.compliance_refs = riskEvent.compliance_refs;
+        }
+
+        found.identity_risks = identityRisks;
+        setIdentity({ ...found });
+      } catch {
+        if (!cancelled) setError('Failed to load identity');
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
-
-    if (!found.remediation_steps || found.remediation_steps.length === 0) {
-      const steps = [];
-      if (isAdmin) steps.push('Review admin privilege necessity — implement JIT access for elevated roles');
-      if (!found.mfa_complete) steps.push('Enable MFA on all active platform accounts immediately');
-      if ((found.max_dormancy_days || 0) > 90) steps.push(`Investigate dormant access (${found.max_dormancy_days} days) — disable if not needed`);
-      if (platforms.length >= 3 && isAdmin) steps.push('Reduce cross-platform admin exposure — remove admin on non-essential platforms');
-      if (found.status === 'Orphaned') steps.push('Disable all accounts immediately — identity is orphaned');
-      if (found.status === 'Dormant') steps.push('Verify account ownership and disable if user is no longer active');
-      if (riskEvent) steps.push(`Address ${riskEvent.type.replace(/_/g, ' ')} finding: ${riskEvent.title}`);
-      if (steps.length === 0) steps.push('Continue monitoring — no immediate remediation required');
-      found.remediation_steps = steps;
-    }
-
-    if (!found.compliance_refs || found.compliance_refs.length === 0) {
-      const refs = ['NIST AC-2 (Account Management)'];
-      if (isAdmin) refs.push('NIST AC-6 (Least Privilege)', 'CIS Control 6 (Access Control)');
-      if (!found.mfa_complete) refs.push('NIST IA-4 (Identifier Management)');
-      if (found.status === 'Orphaned') refs.push('MITRE T1078 (Valid Accounts)');
-      if (platforms.length >= 3) refs.push('GDPR Art. 32 (Security of Processing)');
-      found.compliance_refs = refs;
-    }
-
-    if (!found.relationships_good) {
-      const good = [];
-      if (found.mfa_complete) good.push({ label: 'MFA Enabled', detail: 'All active accounts have MFA' });
-      if (!isAdmin) good.push({ label: 'Least Privilege', detail: 'No admin roles assigned' });
-      if ((found.max_dormancy_days || 0) < 30) good.push({ label: 'Active Usage', detail: 'Recent login activity detected' });
-      found.relationships_good = good;
-    }
-    if (!found.relationships_risky) {
-      const risky = [];
-      if (isAdmin) risky.push({ label: 'Admin Privileges', detail: `Admin access on ${platforms.length} platform(s)`, severity: 'high' });
-      if (!found.mfa_complete) risky.push({ label: 'MFA Gap', detail: 'MFA not enabled on all accounts', severity: 'high' });
-      if ((found.max_dormancy_days || 0) > 90) risky.push({ label: 'Dormant Access', detail: `${found.max_dormancy_days} days inactive`, severity: 'high' });
-      if (found.status === 'Orphaned') risky.push({ label: 'Orphaned Account', detail: 'Terminated but accounts still active', severity: 'critical' });
-      if (platforms.length >= 3 && isAdmin) risky.push({ label: 'Cross-Platform Admin', detail: `Admin on ${platforms.join(', ')}`, severity: 'critical' });
-      found.relationships_risky = risky;
-    }
-
-    setIdentity(found);
-    setLoading(false);
+    loadIdentity();
+    return () => { cancelled = true; };
   }, [personId]);
 
   /* ── Loading state ──────────────────────────────────────────────── */

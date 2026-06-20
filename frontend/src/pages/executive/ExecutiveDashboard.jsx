@@ -17,8 +17,12 @@ import InteractiveBarChart from '../../components/charts/InteractiveBarChart';
 import SustainabilityGauge from '../../components/charts/SustainabilityGauge';
 import SustainabilityDetailsModal, { SUSTAINABILITY_DETAILS } from '../../components/executive/SustainabilityDetailsModal';
 import { buildBusinessImpactReport, downloadReportJson, downloadReportPdf } from '../../utils/exportBusinessImpactReport';
-import { TREND_DATA } from '../../data/mockData';
 import { getIdentities, getRiskEvents, getIncidents } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
+import {
+  buildRiskCategoryChart, buildDepartmentImpact, computeComplianceScore,
+  buildFrameworkScores, buildRecentAlerts, buildComplianceTrend,
+} from '../../utils/liveMetrics';
 import { useAuth } from '../../context/AuthContext';
 
 const PIE_COLORS = { critical: '#E31937', high: '#f97316', medium: '#eab308', low: '#22c55e' };
@@ -28,45 +32,11 @@ const RISK_TREND_6MO = [
   { month: 'Apr', score: 68 }, { month: 'May', score: 70 }, { month: 'Jun', score: 72 },
 ];
 
-const BUSINESS_UNIT_IMPACT = [
-  { name: 'Finance', value: 35, color: '#E31937' },
-  { name: 'Operations', value: 25, color: '#f97316' },
-  { name: 'IT', value: 20, color: '#3b82f6' },
-  { name: 'Sales', value: 12, color: '#22c55e' },
-  { name: 'HR', value: 8, color: '#a855f7' },
-];
-
-const TOP_RISK_CATEGORIES = [
-  { label: 'Privilege Misuse', value: 68, color: '#E31937' },
-  { label: 'Excessive Access', value: 55, color: '#f97316' },
-  { label: 'Dormant Accounts', value: 42, color: '#eab308' },
-  { label: 'Policy Violations', value: 30, color: '#3b82f6' },
-  { label: 'Other Risks', value: 18, color: '#a855f7' },
-];
-
-const RECENT_ALERTS = [
-  { type: 'Privilege Escalation Detected', severity: 'High', impact: 'High', status: 'Active', detected: 'Jun 20, 2025 10:12 AM' },
-  { type: 'Multiple Failed Login Attempts', severity: 'Medium', impact: 'Medium', status: 'Active', detected: 'Jun 19, 2025 08:40 PM' },
-  { type: 'Dormant Admin Accounts', severity: 'High', impact: 'High', status: 'Active', detected: 'Jun 18, 2025 09:15 AM' },
-];
-
-const COMPLIANCE_OVERVIEW = [
-  { label: 'NIST Compliance', value: 92, sublabel: 'Compliant', color: 'text-green-400', bg: 'from-green-500/10 to-emerald-500/5' },
-  { label: 'ISO 27001', value: 88, sublabel: 'Compliant', color: 'text-cyan-400', bg: 'from-cyan-500/10 to-blue-500/5' },
-  { label: 'GDPR Compliance', value: 95, sublabel: 'Compliant', color: 'text-purple-400', bg: 'from-purple-500/10 to-violet-500/5' },
-  { label: 'Overall Compliance', value: 91, sublabel: 'Compliant', color: 'text-green-400', bg: 'from-green-500/10 to-emerald-500/5' },
-];
-
 const SEV_STYLE = {
   High: 'bg-red-500/15 text-red-400 border-red-500/25',
   Medium: 'bg-orange-500/15 text-orange-400 border-orange-500/25',
   Low: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/25',
 };
-
-const complianceTrend = Array.from({ length: 12 }, (_, i) => ({
-  month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-  score: Math.min(100, 62 + i * 2 + Math.floor(Math.random() * 4)),
-}));
 
 function scrollToSection(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -74,10 +44,22 @@ function scrollToSection(id) {
 
 export default function ExecutiveDashboard() {
   const { user } = useAuth();
+  const { data: platformData } = usePlatformData();
   const [showSustainabilityDetails, setShowSustainabilityDetails] = useState(false);
-  const identities = useMemo(() => getIdentities(), []);
-  const risks = useMemo(() => getRiskEvents(), []);
-  const incidents = useMemo(() => getIncidents(), []);
+  const identities = useMemo(() => getIdentities(), [platformData]);
+  const risks = useMemo(() => getRiskEvents(), [platformData]);
+  const incidents = useMemo(() => getIncidents(), [platformData]);
+
+  const businessUnitImpact = useMemo(() => buildDepartmentImpact(identities), [identities]);
+  const topRiskCategories = useMemo(() => buildRiskCategoryChart(risks), [risks]);
+  const recentAlerts = useMemo(() => buildRecentAlerts(risks, incidents), [risks, incidents]);
+  const frameworkScores = useMemo(() => buildFrameworkScores(identities, risks), [identities, risks]);
+  const complianceOverview = useMemo(() => [
+    { label: 'NIST Compliance', value: frameworkScores.nist, sublabel: frameworkScores.nist >= 80 ? 'Compliant' : 'Review', color: 'text-green-400', bg: 'from-green-500/10 to-emerald-500/5' },
+    { label: 'ISO 27001', value: frameworkScores.iso, sublabel: frameworkScores.iso >= 80 ? 'Compliant' : 'Review', color: 'text-cyan-400', bg: 'from-cyan-500/10 to-blue-500/5' },
+    { label: 'GDPR Compliance', value: frameworkScores.gdpr, sublabel: frameworkScores.gdpr >= 80 ? 'Compliant' : 'Review', color: 'text-purple-400', bg: 'from-purple-500/10 to-violet-500/5' },
+    { label: 'Overall Compliance', value: frameworkScores.overall, sublabel: frameworkScores.overall >= 80 ? 'Compliant' : 'Review', color: 'text-green-400', bg: 'from-green-500/10 to-emerald-500/5' },
+  ], [frameworkScores]);
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);
@@ -96,10 +78,16 @@ export default function ExecutiveDashboard() {
   const platforms = new Set(identities.flatMap(i => i.platforms || [])).size;
   const avgScore = total > 0 ? Math.round(identities.reduce((a, i) => a + (i.risk_score || 0), 0) / total) : 0;
   const businessRisk = Math.min(100, Math.round(avgScore + criticalRisks * 3 + crossPlatformAdmins * 2));
-  const overallRisk = 72;
-  const execCriticalRisks = 24;
-  const affectedUsers = 1248;
-  const sustainabilityScore = 78;
+  const overallRisk = businessRisk;
+  const execCriticalRisks = criticalRisks + highRisks;
+  const affectedUsers = identities.filter((i) => (i.risk_score || 0) >= 45).length;
+  const sustainabilityScore = computeComplianceScore(identities, risks);
+  const complianceTrend = useMemo(() => buildComplianceTrend(sustainabilityScore), [sustainabilityScore]);
+  const trendData = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
+    day: `D${i + 1}`,
+    critical: Math.max(0, Math.round(criticalRisks * (0.7 + Math.sin(i / 4) * 0.15))),
+    resolved: Math.max(0, Math.round(incidents.filter((x) => x.status === 'resolved').length * (i / 30))),
+  })), [criticalRisks, incidents]);
 
   const sevDist = { critical: criticalRisks, high: highRisks, medium: risks.filter(r => r.severity === 'medium').length, low: risks.filter(r => r.severity === 'low').length };
   const pieData = Object.entries(sevDist).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value, color: PIE_COLORS[name] }));
@@ -107,7 +95,7 @@ export default function ExecutiveDashboard() {
   const EXEC_CARDS = [
     { label: 'Business Risk', value: businessRisk, color: 'text-red-400', icon: Target, bg: 'from-red-500/10 to-rose-500/5' },
     { label: 'Critical Risks', value: criticalRisks, color: 'text-red-400', icon: AlertTriangle, bg: 'from-red-500/10 to-orange-500/5' },
-    { label: 'Compliance', value: 78, color: 'text-green-400', icon: ShieldCheck, suffix: '%', bg: 'from-green-500/10 to-emerald-500/5' },
+    { label: 'Compliance', value: sustainabilityScore, color: 'text-green-400', icon: ShieldCheck, suffix: '%', bg: 'from-green-500/10 to-emerald-500/5' },
     { label: 'Active Incidents', value: activeIncidents, color: 'text-orange-400', icon: Activity, bg: 'from-orange-500/10 to-amber-500/5' },
     { label: 'Identities', value: total, color: 'text-blue-400', icon: Users, bg: 'from-blue-500/10 to-cyan-500/5' },
     { label: 'Platforms', value: platforms, color: 'text-amber-400', icon: Shield, bg: 'from-amber-500/10 to-yellow-500/5' },
@@ -126,10 +114,10 @@ export default function ExecutiveDashboard() {
     criticalRisks: execCriticalRisks,
     affectedUsers,
     sustainabilityScore,
-    businessUnitImpact: BUSINESS_UNIT_IMPACT,
-    topRiskCategories: TOP_RISK_CATEGORIES,
-    complianceOverview: COMPLIANCE_OVERVIEW.map(c => ({ framework: c.label, score: c.value })),
-    recentAlerts: RECENT_ALERTS,
+    businessUnitImpact,
+    topRiskCategories,
+    complianceOverview: complianceOverview.map(c => ({ framework: c.label, score: c.value })),
+    recentAlerts,
   }), [user, overallRisk, execCriticalRisks, affectedUsers, sustainabilityScore]);
 
   const exportReportJson = useCallback(() => downloadReportJson(buildReport()), [buildReport]);
@@ -220,14 +208,14 @@ export default function ExecutiveDashboard() {
 
       <div className="grid lg:grid-cols-3 gap-4">
         <GlassCard hover={false} delay={0.16} id="business-impact">
-          <InteractivePieChart data={BUSINESS_UNIT_IMPACT} height={240} title="Business Impact by Business Unit" />
+          <InteractivePieChart data={businessUnitImpact} height={240} title="Business Impact by Business Unit" />
           <button type="button" onClick={exportReportPdf} className="mt-2 text-[10px] text-red-400 font-orbitron hover:text-red-300 transition-colors flex items-center gap-1">
             View Business Impact Report <ArrowRight size={10} />
           </button>
         </GlassCard>
         <GlassCard hover={false} delay={0.18}>
           <InteractiveBarChart
-            data={TOP_RISK_CATEGORIES}
+            data={topRiskCategories}
             labelKey="label"
             dataKey="value"
             layout="vertical"
@@ -276,7 +264,7 @@ export default function ExecutiveDashboard() {
       <div id="compliance">
         <SectionHeader title="Compliance Overview" icon={ShieldCheck} subtitle="High-level framework alignment — read-only view" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mt-3">
-          {COMPLIANCE_OVERVIEW.map((c, i) => (
+          {complianceOverview.map((c, i) => (
             <StatCard key={c.label} label={c.label} value={c.value} suffix="%" icon={CheckCircle} color={c.color} bg={c.bg} sublabel={c.sublabel} delay={0.24 + i * 0.03} />
           ))}
         </div>
@@ -296,7 +284,7 @@ export default function ExecutiveDashboard() {
               </tr>
             </thead>
             <tbody>
-              {RECENT_ALERTS.map((a, i) => (
+              {recentAlerts.map((a, i) => (
                 <motion.tr key={a.type} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 + i * 0.05 }}
                   className="border-b border-white/[0.03] hover:bg-white/[0.02]">
                   <td className="py-2.5 text-white text-xs font-medium">{a.type}</td>
@@ -328,7 +316,7 @@ export default function ExecutiveDashboard() {
         <GlassCard hover={false} delay={0.2} className="lg:col-span-2">
           <InteractiveAreaChart
             title="Identity Risk Trend (30 Days)"
-            data={TREND_DATA}
+            data={trendData}
             height={260}
             series={[
               { key: 'critical', color: '#E31937', name: 'critical' },

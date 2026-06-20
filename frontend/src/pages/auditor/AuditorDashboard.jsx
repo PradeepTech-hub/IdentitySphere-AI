@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import { FileText, Download, Eye, ShieldCheck, AlertTriangle } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import PageHeader from '../../components/shared/PageHeader';
@@ -7,18 +8,23 @@ import SectionHeader from '../../components/shared/SectionHeader';
 import StatCard from '../../components/shared/StatCard';
 import FloatingCounter from '../../components/shared/FloatingCounter';
 import InteractivePieChart from '../../components/charts/InteractivePieChart';
-import { COMPLIANCE_MAP } from '../../data/mockData';
-import { getRiskEvents } from '../../services/storageService';
+import { getRiskEvents, getIdentities } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
+import { buildComplianceMap, buildEvidencePack, computeComplianceScore } from '../../utils/liveMetrics';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 function CompliancePage() {
-  const risks = getRiskEvents();
-  const complianceScore = 78;
+  const { data } = usePlatformData();
+  const risks = useMemo(() => getRiskEvents(), [data]);
+  const identities = useMemo(() => getIdentities(), [data]);
+  const complianceMap = useMemo(() => buildComplianceMap(risks, identities), [risks, identities]);
+  const complianceScore = useMemo(() => computeComplianceScore(identities, risks), [identities, risks]);
+  const passCount = complianceMap.filter((r) => r.count === 0).length;
   const pieData = [
-    { name: 'pass', value: 2, color: '#22c55e' },
-    { name: 'partial', value: 3, color: '#eab308' },
-    { name: 'fail', value: 4, color: '#E31937' },
+    { name: 'pass', value: Math.max(1, passCount), color: '#22c55e' },
+    { name: 'partial', value: Math.max(1, Math.ceil(complianceMap.length * 0.35)), color: '#eab308' },
+    { name: 'fail', value: Math.max(1, complianceMap.filter((r) => r.count > 50).length), color: '#E31937' },
   ];
 
   return (
@@ -39,7 +45,7 @@ function CompliancePage() {
                 <th className="text-left pb-2.5 font-medium">MITRE</th><th className="text-left pb-2.5 font-medium">GDPR</th>
                 <th className="text-left pb-2.5 font-medium">CIS</th><th className="text-right pb-2.5 font-medium">Findings</th>
               </tr></thead>
-              <tbody>{COMPLIANCE_MAP.map((r, i) => (
+              <tbody>{complianceMap.map((r, i) => (
                 <motion.tr key={r.capability} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 + i * 0.04 }}
                   className="border-b border-white/[0.03] hover:bg-white/[0.02]">
                   <td className="py-2 text-white font-medium text-xs">{r.capability}</td>
@@ -62,17 +68,15 @@ function CompliancePage() {
 }
 
 function EvidencePage() {
-  const evidence = [
-    { id: 'EV-001', finding: 'Orphaned accounts detected', source: 'DetectionEngine', controls: 'AC-2, T1078', count: 60 },
-    { id: 'EV-002', finding: 'Cross-platform admin exposure', source: 'PrivilegeCalculator', controls: 'AC-6, T1098', count: 119 },
-    { id: 'EV-003', finding: 'MFA gaps across platforms', source: 'DetectionEngine', controls: 'IA-4, T1078', count: 155 },
-    { id: 'EV-004', finding: 'Privilege escalation events', source: 'DetectionEngine + AuditEvents', controls: 'AC-2, T1098', count: 107 },
-    { id: 'EV-005', finding: 'Stale tokens > 180 days', source: 'TokenAbuseDetector', controls: 'IA-4, T1550', count: 12 },
-    { id: 'EV-006', finding: 'Offboarding gaps', source: 'OffboardingGapDetector', controls: 'AC-2', count: 32 },
-  ];
+  const { data } = usePlatformData();
+  const risks = useMemo(() => getRiskEvents(), [data]);
+  const evidence = useMemo(() => buildEvidencePack(risks), [risks]);
   return (
     <div className="space-y-3">
       <SectionHeader title="Audit Evidence Pack" icon={Eye} subtitle="Findings mapped to controls and detection sources" />
+      {evidence.length === 0 && (
+        <GlassCard><p className="text-sm text-slate-500">No pipeline evidence loaded.</p></GlassCard>
+      )}
       {evidence.map((e, i) => (
         <motion.div key={e.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
           <GlassCard className="!p-3">
@@ -100,6 +104,7 @@ function ExportsPage() {
     { name: 'audit_events.csv', rows: 800, size: '131 KB' },
     { name: 'offboarding.csv', rows: 183, size: '34 KB' },
     { name: 'ground_truth.csv', rows: 370, size: '15 KB' },
+    { name: 'risk_report.html', rows: 10, size: '20 KB' },
   ];
   return (
     <div className="space-y-3">
@@ -118,7 +123,7 @@ function ExportsPage() {
                     <p className="text-[9px] text-slate-500 font-orbitron uppercase tracking-wider">{f.rows} rows · {f.size}</p>
                   </div>
                 </div>
-                <button className="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-orbitron uppercase tracking-wider border border-red-500/20 hover:bg-red-500/20 transition-all shrink-0">
+                <button type="button" className="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-orbitron uppercase tracking-wider border border-red-500/20 hover:bg-red-500/20 transition-all shrink-0">
                   Export
                 </button>
               </div>

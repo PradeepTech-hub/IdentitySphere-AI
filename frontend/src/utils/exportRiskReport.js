@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import { API_BASE } from './dataService';
+import { API_BASE } from '../services/dataService';
 
 export async function fetchRiskReportJson() {
   const res = await fetch(`${API_BASE}/risk-report`);

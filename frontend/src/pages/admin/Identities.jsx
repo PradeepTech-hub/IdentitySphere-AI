@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Users, Shield, AlertTriangle, Eye, ChevronLeft, ChevronRight, Database, UserCheck, UserX, Clock, Skull } from 'lucide-react';
@@ -7,6 +7,7 @@ import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { getIdentities as getStoredIdentities } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
 
 const STATUS_CHIP_STYLES = {
   active: 'bg-green-500/15 text-green-400 border border-green-500/30',
@@ -49,25 +50,25 @@ const RISK_COLORS = {
 
 export default function Identities() {
   const navigate = useNavigate();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: platformData } = usePlatformData();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
+  const data = useMemo(() => {
     const identities = getStoredIdentities();
     const statusCounts = {};
     const typeCounts = {};
-    identities.forEach(i => {
+    identities.forEach((i) => {
       const s = (i.status || 'active').toLowerCase();
       statusCounts[s] = (statusCounts[s] || 0) + 1;
       const t = (i.type || 'human').toLowerCase();
       typeCounts[t] = (typeCounts[t] || 0) + 1;
     });
-    setData({ identities, status_counts: statusCounts, type_counts: typeCounts });
-    setLoading(false);
-  }, []);
+    return { identities, status_counts: statusCounts, type_counts: typeCounts };
+  }, [platformData]);
+
+  const loading = !data?.identities?.length && !platformData;
 
   const filteredIdentities = useMemo(() => {
     if (!data?.identities) return [];

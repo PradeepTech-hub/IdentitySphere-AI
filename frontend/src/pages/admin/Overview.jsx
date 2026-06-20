@@ -7,16 +7,19 @@ import GlassCard from '../../components/shared/GlassCard';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
+import PrivilegeHeatmap from '../../components/shared/PrivilegeHeatmap';
 import { getIdentities, getRiskEvents, getIncidents } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
 import { TREND_DATA } from '../../data/mockData';
 
 const PIE_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e'];
 
 export default function Overview() {
   const navigate = useNavigate();
-  const identities = useMemo(() => getIdentities(), []);
-  const risks = useMemo(() => getRiskEvents(), []);
-  const incidents = useMemo(() => getIncidents(), []);
+  const { data } = usePlatformData();
+  const identities = useMemo(() => getIdentities(), [data]);
+  const risks = useMemo(() => getRiskEvents(), [data]);
+  const incidents = useMemo(() => getIncidents(), [data]);
 
   const totalIdentities = identities.length;
   const activeIdentities = identities.filter(i => i.status === 'Active').length;
@@ -188,6 +191,8 @@ export default function Overview() {
           </table>
         </div>
       </GlassCard>
+
+      <PrivilegeHeatmap />
     </div>
   );
 }

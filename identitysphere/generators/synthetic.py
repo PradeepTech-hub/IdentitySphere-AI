@@ -82,18 +82,22 @@ TITLES = {
 
 ADMIN_ROLES_BY_PLATFORM = {
     Platform.AD: ["Domain Admin", "Enterprise Admin", "Schema Admin"],
+    Platform.AZURE: ["Global Administrator", "Privileged Role Administrator", "User Administrator"],
     Platform.AWS: ["AdministratorAccess", "IAMFullAccess", "PowerUserAccess"],
     Platform.OKTA: ["Super Admin", "Org Admin", "App Admin"],
     Platform.GITHUB: ["Owner", "Admin"],
     Platform.SALESFORCE: ["System Administrator", "Modify All Data"],
+    Platform.SERVICENOW: ["admin", "security_admin", "itil_admin"],
 }
 
 NORMAL_ROLES_BY_PLATFORM = {
     Platform.AD: ["Domain User", "Remote Desktop Users", "DNS Admins"],
+    Platform.AZURE: ["User", "Guest", "Application Developer"],
     Platform.AWS: ["ReadOnlyAccess", "S3ReadOnly", "CloudWatchReadOnly", "EC2Viewer"],
     Platform.OKTA: ["Everyone", "App User", "Help Desk Admin"],
     Platform.GITHUB: ["Member", "Collaborator", "Triage"],
     Platform.SALESFORCE: ["Standard User", "Read Only", "Marketing User", "Chatter User"],
+    Platform.SERVICENOW: ["itil", "sn_incident_read", "sn_change_read"],
 }
 
 GROUPS_BY_PLATFORM = {
@@ -133,6 +137,15 @@ GROUPS_BY_PLATFORM = {
         "Help Desk",
         "Executive Team",
     ],
+    Platform.AZURE: [
+        "All-Users",
+        "Cloud-Admins",
+        "App-Developers",
+        "Security-Readers",
+        "Conditional-Access",
+        "Guest-Users",
+        "Privileged-Identity",
+    ],
     Platform.GITHUB: [
         "backend-team",
         "frontend-team",
@@ -152,14 +165,24 @@ GROUPS_BY_PLATFORM = {
         "Report Viewers",
         "Data Stewards",
     ],
+    Platform.SERVICENOW: [
+        "IT-Support",
+        "Change-Managers",
+        "Incident-Responders",
+        "CMDB-Owners",
+        "Service-Desk",
+        "Security-Ops",
+    ],
 }
 
 RESOURCES = {
     Platform.AD: ["domain-controller", "file-server", "exchange", "dns", "gpo"],
+    Platform.AZURE: ["subscriptions", "keyvault", "aad-users", "conditional-access", "app-registrations"],
     Platform.AWS: ["s3://prod-data", "ec2:*", "iam:*", "rds:prod", "lambda:*", "kms:*"],
     Platform.OKTA: ["sso-apps", "mfa-config", "user-management", "api-tokens", "policies"],
     Platform.GITHUB: ["repos:private", "repos:public", "actions", "packages", "settings"],
     Platform.SALESFORCE: ["accounts", "contacts", "opportunities", "reports", "setup"],
+    Platform.SERVICENOW: ["incidents", "changes", "cmdb", "workflows", "service-catalog"],
 }
 
 

@@ -121,6 +121,7 @@ class DetectionEngine:
         self.role_change_days: int = context_cfg.get("recent_role_change_days", 14)
         self.role_change_discount: float = context_cfg.get("recent_role_change_discount", 0.3)
         self.manager_discount: float = context_cfg.get("manager_approved_discount", 0.2)
+        self.fp_trap_discount: float = context_cfg.get("false_positive_trap_discount", 0.6)
 
         iso_cfg = risk_cfg.get("isolation_forest", {})
         self.iso_contamination: float = iso_cfg.get("contamination", 0.10)
@@ -684,7 +685,7 @@ class DetectionEngine:
             total_rule_score = min(total_rule_score, 100.0)
 
             combined = (total_rule_score * rule_weight) + (ml_score * ml_weight)
-            combined = self._apply_context_adjustments(identity, combined)
+            combined = self._apply_context_adjustments(identity, combined, ctx)
 
             if combined >= 70:
                 severity = RiskSeverity.CRITICAL
@@ -710,10 +711,15 @@ class DetectionEngine:
                 self.result.severity_distribution.get(event.severity.value, 0) + 1
             )
 
-    def _apply_context_adjustments(self, identity: Identity, score: float) -> float:
+    def _apply_context_adjustments(
+        self, identity: Identity, score: float, ctx: DetectionContext | None = None
+    ) -> float:
         """Reduce score for identities with legitimate context (on-call, recent change)."""
         if identity.tags.get("on_call") == "true":
             score *= (1 - self.on_call_discount)
+
+        if identity.tags.get("manager_approved") == "true":
+            score *= (1 - self.manager_discount)
 
         role_change_str = identity.tags.get("role_change_date")
         if role_change_str:
@@ -724,6 +730,13 @@ class DetectionEngine:
             except (ValueError, TypeError):
                 pass
 
+        if ctx and ctx.anomaly_labels.get(identity.identity_id) == "false_positive_traps":
+            has_material = any(
+                a.is_admin and a.status == IdentityStatus.ACTIVE for a in identity.accounts
+            )
+            if not has_material or score < 55:
+                score *= (1 - self.fp_trap_discount)
+
         return score
 
     def _compute_accuracy(self, ctx: DetectionContext) -> None:
@@ -731,7 +744,9 @@ class DetectionEngine:
         if not ctx.anomaly_labels:
             return
 
-        detected_ids = {e.identity_id for e in self.result.risk_events}
+        detected_ids = {
+            e.identity_id for e in self.result.risk_events if e.score >= 25
+        }
         actual_anomalous = {
             iid for iid, cat in ctx.anomaly_labels.items()
             if cat not in ("normal", "false_positive_traps")

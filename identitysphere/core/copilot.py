@@ -434,3 +434,55 @@ class SecurityCopilot:
 
         lines.append("---END---")
         return "\n".join(lines)
+
+    def generate_risk_narrative_offline(
+        self,
+        display_name: str,
+        risk_score: float,
+        severity: str,
+        factors: list[dict],
+        risks: list[dict],
+        remediation: list[str],
+    ) -> str:
+        """Template narrative when LLM is unavailable (API offline mode)."""
+        lines = [
+            f"## Risk Summary: {display_name}",
+            f"**Composite score:** {risk_score:.1f}/100 ({severity.upper()})",
+            "",
+            "### Contributing Factors",
+        ]
+        for f in factors[:6]:
+            name = f.get("name", "factor")
+            weighted = f.get("weighted_value", f.get("value", 0))
+            lines.append(f"- **{name}**: {weighted:.1f}")
+        if risks:
+            lines.extend(["", "### Detected Signals"])
+            for r in risks[:5]:
+                lines.append(f"- [{r.get('severity', 'medium').upper()}] {r.get('title', r.get('type', 'risk'))}")
+        if remediation:
+            lines.extend(["", "### Recommended Remediation"])
+            for step in remediation[:6]:
+                lines.append(f"- {step}")
+        return "\n".join(lines)
+
+    def generate_general_response(self, query: str, identity_count: int) -> str:
+        q = query.lower()
+        if "heatmap" in q or "privilege" in q:
+            return (
+                f"**Cross-Platform Privilege View**\n\n"
+                f"The heatmap shows average composite risk by platform and department "
+                f"across {identity_count} identities. Open **Compliance** or **Overview** "
+                f"for the live matrix from the pipeline."
+            )
+        if "incident" in q or "cluster" in q:
+            return (
+                "**Incident Clusters**\n\n"
+                "Related risk signals are grouped with DBSCAN to reduce alert noise. "
+                "See the **Incidents** page for clustered workflows."
+            )
+        return (
+            f"**IdentitySphere Copilot** (offline mode)\n\n"
+            f"Ask about a specific person by name, e.g. "
+            f"\"Why is [name] risky?\" or \"Generate remediation plan for [name]\".\n\n"
+            f"Monitoring **{identity_count}** identities across hybrid platforms."
+        )

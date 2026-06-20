@@ -11,6 +11,7 @@ import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { COMPLIANCE_MAP } from '../../data/mockData';
 import { getIdentities, getRiskEvents } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
 
 const FRAMEWORK_DATA = [
   {
@@ -63,8 +64,11 @@ export default function Compliance() {
   const [controlDetail, setControlDetail] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const identities = useMemo(() => getIdentities(), [activePanel]);
-  const risks = useMemo(() => getRiskEvents(), [activePanel]);
+  const { data } = usePlatformData();
+  const identities = useMemo(() => getIdentities(), [data]);
+  const risks = useMemo(() => getRiskEvents(), [data]);
+  const liveCompliance = data?.compliance_mapping || [];
+  const capabilityRows = liveCompliance.length ? liveCompliance : [];
 
   const totalControls = allControls.length;
   const passControls = allControls.filter(c => c.status === 'pass').length;
@@ -136,6 +140,34 @@ export default function Compliance() {
           </motion.div>
         ))}
       </div>
+
+      {capabilityRows.length > 0 && (
+        <GlassCard hover={false} delay={0.1}>
+          <h3 className="text-sm font-semibold text-white mb-3">Live Pipeline Compliance Evidence</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-slate-500 border-b border-white/5">
+                  <th className="text-left py-2">Capability</th>
+                  <th className="text-left py-2">NIST</th>
+                  <th className="text-left py-2">MITRE</th>
+                  <th className="text-right py-2">Findings</th>
+                </tr>
+              </thead>
+              <tbody>
+                {capabilityRows.map((row) => (
+                  <tr key={row.capability} className="border-b border-white/[0.03]">
+                    <td className="py-2 text-slate-300">{row.capability}</td>
+                    <td className="py-2 text-cyan-400">{row.nist_800_53}</td>
+                    <td className="py-2 text-orange-400">{row.mitre_attack}</td>
+                    <td className="py-2 text-right font-mono text-white">{row.findings_count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </GlassCard>
+      )}
 
       {/* Drill-Down Panels */}
       <AnimatePresence mode="wait">

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { PlatformDataProvider } from './context/PlatformDataContext';
 import { ScenarioProvider } from './context/ScenarioContext';
 import { SidebarProvider } from './components/layout/Sidebar';
 
@@ -99,11 +100,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ScenarioProvider>
-          <SidebarProvider>
-            <AppRoutes />
-          </SidebarProvider>
-        </ScenarioProvider>
+        <PlatformDataProvider>
+          <ScenarioProvider>
+            <SidebarProvider>
+              <AppRoutes />
+            </SidebarProvider>
+          </ScenarioProvider>
+        </PlatformDataProvider>
       </AuthProvider>
     </BrowserRouter>
   );

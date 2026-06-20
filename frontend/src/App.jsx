@@ -19,6 +19,7 @@ import BlastRadius from './pages/admin/BlastRadius';
 import Compliance from './pages/admin/Compliance';
 import Copilot from './pages/admin/Copilot';
 import Incidents from './pages/admin/Incidents';
+import OffboardingGaps from './pages/admin/OffboardingGaps';
 import Scenarios from './pages/admin/Scenarios';
 
 import AuditorDashboard, { EvidencePage, ExportsPage } from './pages/auditor/AuditorDashboard';
@@ -57,6 +58,7 @@ function AppRoutes() {
         <Route path="access-review" element={<AccessReview />} />
         <Route path="privileges" element={<Privileges />} />
         <Route path="risks" element={<Risks />} />
+        <Route path="offboarding-gaps" element={<OffboardingGaps />} />
         <Route path="attack-paths" element={<AttackPaths />} />
         <Route path="blast-radius" element={<BlastRadius />} />
         <Route path="compliance" element={<Compliance />} />

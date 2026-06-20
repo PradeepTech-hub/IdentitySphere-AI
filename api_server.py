@@ -12,7 +12,7 @@ from typing import Any
 import networkx as nx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
 logger = logging.getLogger("identitysphere.api")
@@ -279,6 +279,48 @@ def copilot_chat(body: CopilotRequest):
         "response": copilot.generate_general_response(body.query, len(identities)),
         "mode": "offline",
     }
+
+
+@app.get("/api/risk-report")
+def risk_report_json():
+    report = _cache.get("report", {})
+    top = report.get("top_risky_identities", [])[:10]
+    return {
+        "generated_at": report.get("metadata", {}).get("run_timestamp"),
+        "success_metrics": report.get("success_metrics", {}),
+        "top_risky_identities": top,
+    }
+
+
+@app.get("/api/risk-report/html")
+def risk_report_html():
+    from identitysphere.core.risk_report import build_risk_report_html
+
+    report = _cache.get("report", {})
+    if not report.get("top_risky_identities"):
+        raise HTTPException(404, "Risk report not available — run pipeline first")
+    return HTMLResponse(build_risk_report_html(report))
+
+
+@app.get("/api/risk-report/download")
+def risk_report_download():
+    path = DATA_DIR / "risk_report.html"
+    if not path.exists():
+        from identitysphere.core.risk_report import write_risk_report_html
+        report = _cache.get("report", {})
+        if not report:
+            raise HTTPException(404, "Risk report not available — run pipeline first")
+        write_risk_report_html(report, path)
+    return FileResponse(path, media_type="text/html", filename="identitysphere_risk_report.html")
+
+
+@app.get("/api/offboarding-gaps")
+def offboarding_gaps():
+    from identitysphere.core.offboarding_gaps import compute_offboarding_gaps
+
+    rows = _cache.get("offboarding", [])
+    events = _cache.get("risk_events", [])
+    return compute_offboarding_gaps(rows, events)
 
 
 @app.post("/api/pipeline/run")

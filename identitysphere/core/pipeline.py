@@ -252,6 +252,12 @@ class IdentitySpherePipeline:
         self._print_report(report)
         self._save_report(report)
 
+        from identitysphere.core.risk_report import write_risk_report_html, write_risk_report_json
+        output_dir = self.config.get("output", {}).get("data_dir", "identitysphere/data/generated")
+        write_risk_report_html(report, os.path.join(output_dir, "risk_report.html"))
+        write_risk_report_json(report, os.path.join(output_dir, "risk_report.json"))
+        logger.info("Risk report exported to %s/risk_report.html", output_dir)
+
         return report
 
     def _build_report(

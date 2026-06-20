@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, Users, Shield, AlertTriangle, Route, Target,
   MessageSquare, Bell, FileText, BarChart3, LogOut, Zap, Eye, Download,
-  UserPlus, ShieldCheck, ClipboardCheck, Server, Menu, X,
+  UserPlus, ShieldCheck, ClipboardCheck, Server, Menu, X, UserX,
 } from 'lucide-react';
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
@@ -15,6 +15,7 @@ const ADMIN_LINKS = [
   { to: '/admin/access-review', icon: ClipboardCheck, label: 'Access Review' },
   { to: '/admin/privileges', icon: Shield, label: 'Privileges' },
   { to: '/admin/risks', icon: AlertTriangle, label: 'Risk Findings' },
+  { to: '/admin/offboarding-gaps', icon: UserX, label: 'Offboarding Gaps' },
   { to: '/admin/attack-paths', icon: Route, label: 'Attack Paths' },
   { to: '/admin/blast-radius', icon: Target, label: 'Blast Radius' },
   { to: '/admin/compliance', icon: ShieldCheck, label: 'Compliance' },

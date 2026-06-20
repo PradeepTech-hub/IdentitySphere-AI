@@ -47,9 +47,10 @@ export async function loadPlatformData() {
   let blastRadii = [];
   let compliance = [];
   let heatmap = null;
+  let offboardingGaps = [];
 
   try {
-    [report, identities, stats, riskEvents, incidents, compliance, heatmap] = await Promise.all([
+    [report, identities, stats, riskEvents, incidents, compliance, heatmap, offboardingGaps] = await Promise.all([
       fetchJson(`${API_BASE}/report`),
       fetchJson(`${API_BASE}/identities`),
       fetchJson(`${API_BASE}/stats`),
@@ -57,6 +58,7 @@ export async function loadPlatformData() {
       fetchJson(`${API_BASE}/incidents`).catch(() => []),
       fetchJson(`${API_BASE}/compliance`).catch(() => []),
       fetchJson(`${API_BASE}/privilege-heatmap`).catch(() => null),
+      fetchJson(`${API_BASE}/offboarding-gaps`).catch(() => []),
     ]);
 
     try {
@@ -89,6 +91,7 @@ export async function loadPlatformData() {
     incidents,
     compliance_mapping: compliance,
     privilege_heatmap: heatmap,
+    offboarding_gaps: offboardingGaps,
     blast_radii: blastRadii,
     top_risky_identities: report.top_risky_identities || [],
     status_counts: {},

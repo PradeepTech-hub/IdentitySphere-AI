@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ReactFlow, Background, Controls } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -218,7 +219,7 @@ function buildNarrative(identity, riskEvent) {
     }
   }
 
-  const blastEntry = BLAST_RADII.find(b => b.id === identity.person_id);
+  const blastEntry = getBlastRadii().find(b => b.id === identity.person_id);
   const resourceCount = blastEntry?.resources || platforms.length * 3;
 
   steps.push({
@@ -232,19 +233,24 @@ function buildNarrative(identity, riskEvent) {
 }
 
 export default function AttackPaths() {
-  const [identities, setIdentities] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+
+  const preSelected = useMemo(() => {
+    const pid = location.state?.personId;
+    if (!pid) return null;
+    const match = getStoredIdentities().find(i => i.person_id === pid);
+    if (match) window.history.replaceState({}, '');
+    return match || null;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [identities, setIdentities] = useState(() => getStoredIdentities());
+  const [loading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedIdentity, setSelectedIdentity] = useState(null);
-  const [identityDetail, setIdentityDetail] = useState(null);
+  const [selectedIdentity, setSelectedIdentity] = useState(preSelected);
+  const [identityDetail, setIdentityDetail] = useState(preSelected);
   const [filter, setFilter] = useState('all');
   const [selectedNode, setSelectedNode] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-
-  useEffect(() => {
-    setIdentities(getStoredIdentities());
-    setLoading(false);
-  }, []);
 
   const filteredIdentities = useMemo(() => {
     let list = identities;

@@ -11,31 +11,31 @@ const ScenarioContext = createContext(null);
 const SCENARIO_CONFIGS = {
   dormant_admin: {
     riskType: 'stale_account', severity: 'critical', score: 72.5,
-    name: 'Simulated Dormant Admin', dept: 'IT Operations',
+    name: 'Manoj Tiwari (SIM)', dept: 'IT Operations',
     platforms: ['aws_iam'], title: 'AWS AdministratorAccess - 180 days dormant',
     dormancyDays: 180, isAdmin: true, status: 'Dormant',
   },
   offboarding_failure: {
     riskType: 'offboarding_gap', severity: 'critical', score: 68.3,
-    name: 'Simulated Terminated User', dept: 'Engineering',
+    name: 'Divya Krishnan (SIM)', dept: 'Engineering',
     platforms: ['aws_iam', 'okta'], title: 'Terminated but active on AWS + Okta',
     gapDays: 45, isAdmin: false, status: 'Orphaned',
   },
   privilege_escalation: {
     riskType: 'privilege_escalation', severity: 'critical', score: 75.1,
-    name: 'Simulated Escalated User', dept: 'DevOps',
+    name: 'Ravi Deshmukh (SIM)', dept: 'DevOps',
     platforms: ['okta'], title: 'Unauthorized Org Admin role assignment',
     isAdmin: true, status: 'Active',
   },
   token_abuse: {
     riskType: 'token_abuse', severity: 'high', score: 63.8,
-    name: 'Simulated Service Account', dept: 'IT Operations',
+    name: 'svc-deploy-bot (SIM)', dept: 'IT Operations',
     platforms: ['github'], title: 'PAT token 540 days old, anomalous API usage',
     tokenAgeDays: 540, isAdmin: false, status: 'Active', type: 'Service',
   },
   cross_platform_admin: {
     riskType: 'cross_platform_admin', severity: 'critical', score: 81.2,
-    name: 'Simulated Cross-Admin', dept: 'Security',
+    name: 'Nitin Saxena (SIM)', dept: 'Security',
     platforms: ['active_directory', 'aws_iam', 'okta'], title: 'Admin on AD + AWS + Okta without justification',
     isAdmin: true, status: 'Active',
   },

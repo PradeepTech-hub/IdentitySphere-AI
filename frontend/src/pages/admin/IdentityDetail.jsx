@@ -812,12 +812,86 @@ function buildCorrelationGraph(id) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   TAB 3 : PRIVILEGES
+   TAB 3 : PRIVILEGES (Effective Privilege Calculator)
    ══════════════════════════════════════════════════════════════════════ */
+
+const PRIV_RESOURCE_MAP = {
+  active_directory: ['domain-controller', 'dns-server', 'file-server', 'gpo-management'],
+  aws_iam: ['iam-console', 'ec2-instances', 's3-prod-data', 'kms-keys'],
+  okta: ['sso-config', 'api-tokens', 'mfa-policies', 'user-provisioning'],
+  github: ['private-repos', 'org-settings', 'actions-secrets', 'deploy-keys'],
+  salesforce: ['crm-data', 'user-management', 'reports', 'apex-classes'],
+};
+
+const PRIV_PERMISSION_MAP = {
+  active_directory: { admin: ['full-control', 'gpo-edit', 'user-mgmt', 'dns-admin'], user: ['read', 'logon'] },
+  aws_iam: { admin: ['iam:*', 'ec2:*', 's3:*', 'kms:*'], user: ['s3:GetObject', 'ec2:Describe*'] },
+  okta: { admin: ['admin:api-tokens', 'admin:users', 'admin:apps', 'admin:mfa'], user: ['sso:login'] },
+  github: { admin: ['repo:*', 'org:admin', 'actions:write', 'packages:write'], user: ['repo:read', 'actions:read'] },
+  salesforce: { admin: ['setup:all', 'user:manage', 'apex:execute', 'api:full'], user: ['report:view', 'record:read'] },
+};
+
+const HIGH_RISK_ROLES = ['Domain Admin', 'AdministratorAccess', 'Org Admin', 'System Administrator', 'Owner'];
+
+function buildPrivilegeGraph(id) {
+  const nodes = [];
+  const edges = [];
+  const platforms = id.platforms || [];
+  if (platforms.length === 0) return { nodes, edges };
+
+  nodes.push({
+    id: 'identity', position: { x: 400, y: 20 },
+    data: { label: `👤 ${id.display_name}` },
+    style: { background: 'linear-gradient(135deg, #1a0008, #080a12)', color: '#E31937', border: '2px solid #E31937', borderRadius: '16px', padding: '12px 22px', fontSize: 13, fontWeight: 700, width: 200, textAlign: 'center', boxShadow: '0 0 20px rgba(227,25,55,0.2)' },
+    draggable: true,
+  });
+
+  const totalW = Math.max(platforms.length * 280, 500);
+  const startX = 400 - totalW / 2 + 140;
+
+  platforms.forEach((p, pIdx) => {
+    const px = startX + pIdx * 280;
+    const pColors = PLATFORM_COLORS[p] || { bg: '#080a12', border: '#64748b', color: '#64748b' };
+    const roleInfo = PLATFORM_ROLES[p] || { admin: 'Admin', standard: 'User', group: 'Users' };
+    const isAdm = id.is_admin && ['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(p);
+    const roleName = isAdm ? roleInfo.admin : roleInfo.standard;
+    const isHighRisk = HIGH_RISK_ROLES.includes(roleName);
+    const perms = isAdm ? (PRIV_PERMISSION_MAP[p]?.admin || ['admin:*']) : (PRIV_PERMISSION_MAP[p]?.user || ['read']);
+    const resources = isAdm ? (PRIV_RESOURCE_MAP[p] || ['resource']) : (PRIV_RESOURCE_MAP[p] || ['resource']).slice(0, 2);
+    const username = generateUsername(id.display_name || 'user', p);
+
+    const pId = `p-${p}`;
+    nodes.push({ id: pId, position: { x: px, y: 120 }, data: { label: `🖥️ ${PLATFORM_LABELS[p] || p}` }, style: { background: pColors.bg, color: pColors.color, border: `2px solid ${pColors.border}`, borderRadius: '10px', padding: '8px 16px', fontSize: 11, fontWeight: 600, width: 160, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-id-${p}`, source: 'identity', target: pId, animated: true, style: { stroke: pColors.border, strokeWidth: 2 }, labelStyle: { fontSize: 8, fill: '#64748b' } });
+
+    const aId = `a-${p}`;
+    nodes.push({ id: aId, position: { x: px, y: 210 }, data: { label: `${isAdm ? '🔑 ' : ''}${username}` }, style: { background: pColors.bg, color: isAdm ? '#ef4444' : pColors.color, border: `1.5px solid ${isAdm ? '#ef4444' : pColors.border}`, borderRadius: '8px', padding: '6px 12px', fontSize: 10, width: 140, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-${pId}-${aId}`, source: pId, target: aId, label: 'account', style: { stroke: pColors.border + '88', strokeWidth: 1.5 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+
+    const gId = `g-${p}`;
+    nodes.push({ id: gId, position: { x: px - 60, y: 300 }, data: { label: `👥 ${roleInfo.group}` }, style: { background: 'rgba(255,255,255,0.03)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '5px 10px', fontSize: 9, width: 120, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-${aId}-${gId}`, source: aId, target: gId, label: 'member_of', style: { stroke: '#64748b55', strokeWidth: 1 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+
+    const rId = `r-${p}`;
+    nodes.push({ id: rId, position: { x: px + 60, y: 300 }, data: { label: `🛡️ ${roleName}` }, style: { background: isHighRisk ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)', color: isHighRisk ? '#ef4444' : '#94a3b8', border: `1.5px solid ${isHighRisk ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.08)'}`, borderRadius: '8px', padding: '5px 10px', fontSize: 9, fontWeight: isHighRisk ? 700 : 500, width: 130, textAlign: 'center', boxShadow: isHighRisk ? '0 0 12px rgba(239,68,68,0.15)' : 'none' }, draggable: true });
+    edges.push({ id: `e-${aId}-${rId}`, source: aId, target: rId, label: 'has_role', style: { stroke: isHighRisk ? '#ef444488' : '#64748b55', strokeWidth: isHighRisk ? 2 : 1 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+
+    const permId = `perm-${p}`;
+    nodes.push({ id: permId, position: { x: px, y: 400 }, data: { label: `🔐 ${perms[0]}` }, style: { background: isAdm ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.02)', color: isAdm ? '#f97316' : '#64748b', border: `1px solid ${isAdm ? 'rgba(249,115,22,0.2)' : 'rgba(255,255,255,0.06)'}`, borderRadius: '6px', padding: '4px 10px', fontSize: 9, width: 130, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-${rId}-${permId}`, source: rId, target: permId, label: 'grants', style: { stroke: isAdm ? '#f9731644' : '#64748b33', strokeWidth: 1 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+
+    const resId = `res-${p}`;
+    nodes.push({ id: resId, position: { x: px, y: 490 }, data: { label: `📦 ${resources[0]}` }, style: { background: isAdm ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.02)', color: isAdm ? '#ef4444' : '#64748b', border: `1px solid ${isAdm ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)'}`, borderRadius: '6px', padding: '4px 10px', fontSize: 9, width: 130, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-${permId}-${resId}`, source: permId, target: resId, label: 'accesses', style: { stroke: isAdm ? '#ef444433' : '#64748b22', strokeWidth: 1 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+  });
+
+  return { nodes, edges };
+}
+
 function PrivilegesTab({ identity: id }) {
   const entitlements = id.entitlements || [];
+  const platforms = id.platforms || [];
 
-  /* Group by platform */
   const grouped = {};
   entitlements.forEach(ent => {
     const p = ent.platform || 'unknown';
@@ -825,88 +899,150 @@ function PrivilegesTab({ identity: id }) {
     grouped[p].push(ent);
   });
 
+  const { nodes: privNodes, edges: privEdges } = useMemo(() => buildPrivilegeGraph(id), [id]);
+
+  const directPrivs = entitlements.filter(e => e.privilege_level === 'high' || e.is_admin_role);
+  const inheritedPrivs = entitlements.filter(e => !e.is_admin_role && e.privilege_level !== 'high');
+  const effectivePrivs = entitlements;
+  const totalResources = platforms.reduce((a, p) => {
+    const res = PRIV_RESOURCE_MAP[p] || [];
+    return a + (id.is_admin ? res.length : Math.min(res.length, 2));
+  }, 0);
+
   return (
     <div className="space-y-6">
       {/* Top stats */}
       <div className="flex flex-wrap gap-4">
-        <MiniStatCard icon={ShieldAlert} label="Admin Entitlements" value={id.admin_entitlement_count} color="#ef4444" delay={0.05} />
-        <MiniStatCard icon={AlertTriangle} label="Sensitive Permissions" value={id.sensitive_permission_count} color="#f97316" delay={0.1} />
-        <MiniStatCard icon={Key} label="Total Entitlements" value={id.entitlement_count} color="#E31937" delay={0.15} />
+        <MiniStatCard icon={ShieldAlert} label="Admin Entitlements" value={id.admin_entitlement_count || directPrivs.length} color="#ef4444" delay={0.05} />
+        <MiniStatCard icon={AlertTriangle} label="Sensitive Permissions" value={id.sensitive_permission_count || directPrivs.length} color="#f97316" delay={0.1} />
+        <MiniStatCard icon={Key} label="Total Entitlements" value={id.entitlement_count || effectivePrivs.length} color="#E31937" delay={0.15} />
       </div>
+
+      {/* Privilege Type Summary */}
+      <div className="grid grid-cols-3 gap-4">
+        <GlassCard hover={false} delay={0.05} className="border-red-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Direct Privileges</span>
+          </div>
+          <p className="text-2xl font-black text-red-400">{directPrivs.length}</p>
+          <p className="text-[10px] text-slate-500 mt-1">Explicitly assigned admin/high-privilege roles</p>
+        </GlassCard>
+        <GlassCard hover={false} delay={0.1} className="border-blue-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-blue-400" />
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Inherited Privileges</span>
+          </div>
+          <p className="text-2xl font-black text-blue-400">{inheritedPrivs.length}</p>
+          <p className="text-[10px] text-slate-500 mt-1">Inherited via group membership and role hierarchy</p>
+        </GlassCard>
+        <GlassCard hover={false} delay={0.15} className="border-purple-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-purple-400" />
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Effective Privileges</span>
+          </div>
+          <p className="text-2xl font-black text-purple-400">{effectivePrivs.length}</p>
+          <p className="text-[10px] text-slate-500 mt-1">{totalResources} reachable resources across {platforms.length} platform(s)</p>
+        </GlassCard>
+      </div>
+
+      {/* Privilege Relationship Graph */}
+      {privNodes.length > 0 && (
+        <GlassCard hover={false} delay={0.2} className="p-0 overflow-hidden" style={{ height: 580 }}>
+          <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+            <h3 className="text-sm text-slate-500 uppercase tracking-wider flex items-center gap-2">
+              <Layers size={14} className="text-red-400" /> Privilege Relationship Graph
+            </h3>
+            <div className="flex gap-3 text-[9px]">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" /> Direct / Admin</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> Inherited</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-400" /> Resource</span>
+            </div>
+          </div>
+          <div style={{ height: 530 }}>
+            <ReactFlow
+              nodes={privNodes}
+              edges={privEdges}
+              fitView
+              fitViewOptions={{ padding: 0.2 }}
+              panOnDrag
+              zoomOnScroll
+              minZoom={0.3}
+              maxZoom={2}
+              className="bg-navy-950"
+              proOptions={{ hideAttribution: true }}
+            >
+              <Background color="#E3193706" gap={30} />
+              <Controls className="bg-navy-800 border border-white/10 rounded-xl" />
+            </ReactFlow>
+          </div>
+        </GlassCard>
+      )}
 
       {/* Entitlement groups */}
       {Object.keys(grouped).length > 0 ? (
-        Object.entries(grouped).map(([platform, ents], gIdx) => (
-          <GlassCard key={platform} hover={false} delay={0.05 + gIdx * 0.05}>
-            <div className="flex items-center gap-3 mb-4">
-              <PlatformIcon platform={platform} size="lg" />
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-                {PLATFORM_LABELS[platform] || platform}
-              </h3>
-              <span className="text-xs text-slate-500">({ents.length} entitlement{ents.length !== 1 ? 's' : ''})</span>
-            </div>
+        Object.entries(grouped).map(([platform, ents], gIdx) => {
+          const isAdmP = id.is_admin && ['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(platform);
+          const perms = isAdmP ? (PRIV_PERMISSION_MAP[platform]?.admin || []) : (PRIV_PERMISSION_MAP[platform]?.user || []);
+          const resources = isAdmP ? (PRIV_RESOURCE_MAP[platform] || []) : (PRIV_RESOURCE_MAP[platform] || []).slice(0, 2);
+          return (
+            <GlassCard key={platform} hover={false} delay={0.05 + gIdx * 0.05}>
+              <div className="flex items-center gap-3 mb-4">
+                <PlatformIcon platform={platform} size="lg" />
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+                  {PLATFORM_LABELS[platform] || platform}
+                </h3>
+                <span className="text-xs text-slate-500">({ents.length} entitlement{ents.length !== 1 ? 's' : ''})</span>
+              </div>
 
-            <div className="space-y-3">
-              {ents.map((ent, eIdx) => (
-                <motion.div
-                  key={eIdx}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.02 * eIdx }}
-                  className="rounded-lg px-4 py-3"
-                  style={{
-                    background: ent.is_admin_role ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.02)',
-                    border: `1px solid ${ent.is_admin_role ? 'rgba(239,68,68,0.18)' : 'rgba(255,255,255,0.06)'}`,
-                  }}
-                >
-                  <div className="flex items-center flex-wrap gap-2 mb-2">
-                    <span className="text-sm font-semibold text-white">{ent.role_name || 'Direct Permission'}</span>
-                    {ent.is_admin_role && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-semibold uppercase">
-                        Admin
-                      </span>
-                    )}
-                    {ent.is_sensitive && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 font-semibold uppercase">
-                        Sensitive
-                      </span>
-                    )}
-                    {ent.privilege_level && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400 border border-slate-500/20 font-medium">
-                        {ent.privilege_level}
-                      </span>
-                    )}
+              <div className="space-y-3">
+                {ents.map((ent, eIdx) => (
+                  <motion.div key={eIdx} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 * eIdx }}
+                    className="rounded-lg px-4 py-3"
+                    style={{ background: ent.is_admin_role ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.02)', border: `1px solid ${ent.is_admin_role ? 'rgba(239,68,68,0.18)' : 'rgba(255,255,255,0.06)'}` }}>
+                    <div className="flex items-center flex-wrap gap-2 mb-2">
+                      <span className="text-sm font-semibold text-white">{ent.role_name || 'Direct Permission'}</span>
+                      {ent.is_admin_role && <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-semibold uppercase">Admin</span>}
+                      {ent.is_sensitive && <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 font-semibold uppercase">Sensitive</span>}
+                      {ent.privilege_level && <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400 border border-slate-500/20 font-medium">{ent.privilege_level}</span>}
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 font-medium">{ent.is_admin_role ? 'Direct' : 'Inherited'}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
+                      {ent.permission_id && <span className="flex items-center gap-1"><Hash size={10} className="text-slate-500" /> {ent.permission_id}</span>}
+                      {ent.resource && <span className="flex items-center gap-1"><Target size={10} className="text-slate-500" /> {ent.resource}</span>}
+                      {ent.action && <span className="flex items-center gap-1"><Zap size={10} className="text-slate-500" /> {ent.action}</span>}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Reachable resources for this platform */}
+              <div className="mt-4 pt-3 border-t border-white/5">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">Reachable Resources ({resources.length})</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {resources.map(r => (
+                    <span key={r} className={`text-[10px] px-2 py-1 rounded font-mono ${isAdmP ? 'bg-red-500/10 text-red-400 border border-red-500/15' : 'bg-white/5 text-slate-400 border border-white/5'}`}>{r}</span>
+                  ))}
+                </div>
+                {perms.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1.5">Permissions ({perms.length})</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {perms.map(pm => (
+                        <span key={pm} className={`text-[10px] px-2 py-0.5 rounded font-mono ${isAdmP ? 'bg-orange-500/10 text-orange-400 border border-orange-500/15' : 'bg-white/5 text-slate-500 border border-white/5'}`}>{pm}</span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
-                    {ent.permission_id && (
-                      <span className="flex items-center gap-1">
-                        <Hash size={10} className="text-slate-500" /> {ent.permission_id}
-                      </span>
-                    )}
-                    {ent.resource && (
-                      <span className="flex items-center gap-1">
-                        <Target size={10} className="text-slate-500" /> {ent.resource}
-                      </span>
-                    )}
-                    {ent.action && (
-                      <span className="flex items-center gap-1">
-                        <Zap size={10} className="text-slate-500" /> {ent.action}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </GlassCard>
-        ))
+                )}
+              </div>
+            </GlassCard>
+          );
+        })
       ) : (
         <GlassCard hover={false} delay={0.1}>
           <div className="flex flex-col items-center gap-3 py-8">
             <Key size={36} className="text-slate-600" />
             <p className="text-sm text-slate-500">No detailed entitlement data available</p>
-            <p className="text-xs text-slate-600">
-              {id.entitlement_count ? `${id.entitlement_count} entitlements reported but details not loaded` : 'No entitlements found'}
-            </p>
           </div>
         </GlassCard>
       )}

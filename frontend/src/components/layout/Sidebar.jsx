@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, Users, Shield, AlertTriangle, Route, Target,
   MessageSquare, Bell, FileText, BarChart3, Settings, LogOut, Zap, Eye, Download,
-  UserPlus, ShieldCheck, ClipboardCheck,
+  UserPlus, ShieldCheck, ClipboardCheck, Server, Activity,
 } from 'lucide-react';
 
 const ADMIN_LINKS = [
@@ -34,7 +34,12 @@ const EXEC_LINKS = [
 ];
 
 const EMPLOYEE_LINKS = [
-  { to: '/employee', icon: LayoutDashboard, label: 'My Requests' },
+  { to: '/employee', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/employee/apps', icon: Server, label: 'My Applications' },
+  { to: '/employee/roles', icon: Shield, label: 'My Roles' },
+  { to: '/employee/requests', icon: FileText, label: 'Access Requests' },
+  { to: '/employee/activity', icon: Activity, label: 'Activity History' },
+  { to: '/employee/security', icon: ShieldCheck, label: 'Security Center' },
 ];
 
 export default function Sidebar() {

@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {
   Target, Search, Shield, AlertTriangle, Key, Users, Server,
-  Zap, Activity, ChevronRight, Eye,
+  Zap, Activity, ChevronRight, Eye, Globe, Info, X, ArrowRight,
 } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import SeverityBadge from '../../components/shared/SeverityBadge';
@@ -22,16 +23,9 @@ const RESOURCE_MAP = {
   salesforce: ['crm-data', 'user-management', 'reports', 'apex-classes', 'api-access'],
 };
 
-const ROLE_MAP = {
-  active_directory: { admin: 'Domain Admin', user: 'Domain User' },
-  aws_iam: { admin: 'AdministratorAccess', user: 'ReadOnlyAccess' },
-  okta: { admin: 'Org Admin', user: 'SSO User' },
-  github: { admin: 'Owner', user: 'Contributor' },
-  salesforce: { admin: 'System Administrator', user: 'Standard User' },
-};
-
-function computeBlastRadius(identity) {
-  const platforms = identity.platforms || [];
+function computeBlastRadius(identity, excludePlatform) {
+  const allPlatforms = identity.platforms || [];
+  const platforms = excludePlatform ? allPlatforms.filter(p => p !== excludePlatform) : allPlatforms;
   const isAdmin = identity.is_admin;
   const byPlatform = {};
   let totalResources = 0;
@@ -56,34 +50,43 @@ function computeBlastRadius(identity) {
   else if (totalResources >= 10 || adminRoles >= 2) severity = 'high';
   else if (totalResources >= 5) severity = 'medium';
 
+  const riskScore = excludePlatform
+    ? Math.max(0, Math.round((identity.risk_score || 0) * (totalResources / Math.max(computeBlastRadius(identity, null).resources, 1))))
+    : (identity.risk_score || 0);
+
   return {
-    identity: identity.display_name,
-    id: identity.person_id,
-    department: identity.department,
-    severity,
-    resources: totalResources,
-    permissions: totalPermissions,
-    adminRoles,
-    platforms,
-    byPlatform,
-    sensitiveAssets,
-    riskScore: identity.risk_score || 0,
-    isAdmin,
-    mfaComplete: identity.mfa_complete,
-    status: identity.status,
+    identity: identity.display_name, id: identity.person_id, department: identity.department,
+    severity, resources: totalResources, permissions: totalPermissions, adminRoles,
+    platforms, byPlatform, sensitiveAssets, riskScore, isAdmin,
+    mfaComplete: identity.mfa_complete, status: identity.status,
   };
 }
 
+function computeForIdentity(identity) { return computeBlastRadius(identity, null); }
+
 export default function BlastRadius() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const identities = useMemo(() => getIdentities().filter(i => i.status !== 'Disabled' && i.status !== 'Offboarded'), []);
   const risks = useMemo(() => getRiskEvents(), []);
+
+  const preSelected = useMemo(() => {
+    const pid = location.state?.personId;
+    if (!pid) return null;
+    const all = getIdentities().filter(i => i.status !== 'Disabled' && i.status !== 'Offboarded');
+    const match = all.find(i => i.person_id === pid);
+    if (match) window.history.replaceState({}, '');
+    return match || null;
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [analysis, setAnalysis] = useState(null);
-  const [simulating, setSimulating] = useState(false);
+  const [selected, setSelected] = useState(preSelected);
+  const [analysis, setAnalysis] = useState(() => preSelected ? computeForIdentity(preSelected) : null);
+  const [simPlatform, setSimPlatform] = useState(() => preSelected?.platforms?.[0] || '');
   const [simResult, setSimResult] = useState(null);
-  const [simPlatform, setSimPlatform] = useState('');
+  const [simulating, setSimulating] = useState(false);
+  const [breakdownItem, setBreakdownItem] = useState(null);
 
   const topRiskUsers = useMemo(() =>
     identities.filter(i => i.risk_score > 40 || i.is_admin).sort((a, b) => (b.risk_score || 0) - (a.risk_score || 0)).slice(0, 6),
@@ -102,44 +105,58 @@ export default function BlastRadius() {
     setShowDropdown(false);
     setSearchQuery('');
     setSimResult(null);
-    const br = computeBlastRadius(identity);
+    setBreakdownItem(null);
+    const br = computeForIdentity(identity);
     setAnalysis(br);
     setSimPlatform(identity.platforms?.[0] || '');
   };
 
   const runSimulation = () => {
-    if (!analysis || !simPlatform) return;
+    if (!analysis || !simPlatform || !selected) return;
     setSimulating(true);
     setTimeout(() => {
-      const remaining = { ...analysis.byPlatform };
-      const removedCount = remaining[simPlatform] || 0;
-      delete remaining[simPlatform];
-      const afterResources = Object.values(remaining).reduce((a, b) => a + b, 0);
-      const afterAdminRoles = Math.max(0, analysis.adminRoles - (analysis.isAdmin ? 1 : 0));
-      const afterPermissions = analysis.permissions - (removedCount * (analysis.isAdmin ? 3 : 1));
-      const reductionPct = analysis.resources > 0 ? ((1 - afterResources / analysis.resources) * 100) : 0;
-      const beforeScore = analysis.riskScore;
-      const afterScore = Math.max(0, Math.round(beforeScore * (afterResources / Math.max(analysis.resources, 1))));
+      const before = computeForIdentity(selected);
+      const after = computeBlastRadius(selected, simPlatform);
+      const removedResources = RESOURCE_MAP[simPlatform] || [];
+      const wasAdmin = selected.is_admin && ['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(simPlatform);
 
       setSimResult({
         removedPlatform: simPlatform,
-        removedResources: removedCount,
-        originalResources: analysis.resources,
-        afterResources,
-        originalPermissions: analysis.permissions,
-        afterPermissions: Math.max(0, afterPermissions),
-        originalAdminRoles: analysis.adminRoles,
-        afterAdminRoles,
-        reductionPct: reductionPct.toFixed(1),
-        beforeScore,
-        afterScore,
+        before, after,
+        removedResourceList: selected.is_admin ? removedResources : removedResources.slice(0, 2),
+        wasAdminOnPlatform: wasAdmin,
+        reductionPct: before.resources > 0 ? ((1 - after.resources / before.resources) * 100).toFixed(1) : '0',
       });
+      setAnalysis(after);
       setSimulating(false);
-    }, 1200);
+    }, 1000);
+  };
+
+  const resetSimulation = () => {
+    if (!selected) return;
+    setSimResult(null);
+    setBreakdownItem(null);
+    setAnalysis(computeForIdentity(selected));
+    setSimPlatform(selected.platforms?.[0] || '');
   };
 
   const chartData = analysis ? Object.entries(analysis.byPlatform).map(([p, v]) => ({ platform: PLATFORM_LABELS[p] || p, resources: v, key: p })) : [];
   const riskEvent = selected ? risks.find(r => r.identityId === selected.person_id) : null;
+
+  const SIM_ROWS = simResult ? [
+    { key: 'platform', label: 'Platform Removed', before: PLATFORM_LABELS[simResult.removedPlatform], after: 'Revoked', color: 'text-orange-400',
+      detail: `All access on ${PLATFORM_LABELS[simResult.removedPlatform]} will be revoked. ${simResult.wasAdminOnPlatform ? 'Admin role will be removed.' : 'Standard user access removed.'}` },
+    { key: 'resources', label: 'Resources', before: simResult.before.resources, after: simResult.after.resources, color: 'text-white',
+      detail: `Removed ${simResult.removedResourceList.length} resource(s): ${simResult.removedResourceList.join(', ')}` },
+    { key: 'permissions', label: 'Permissions', before: simResult.before.permissions, after: simResult.after.permissions, color: 'text-white',
+      detail: `${simResult.before.permissions - simResult.after.permissions} permission(s) revoked from ${PLATFORM_LABELS[simResult.removedPlatform]}. ${simResult.wasAdminOnPlatform ? 'Includes admin-level write/delete permissions.' : 'Read-level permissions removed.'}` },
+    { key: 'admin', label: 'Admin Roles', before: simResult.before.adminRoles, after: simResult.after.adminRoles, color: 'text-white',
+      detail: simResult.wasAdminOnPlatform ? `Admin role on ${PLATFORM_LABELS[simResult.removedPlatform]} removed. Remaining admin roles: ${simResult.after.adminRoles}.` : 'No admin role was held on this platform.' },
+    { key: 'reduction', label: 'Risk Reduction', before: null, after: `${simResult.reductionPct}%`, color: 'text-emerald-400',
+      detail: `Blast radius reduced by ${simResult.reductionPct}%. Resource exposure decreased from ${simResult.before.resources} to ${simResult.after.resources} reachable targets.` },
+    { key: 'score', label: 'Risk Score', before: simResult.before.riskScore, after: simResult.after.riskScore, color: 'text-emerald-400',
+      detail: `Risk score drops from ${simResult.before.riskScore} to ${simResult.after.riskScore} (reduction of ${simResult.before.riskScore - simResult.after.riskScore} points). Severity: ${simResult.before.severity.toUpperCase()} → ${simResult.after.severity.toUpperCase()}.` },
+  ] : [];
 
   return (
     <div className="space-y-6">
@@ -150,12 +167,11 @@ export default function BlastRadius() {
         <p className="text-sm text-slate-500 mt-1">Select an identity to analyze blast radius and simulate role revocation</p>
       </div>
 
-      {/* User Selector */}
+      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
         <input value={searchQuery} onChange={e => { setSearchQuery(e.target.value); setShowDropdown(true); }}
-          onFocus={() => setShowDropdown(true)}
-          placeholder="Search identity by name, ID, or department..."
+          onFocus={() => setShowDropdown(true)} placeholder="Search identity by name, ID, or department..."
           className="w-full pl-10 pr-4 py-2.5 bg-white/3 border border-white/6 rounded-lg text-sm text-white placeholder-slate-500 outline-none focus:border-red-500/50 transition-colors" />
         <AnimatePresence>
           {showDropdown && filteredIdentities.length > 0 && (
@@ -173,7 +189,7 @@ export default function BlastRadius() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white font-medium truncate">{id.display_name}</p>
-                      <p className="text-[10px] text-slate-500">{id.person_id} | {id.department} | {id.platforms?.length || 0} platforms</p>
+                      <p className="text-[10px] text-slate-500">{id.person_id} | {id.department}</p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-xs font-mono text-red-400">{id.risk_score}</span>
@@ -187,10 +203,10 @@ export default function BlastRadius() {
         </AnimatePresence>
       </div>
 
-      {/* Quick-select: Top Risk Users */}
+      {/* Top Risk Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {topRiskUsers.map((user, i) => {
-          const br = computeBlastRadius(user);
+          const br = computeForIdentity(user);
           const isActive = selected?.person_id === user.person_id;
           return (
             <GlassCard key={user.person_id} delay={i * 0.04} onClick={() => selectAndAnalyze(user)}
@@ -205,7 +221,7 @@ export default function BlastRadius() {
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div><p className="text-lg font-black text-red-400">{br.resources}</p><p className="text-[10px] text-slate-500">Resources</p></div>
                 <div><p className="text-lg font-black text-amber-400">{br.permissions}</p><p className="text-[10px] text-slate-500">Permissions</p></div>
-                <div><p className="text-lg font-black text-orange-400">{br.adminRoles}</p><p className="text-[10px] text-slate-500">Admin Roles</p></div>
+                <div><p className="text-lg font-black text-orange-400">{br.adminRoles}</p><p className="text-[10px] text-slate-500">Admin</p></div>
               </div>
               <div className="flex gap-1 mt-2">{user.platforms?.map(p => <PlatformIcon key={p} platform={p} size="sm" />)}</div>
             </GlassCard>
@@ -213,10 +229,10 @@ export default function BlastRadius() {
         })}
       </div>
 
-      {/* Analysis Results */}
-      {analysis && (
+      {/* Analysis */}
+      {analysis && selected && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-          {/* Summary Header */}
+          {/* Header with nav buttons */}
           <GlassCard hover={false} glow="red">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -229,21 +245,39 @@ export default function BlastRadius() {
                   <p className="text-xs text-slate-400">{analysis.id} | {analysis.department} | Risk Score: <span className="text-red-400 font-mono">{analysis.riskScore}</span></p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="text-center"><p className="text-2xl font-black text-red-400">{analysis.resources}</p><p className="text-[9px] text-slate-500 uppercase">Resources</p></div>
                 <div className="text-center"><p className="text-2xl font-black text-amber-400">{analysis.permissions}</p><p className="text-[9px] text-slate-500 uppercase">Permissions</p></div>
                 <div className="text-center"><p className="text-2xl font-black text-orange-400">{analysis.adminRoles}</p><p className="text-[9px] text-slate-500 uppercase">Admin</p></div>
                 <SeverityBadge severity={analysis.severity} pulse />
+                {/* Navigation buttons */}
+                <div className="flex gap-1.5 ml-3">
+                  <button onClick={() => navigate(`/admin/identities/${selected.person_id}`)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-[10px] font-semibold border border-blue-500/20 hover:bg-blue-500/20 transition-all">
+                    <Globe size={11} /> View Correlation
+                  </button>
+                  <button onClick={() => navigate('/admin/attack-paths', { state: { personId: selected?.person_id } })}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-semibold border border-red-500/20 hover:bg-red-500/20 transition-all">
+                    <ArrowRight size={11} /> Attack Path
+                  </button>
+                </div>
               </div>
             </div>
           </GlassCard>
 
           <div className="grid lg:grid-cols-2 gap-6">
-            {/* Resource Distribution */}
+            {/* Chart — updates after simulation */}
             <GlassCard hover={false}>
-              <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
-                <Activity size={14} className="text-red-400" /> Resource Distribution
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                  <Activity size={14} className="text-red-400" /> Resource Distribution {simResult ? '(After Simulation)' : ''}
+                </h3>
+                {simResult && (
+                  <button onClick={resetSimulation} className="text-[10px] text-slate-500 hover:text-red-400 transition-colors flex items-center gap-1">
+                    <X size={10} /> Reset
+                  </button>
+                )}
+              </div>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={chartData}>
                   <XAxis dataKey="platform" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
@@ -256,7 +290,7 @@ export default function BlastRadius() {
               </ResponsiveContainer>
             </GlassCard>
 
-            {/* What-If Simulation */}
+            {/* Simulation Panel */}
             <GlassCard hover={false}>
               <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
                 <Zap size={14} className="text-red-400" /> What-If Simulation
@@ -266,27 +300,40 @@ export default function BlastRadius() {
                 <label className="text-[11px] text-slate-500 uppercase tracking-wider block mb-1">Remove Access From</label>
                 <select value={simPlatform} onChange={e => setSimPlatform(e.target.value)}
                   className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white outline-none focus:border-red-500/50">
-                  {analysis.platforms.map(p => <option key={p} value={p} className="bg-navy-900">{PLATFORM_LABELS[p] || p}</option>)}
+                  {(selected.platforms || []).map(p => <option key={p} value={p} className="bg-navy-900">{PLATFORM_LABELS[p] || p}</option>)}
                 </select>
               </div>
               <button onClick={runSimulation} disabled={simulating || !simPlatform}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold text-sm disabled:opacity-50 hover:opacity-90 transition-opacity">
                 {simulating ? 'Analyzing...' : `Simulate Revocation on ${PLATFORM_LABELS[simPlatform] || simPlatform}`}
               </button>
+
               <AnimatePresence>
                 {simResult && (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-2.5">
-                    {[
-                      { label: 'Platform Removed', value: PLATFORM_LABELS[simResult.removedPlatform] || simResult.removedPlatform, color: 'text-orange-400' },
-                      { label: 'Resources', value: `${simResult.originalResources} → ${simResult.afterResources}`, color: 'text-white' },
-                      { label: 'Permissions', value: `${simResult.originalPermissions} → ${simResult.afterPermissions}`, color: 'text-white' },
-                      { label: 'Admin Roles', value: `${simResult.originalAdminRoles} → ${simResult.afterAdminRoles}`, color: 'text-white' },
-                      { label: 'Risk Reduction', value: `${simResult.reductionPct}%`, color: 'text-emerald-400' },
-                      { label: 'Risk Score', value: `${simResult.beforeScore} → ${simResult.afterScore}`, color: 'text-emerald-400' },
-                    ].map(row => (
-                      <div key={row.label} className="flex items-center justify-between py-2 border-b border-white/5">
-                        <span className="text-sm text-slate-400">{row.label}</span>
-                        <span className={`text-sm font-bold ${row.color}`}>{row.value}</span>
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-1">
+                    {SIM_ROWS.map(row => (
+                      <div key={row.key}>
+                        <div className="flex items-center justify-between py-2 border-b border-white/5 group cursor-pointer"
+                          onClick={() => setBreakdownItem(breakdownItem === row.key ? null : row.key)}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-slate-400">{row.label}</span>
+                            <button className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-white/5">
+                              <Info size={12} className="text-slate-500" />
+                            </button>
+                          </div>
+                          <span className={`text-sm font-bold ${row.color}`}>
+                            {row.before !== null ? `${row.before} → ${row.after}` : row.after}
+                          </span>
+                        </div>
+                        <AnimatePresence>
+                          {breakdownItem === row.key && (
+                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                              className="px-3 py-2 mb-1 rounded-lg text-xs text-slate-400 leading-relaxed"
+                              style={{ background: 'rgba(227,25,55,0.04)', border: '1px solid rgba(227,25,55,0.1)' }}>
+                              {row.detail}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     ))}
                   </motion.div>
@@ -295,7 +342,7 @@ export default function BlastRadius() {
             </GlassCard>
           </div>
 
-          {/* Sensitive Assets + Risk Explanation */}
+          {/* Bottom panels */}
           <div className="grid lg:grid-cols-2 gap-6">
             <GlassCard hover={false}>
               <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
@@ -322,10 +369,14 @@ export default function BlastRadius() {
               </h3>
               <div className="text-sm text-slate-400 leading-relaxed space-y-2">
                 <p><strong className="text-white">{analysis.identity}</strong> has access to <strong className="text-red-400">{analysis.resources} resources</strong> across <strong className="text-white">{analysis.platforms.length} platform(s)</strong>.</p>
-                {analysis.adminRoles > 0 && <p><strong className="text-orange-400">{analysis.adminRoles} admin role(s)</strong> grant full control over critical infrastructure including {analysis.sensitiveAssets.slice(0, 2).join(', ')}.</p>}
+                {analysis.adminRoles > 0 && <p><strong className="text-orange-400">{analysis.adminRoles} admin role(s)</strong> grant full control over critical infrastructure.</p>}
                 {!analysis.mfaComplete && <p className="text-yellow-400">MFA is not enabled — credential compromise would expose all reachable resources.</p>}
                 {riskEvent && <p>Active finding: <strong className="text-red-400">{riskEvent.title}</strong> ({riskEvent.severity})</p>}
-                <p className="text-xs text-slate-500 mt-2">Blast Radius Severity: <strong className={analysis.severity === 'critical' ? 'text-red-400' : analysis.severity === 'high' ? 'text-orange-400' : 'text-yellow-400'}>{analysis.severity.toUpperCase()}</strong></p>
+                {simResult && (
+                  <div className="mt-3 pt-3 border-t border-white/5">
+                    <p className="text-emerald-400">After revoking {PLATFORM_LABELS[simResult.removedPlatform]}: blast radius reduced by <strong>{simResult.reductionPct}%</strong>, risk score <strong>{simResult.before.riskScore} → {simResult.after.riskScore}</strong>.</p>
+                  </div>
+                )}
               </div>
             </GlassCard>
           </div>

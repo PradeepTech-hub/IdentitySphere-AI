@@ -1,0 +1,102 @@
+data_generation:
+  num_identities: 300
+  num_service_accounts: 50
+  num_external_identities: 20
+  num_groups_per_platform: 25
+  num_roles_per_platform: 15
+  num_audit_events: 800
+  num_offboarding_records: 70
+
+  anomaly_rates:
+    orphaned_stale: 0.12
+    over_privileged: 0.10
+    privilege_escalation: 0.065
+    token_abuse: 0.04
+    false_positive_traps: 0.17
+    normal: 0.505
+
+platforms:
+  - active_directory
+  - aws_iam
+  - okta
+  - github
+  - salesforce
+
+identity_resolver:
+  email_match_weight: 1.0
+  name_match_weight: 0.7
+  username_pattern_weight: 0.5
+  min_confidence_threshold: 0.6
+
+privilege_calculator:
+  max_inheritance_depth: 10
+  admin_weight: 10.0
+  write_weight: 3.0
+  read_weight: 1.0
+  sensitive_resource_multiplier: 2.5
+  cross_platform_admin_multiplier: 3.0
+
+risk_engine:
+  stale_account_days: 90
+  offboarding_gap_critical_days: 7
+  offboarding_gap_high_days: 30
+
+  weights:
+    orphaned_account: 25.0
+    over_privileged: 20.0
+    privilege_escalation: 30.0
+    token_abuse: 28.0
+    cross_platform_admin: 22.0
+    stale_account: 15.0
+    mfa_disabled: 12.0
+    offboarding_gap: 35.0
+    sod_violation: 18.0
+
+  isolation_forest:
+    contamination: 0.10
+    n_estimators: 200
+    random_state: 42
+
+  context_adjustments:
+    on_call_discount: 0.4
+    recent_role_change_days: 14
+    recent_role_change_discount: 0.3
+    manager_approved_discount: 0.2
+
+behavioral:
+  audit_window_days: 30
+  dormancy_max_days: 365
+  anomaly_threshold: 65.0
+  isolation_forest:
+    contamination: 0.10
+    n_estimators: 200
+    random_state: 42
+
+scoring:
+  factor_weights:
+    privilege_breadth: 0.25
+    cross_platform_exposure: 0.20
+    dormancy: 0.15
+    detector_severity: 0.25
+    behavioral_anomaly: 0.15
+  suppression:
+    active_admin: 0.85
+    mfa_all_platforms: 0.80
+    on_call: 0.60
+    recent_role_change: 0.70
+    active_admin_days: 7
+    role_change_days: 14
+  incident_threshold: 30.0
+
+copilot:
+  mode: "offline"
+  api_base: "https://api.openai.com/v1"
+  api_key_env: "OPENAI_API_KEY"
+  model: "gpt-4o-mini"
+  temperature: 0.3
+  max_tokens: 1024
+  timeout_seconds: 30
+
+output:
+  data_dir: "identitysphere/data/generated"
+  log_level: "INFO"

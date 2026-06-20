@@ -1,0 +1,1146 @@
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ArrowLeft, Shield, Users, Key, AlertTriangle, CheckCircle,
+  XCircle, Activity, FileText, Target, Wrench, Lock, Unlock,
+  Eye, Layers, ChevronRight, Hash, Globe, UserCheck, UserX,
+  ShieldAlert, ShieldCheck, Zap, Info, Clock, Server,
+} from 'lucide-react';
+import { ReactFlow, Background, Controls } from 'reactflow';
+import 'reactflow/dist/style.css';
+import GlassCard from '../../components/shared/GlassCard';
+import SeverityBadge from '../../components/shared/SeverityBadge';
+import PlatformIcon from '../../components/shared/PlatformIcon';
+import FloatingCounter from '../../components/shared/FloatingCounter';
+import { getIdentities as getStoredIdentities, getRiskEvents } from '../../services/storageService';
+
+/* ── Platform colors for correlation graph ─────────────────────────── */
+const PLATFORM_COLORS = {
+  active_directory: { bg: '#080a12', border: '#00a4ef', color: '#00a4ef' },
+  aws_iam:          { bg: '#080a12', border: '#ff9900', color: '#ff9900' },
+  okta:             { bg: '#080a12', border: '#007dc1', color: '#007dc1' },
+  github:           { bg: '#080a12', border: '#f0f6fc', color: '#f0f6fc' },
+  salesforce:       { bg: '#080a12', border: '#00a1e0', color: '#00a1e0' },
+};
+
+const PLATFORM_LABELS = {
+  active_directory: 'Active Directory',
+  aws_iam: 'AWS IAM',
+  okta: 'Okta',
+  github: 'GitHub',
+  salesforce: 'Salesforce',
+};
+
+/* ── Tab definitions ───────────────────────────────────────────────── */
+const TABS = [
+  { key: 'overview',    label: 'Overview',     icon: Eye },
+  { key: 'correlation', label: 'Correlation',  icon: Globe },
+  { key: 'privileges',  label: 'Privileges',   icon: Key },
+  { key: 'risk',        label: 'Risk Analysis', icon: AlertTriangle },
+  { key: 'remediation', label: 'Remediation',  icon: Wrench },
+];
+
+/* ── Severity color helpers ────────────────────────────────────────── */
+function severityColor(severity) {
+  switch (severity) {
+    case 'critical': return '#ef4444';
+    case 'high':     return '#f97316';
+    case 'medium':   return '#eab308';
+    case 'low':      return '#22c55e';
+    default:         return '#94a3b8';
+  }
+}
+
+function riskScoreColor(score) {
+  if (score >= 80) return '#ef4444';
+  if (score >= 60) return '#f97316';
+  if (score >= 40) return '#eab308';
+  return '#22c55e';
+}
+
+/* ── Status chip ───────────────────────────────────────────────────── */
+function StatusChip({ status }) {
+  const isActive = status?.toLowerCase() === 'active';
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm ${
+      isActive
+        ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+        : 'bg-slate-500/15 text-slate-400 border-slate-500/30'
+    }`}>
+      {isActive ? <CheckCircle size={12} /> : <XCircle size={12} />}
+      {status || 'Unknown'}
+    </span>
+  );
+}
+
+/* ── Mini stat card ────────────────────────────────────────────────── */
+function MiniStatCard({ icon: Icon, label, value, color = '#E31937', delay = 0 }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay }}
+      className="flex-1 min-w-[120px] rounded-xl p-3 relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%)',
+        border: '1px solid rgba(227,25,55,0.2)',
+        backdropFilter: 'blur(12px)',
+      }}
+    >
+      <div className="absolute top-0 inset-x-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${color}88, transparent)` }} />
+      <div className="flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-white/10" style={{ background: color + '18' }}>
+          <Icon size={14} style={{ color }} />
+        </div>
+        <div className="min-w-0">
+          <FloatingCounter value={value || 0} color="white" size="2xl" />
+          <span className="text-[9px] text-slate-500 uppercase tracking-[0.16em] font-orbitron block mt-0.5 truncate">{label}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MAIN COMPONENT
+   ══════════════════════════════════════════════════════════════════════ */
+export default function IdentityDetail() {
+  const { personId } = useParams();
+  const navigate = useNavigate();
+
+  const [identity, setIdentity] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    const all = getStoredIdentities();
+    const found = all.find(i => i.person_id === personId) || null;
+    if (!found) { setError('Identity not found'); setIdentity(null); setLoading(false); return; }
+
+    const riskEvent = getRiskEvents().find(r => r.identityId === found.person_id);
+    const platforms = found.platforms || [];
+    const isAdmin = found.is_admin;
+
+    if (!found.entitlements || found.entitlements.length === 0) {
+      found.entitlements = platforms.map(p => ({
+        platform: p,
+        role_name: isAdmin ? (PLATFORM_ROLES[p]?.admin || 'Admin') : (PLATFORM_ROLES[p]?.standard || 'User'),
+        is_admin_role: isAdmin && ['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(p),
+        is_sensitive: isAdmin,
+        privilege_level: isAdmin ? 'high' : 'standard',
+        permission_id: `${p}:${isAdmin ? 'admin' : 'user'}:access`,
+        resource: `${p.replace('_', '-')}-resources`,
+        action: isAdmin ? 'full-control' : 'read-only',
+      }));
+      found.admin_entitlement_count = found.entitlements.filter(e => e.is_admin_role).length;
+      found.sensitive_permission_count = found.entitlements.filter(e => e.is_sensitive).length;
+    }
+
+    if (!found.score_breakdown || found.score_breakdown.length === 0) {
+      const factors = riskEvent?.factors || {};
+      if (Object.keys(factors).length > 0) {
+        found.score_breakdown = Object.entries(factors).map(([k, v]) => ({
+          factor: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+          value: Math.round(v * 100) / 100,
+          description: k === 'privilege_breadth' ? `Privilege score across ${platforms.length} platforms`
+            : k === 'cross_platform_exposure' ? `Admin on ${platforms.length} platform(s)`
+            : k === 'dormancy' ? `${found.max_dormancy_days || 0} days max dormancy`
+            : k === 'detector_severity' ? `${riskEvent?.severity || 'medium'} severity findings`
+            : `Behavioral anomaly indicator`,
+        }));
+      } else {
+        const score = found.risk_score || 0;
+        found.score_breakdown = [
+          { factor: 'Privilege Breadth', value: Math.round(score * 0.3), description: `Access across ${platforms.length} platforms` },
+          { factor: 'Cross-Platform Exposure', value: isAdmin ? Math.round(platforms.length * 4) : Math.round(platforms.length * 2), description: `${isAdmin ? 'Admin' : 'User'} on ${platforms.length} platform(s)` },
+          { factor: 'Dormancy Risk', value: Math.min(Math.round((found.max_dormancy_days || 0) / 10), 15), description: `${found.max_dormancy_days || 0} days inactive` },
+          { factor: 'MFA Coverage', value: found.mfa_complete ? 0 : 10, description: found.mfa_complete ? 'MFA enabled' : 'MFA not enabled' },
+          { factor: 'Admin Privileges', value: isAdmin ? 20 : 0, description: isAdmin ? 'Has admin access' : 'No admin access' },
+        ].filter(f => f.value > 0);
+      }
+    }
+
+    if (!found.remediation_steps || found.remediation_steps.length === 0) {
+      const steps = [];
+      if (isAdmin) steps.push('Review admin privilege necessity — implement JIT access for elevated roles');
+      if (!found.mfa_complete) steps.push('Enable MFA on all active platform accounts immediately');
+      if ((found.max_dormancy_days || 0) > 90) steps.push(`Investigate dormant access (${found.max_dormancy_days} days) — disable if not needed`);
+      if (platforms.length >= 3 && isAdmin) steps.push('Reduce cross-platform admin exposure — remove admin on non-essential platforms');
+      if (found.status === 'Orphaned') steps.push('Disable all accounts immediately — identity is orphaned');
+      if (found.status === 'Dormant') steps.push('Verify account ownership and disable if user is no longer active');
+      if (riskEvent) steps.push(`Address ${riskEvent.type.replace(/_/g, ' ')} finding: ${riskEvent.title}`);
+      if (steps.length === 0) steps.push('Continue monitoring — no immediate remediation required');
+      found.remediation_steps = steps;
+    }
+
+    if (!found.compliance_refs || found.compliance_refs.length === 0) {
+      const refs = ['NIST AC-2 (Account Management)'];
+      if (isAdmin) refs.push('NIST AC-6 (Least Privilege)', 'CIS Control 6 (Access Control)');
+      if (!found.mfa_complete) refs.push('NIST IA-4 (Identifier Management)');
+      if (found.status === 'Orphaned') refs.push('MITRE T1078 (Valid Accounts)');
+      if (platforms.length >= 3) refs.push('GDPR Art. 32 (Security of Processing)');
+      found.compliance_refs = refs;
+    }
+
+    if (!found.relationships_good) {
+      const good = [];
+      if (found.mfa_complete) good.push({ label: 'MFA Enabled', detail: 'All active accounts have MFA' });
+      if (!isAdmin) good.push({ label: 'Least Privilege', detail: 'No admin roles assigned' });
+      if ((found.max_dormancy_days || 0) < 30) good.push({ label: 'Active Usage', detail: 'Recent login activity detected' });
+      found.relationships_good = good;
+    }
+    if (!found.relationships_risky) {
+      const risky = [];
+      if (isAdmin) risky.push({ label: 'Admin Privileges', detail: `Admin access on ${platforms.length} platform(s)`, severity: 'high' });
+      if (!found.mfa_complete) risky.push({ label: 'MFA Gap', detail: 'MFA not enabled on all accounts', severity: 'high' });
+      if ((found.max_dormancy_days || 0) > 90) risky.push({ label: 'Dormant Access', detail: `${found.max_dormancy_days} days inactive`, severity: 'high' });
+      if (found.status === 'Orphaned') risky.push({ label: 'Orphaned Account', detail: 'Terminated but accounts still active', severity: 'critical' });
+      if (platforms.length >= 3 && isAdmin) risky.push({ label: 'Cross-Platform Admin', detail: `Admin on ${platforms.join(', ')}`, severity: 'critical' });
+      found.relationships_risky = risky;
+    }
+
+    setIdentity(found);
+    setLoading(false);
+  }, [personId]);
+
+  /* ── Loading state ──────────────────────────────────────────────── */
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
+          className="w-12 h-12 rounded-full border-2 border-red-500/30 border-t-red-500"
+        />
+      </div>
+    );
+  }
+
+  /* ── Error state ────────────────────────────────────────────────── */
+  if (error || !identity) {
+    return (
+      <div className="space-y-6">
+        <button
+          onClick={() => navigate('/admin/identities')}
+          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+        >
+          <ArrowLeft size={18} /> Back to Identities
+        </button>
+        <GlassCard hover={false}>
+          <div className="flex flex-col items-center gap-4 py-12">
+            <AlertTriangle size={48} className="text-red-400" />
+            <p className="text-lg text-slate-300">{error || 'Identity not found'}</p>
+            <p className="text-sm text-slate-500">Person ID: {personId}</p>
+          </div>
+        </GlassCard>
+      </div>
+    );
+  }
+
+  const id = identity;
+
+  /* ═══════════════════════════════════════════════════════════════════ */
+  return (
+    <div className="space-y-6 pb-12">
+      {/* ── HEADER ──────────────────────────────────────────────────── */}
+      <Header identity={id} navigate={navigate} />
+
+      {/* ── TAB NAVIGATION ──────────────────────────────────────────── */}
+      <div className="flex gap-1 p-1 rounded-xl overflow-x-auto" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(227,25,55,0.12)' }}>
+        {TABS.map(tab => {
+          const Icon = tab.icon;
+          const active = activeTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                active
+                  ? 'bg-red-500/20 text-red-400 border border-red-500/30 shadow-lg shadow-red-500/10'
+                  : 'text-slate-400 hover:text-slate-300 hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              <Icon size={15} />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── TAB CONTENT ─────────────────────────────────────────────── */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.25 }}
+        >
+          {activeTab === 'overview'    && <OverviewTab identity={id} />}
+          {activeTab === 'correlation' && <CorrelationTab identity={id} />}
+          {activeTab === 'privileges'  && <PrivilegesTab identity={id} />}
+          {activeTab === 'risk'        && <RiskAnalysisTab identity={id} />}
+          {activeTab === 'remediation' && <RemediationTab identity={id} />}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   HEADER
+   ══════════════════════════════════════════════════════════════════════ */
+function Header({ identity: id, navigate }) {
+  const scoreColor = riskScoreColor(id.risk_score ?? 0);
+
+  return (
+    <div className="space-y-4">
+      {/* Back button */}
+      <button
+        onClick={() => navigate('/admin/identities')}
+        className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group"
+      >
+        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm">Back to Identity Inventory</span>
+      </button>
+
+      {/* Main header card */}
+      <GlassCard hover={false} glow="red" delay={0.05}>
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          {/* Left: Identity info */}
+          <div className="flex items-start gap-5">
+            {/* Avatar */}
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(227,25,55,0.25), rgba(227,25,55,0.08))',
+                border: '2px solid rgba(227,25,55,0.35)',
+                color: '#E31937',
+              }}
+            >
+              {(id.display_name || '?')[0].toUpperCase()}
+            </div>
+            <div className="space-y-1.5">
+              <h1 className="text-2xl font-bold text-white leading-tight font-orbitron">
+                {id.display_name || 'Unknown Identity'}
+              </h1>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400">
+                <span className="flex items-center gap-1.5">
+                  <Hash size={13} className="text-slate-500" />
+                  {id.person_id}
+                </span>
+                {id.department && (
+                  <span className="flex items-center gap-1.5">
+                    <Users size={13} className="text-slate-500" />
+                    {id.department}
+                  </span>
+                )}
+                {id.title && (
+                  <span className="flex items-center gap-1.5">
+                    <FileText size={13} className="text-slate-500" />
+                    {id.title}
+                  </span>
+                )}
+              </div>
+              {/* Platform icons */}
+              <div className="flex gap-2 pt-1">
+                {(id.platforms || []).map(p => (
+                  <PlatformIcon key={p} platform={p} size="sm" />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Risk + Status */}
+          <div className="flex items-center gap-5">
+            {/* Risk score ring */}
+            <div className="relative flex items-center justify-center">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
+                <circle
+                  cx="40" cy="40" r="34"
+                  fill="none"
+                  stroke={scoreColor}
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray={`${((id.risk_score ?? 0) / 100) * 213.6} 213.6`}
+                  transform="rotate(-90 40 40)"
+                  style={{ filter: `drop-shadow(0 0 6px ${scoreColor}66)` }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xl font-bold" style={{ color: scoreColor }}>
+                  {id.risk_score ?? 0}
+                </span>
+                <span className="text-[9px] text-slate-500 uppercase tracking-widest">Risk</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <SeverityBadge severity={id.severity || 'medium'} pulse />
+              <StatusChip status={id.status} />
+              {id.is_admin && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border bg-red-500/15 text-red-400 border-red-500/30">
+                  <ShieldAlert size={12} /> Admin
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </GlassCard>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TAB 1 : OVERVIEW
+   ══════════════════════════════════════════════════════════════════════ */
+function OverviewTab({ identity: id }) {
+  return (
+    <div className="space-y-6">
+      {/* Profile + Quick flags */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Profile card */}
+        <GlassCard hover={false} delay={0.05} className="lg:col-span-2">
+          <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <UserCheck size={14} className="text-red-400" /> Identity Profile
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-y-5 gap-x-8">
+            {[
+              { label: 'Display Name', value: id.display_name },
+              { label: 'Email', value: id.email },
+              { label: 'Department', value: id.department },
+              { label: 'Title', value: id.title },
+              { label: 'Type', value: id.type },
+              { label: 'Status', value: id.status },
+            ].map(({ label, value }) => (
+              <div key={label}>
+                <span className="block text-[11px] text-slate-500 uppercase tracking-wider mb-1">{label}</span>
+                <span className="text-sm text-white font-medium">{value || '--'}</span>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+
+        {/* Security flags */}
+        <GlassCard hover={false} delay={0.1}>
+          <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <Shield size={14} className="text-red-400" /> Security Flags
+          </h3>
+          <div className="space-y-3">
+            <FlagRow
+              icon={id.is_admin ? ShieldAlert : ShieldCheck}
+              label="Admin Privileges"
+              value={id.is_admin ? 'Yes' : 'No'}
+              bad={id.is_admin}
+            />
+            <FlagRow
+              icon={id.mfa_complete ? Lock : Unlock}
+              label="MFA Complete"
+              value={id.mfa_complete ? 'Yes' : 'No'}
+              bad={!id.mfa_complete}
+            />
+            <FlagRow
+              icon={Clock}
+              label="Max Dormancy"
+              value={id.max_dormancy_days != null ? `${id.max_dormancy_days} days` : '--'}
+              bad={id.max_dormancy_days > 90}
+            />
+            {id.anomaly_category && (
+              <FlagRow
+                icon={Zap}
+                label="Anomaly"
+                value={id.anomaly_category}
+                bad
+              />
+            )}
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Stats row */}
+      <div className="flex flex-wrap gap-4">
+        <MiniStatCard icon={Server} label="Platforms" value={id.platform_count} color="#00a4ef" delay={0.05} />
+        <MiniStatCard icon={Users} label="Groups" value={id.group_count} color="#a855f7" delay={0.1} />
+        <MiniStatCard icon={Key} label="Roles" value={id.role_count} color="#f97316" delay={0.15} />
+        <MiniStatCard icon={Layers} label="Entitlements" value={id.entitlement_count} color="#E31937" delay={0.2} />
+      </div>
+
+      {/* Relationships */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Good relationships */}
+        <GlassCard hover={false} delay={0.15}>
+          <h3 className="text-sm text-emerald-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <CheckCircle size={14} /> Good Relationships
+          </h3>
+          {(id.relationships_good && id.relationships_good.length > 0) ? (
+            <div className="space-y-2">
+              {id.relationships_good.map((rel, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 * i }}
+                  className="flex items-start gap-3 rounded-lg px-3 py-2.5"
+                  style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.12)' }}
+                >
+                  <CheckCircle size={14} className="text-emerald-400 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-sm font-medium text-emerald-300">{rel.label}</span>
+                    <p className="text-xs text-slate-400 mt-0.5">{rel.detail}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 italic">No good relationships detected</p>
+          )}
+        </GlassCard>
+
+        {/* Risky relationships */}
+        <GlassCard hover={false} delay={0.2}>
+          <h3 className="text-sm text-red-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <AlertTriangle size={14} /> Risky Relationships
+          </h3>
+          {(id.relationships_risky && id.relationships_risky.length > 0) ? (
+            <div className="space-y-2">
+              {id.relationships_risky.map((rel, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 * i }}
+                  className="flex items-start gap-3 rounded-lg px-3 py-2.5"
+                  style={{
+                    background: `${severityColor(rel.severity)}0A`,
+                    border: `1px solid ${severityColor(rel.severity)}1F`,
+                  }}
+                >
+                  <AlertTriangle size={14} className="mt-0.5 shrink-0" style={{ color: severityColor(rel.severity) }} />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium" style={{ color: severityColor(rel.severity) }}>{rel.label}</span>
+                      {rel.severity && <SeverityBadge severity={rel.severity} />}
+                    </div>
+                    <p className="text-xs text-slate-400 mt-0.5">{rel.detail}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 italic">No risky relationships detected</p>
+          )}
+        </GlassCard>
+      </div>
+    </div>
+  );
+}
+
+function FlagRow({ icon: Icon, label, value, bad }) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <Icon size={14} className={bad ? 'text-red-400' : 'text-emerald-400'} />
+        <span className="text-sm text-slate-400">{label}</span>
+      </div>
+      <span className={`text-sm font-semibold ${bad ? 'text-red-400' : 'text-emerald-400'}`}>{value}</span>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TAB 2 : CORRELATION GRAPH
+   ══════════════════════════════════════════════════════════════════════ */
+function CorrelationTab({ identity: id }) {
+  const { nodes, edges } = useMemo(() => buildCorrelationGraph(id), [id]);
+  const accounts = useMemo(() => synthesizeAccounts(id), [id]);
+
+  if (!id.platforms || id.platforms.length === 0) {
+    return (
+      <GlassCard hover={false}>
+        <div className="flex flex-col items-center gap-4 py-16">
+          <Globe size={48} className="text-slate-600" />
+          <p className="text-lg text-slate-400 font-semibold">No Linked Accounts</p>
+          <p className="text-sm text-slate-500 text-center max-w-md">
+            {id.display_name} has no platform accounts linked. This identity may be newly provisioned or pending account creation.
+          </p>
+        </div>
+      </GlassCard>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <GlassCard hover={false} delay={0.05} className="p-0 overflow-hidden" style={{ height: 560 }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          fitView
+          fitViewOptions={{ padding: 0.25 }}
+          panOnDrag
+          zoomOnScroll
+          minZoom={0.3}
+          maxZoom={2}
+          className="bg-navy-950"
+          proOptions={{ hideAttribution: true }}
+        >
+          <Background color="#E3193708" gap={30} />
+          <Controls className="bg-navy-800 border border-white/10 rounded-xl" />
+        </ReactFlow>
+      </GlassCard>
+
+      {accounts.length > 0 && (
+        <GlassCard hover={false} delay={0.1}>
+          <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <Activity size={14} className="text-red-400" /> Correlated Accounts
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[11px] text-slate-500 uppercase tracking-wider">
+                  <th className="pb-3 pr-4">Platform</th>
+                  <th className="pb-3 pr-4">Username</th>
+                  <th className="pb-3 pr-4">Status</th>
+                  <th className="pb-3 pr-4">Admin</th>
+                  <th className="pb-3 pr-4">MFA</th>
+                  <th className="pb-3">Dormancy</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {accounts.map((acct, i) => (
+                  <motion.tr
+                    key={acct.acct_id || i}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.03 * i }}
+                    className="text-slate-300"
+                  >
+                    <td className="py-2.5 pr-4">
+                      <div className="flex items-center gap-2">
+                        <PlatformIcon platform={acct.platform} size="sm" />
+                        <span className="text-xs text-slate-400">{PLATFORM_LABELS[acct.platform] || acct.platform}</span>
+                      </div>
+                    </td>
+                    <td className="py-2.5 pr-4 font-mono text-xs">{acct.username}</td>
+                    <td className="py-2.5 pr-4"><StatusChip status={acct.status} /></td>
+                    <td className="py-2.5 pr-4">
+                      {acct.is_admin
+                        ? <span className="text-red-400 font-semibold text-xs">YES</span>
+                        : <span className="text-slate-500 text-xs">No</span>}
+                    </td>
+                    <td className="py-2.5 pr-4">
+                      {acct.mfa_enabled
+                        ? <Lock size={14} className="text-emerald-400" />
+                        : <Unlock size={14} className="text-red-400" />}
+                    </td>
+                    <td className="py-2.5">
+                      <span className={`text-xs font-semibold ${
+                        (acct.dormancy_days ?? 0) > 90 ? 'text-red-400' :
+                        (acct.dormancy_days ?? 0) > 30 ? 'text-yellow-400' : 'text-slate-400'
+                      }`}>
+                        {acct.dormancy_days != null ? `${acct.dormancy_days}d` : '--'}
+                      </span>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </GlassCard>
+      )}
+    </div>
+  );
+}
+
+const PLATFORM_ROLES = {
+  active_directory: { admin: 'Domain Admin', standard: 'Domain User', group: 'Server-Admins' },
+  aws_iam: { admin: 'AdministratorAccess', standard: 'ReadOnlyAccess', group: 'AWS-Users' },
+  okta: { admin: 'Org Admin', standard: 'SSO User', group: 'Privileged Users' },
+  github: { admin: 'Owner', standard: 'Contributor', group: 'Dev-Team' },
+  salesforce: { admin: 'System Administrator', standard: 'Standard User', group: 'CRM-Users' },
+};
+
+function generateUsername(displayName, platform) {
+  const parts = displayName.toLowerCase().split(/\s+/);
+  if (parts.length < 2) return parts[0] || 'user';
+  switch (platform) {
+    case 'active_directory': return `${parts[0]}.${parts[parts.length - 1]}`;
+    case 'aws_iam': return `${parts[0][0]}${parts[parts.length - 1]}`;
+    case 'okta': return `${parts[0]}.${parts[parts.length - 1]}`;
+    case 'github': return `${parts[0]}-${parts[parts.length - 1][0]}`;
+    case 'salesforce': return `${parts[0]}.${parts[parts.length - 1][0]}`;
+    default: return `${parts[0]}.${parts[parts.length - 1]}`;
+  }
+}
+
+function synthesizeAccounts(id) {
+  const platforms = id.platforms || [];
+  return platforms.map(platform => ({
+    acct_id: `${id.person_id}-${platform}`,
+    platform,
+    username: generateUsername(id.display_name || id.person_id, platform),
+    status: id.status || 'Active',
+    is_admin: id.is_admin && ['active_directory', 'aws_iam', 'okta'].includes(platform),
+    mfa_enabled: id.mfa_complete !== false,
+    dormancy_days: id.max_dormancy_days || 0,
+  }));
+}
+
+function buildCorrelationGraph(id) {
+  const nodes = [];
+  const edges = [];
+  const platforms = id.platforms || [];
+
+  if (platforms.length === 0) return { nodes, edges };
+
+  nodes.push({
+    id: 'person',
+    position: { x: 400, y: 30 },
+    data: { label: `👤 ${id.display_name || id.person_id}` },
+    style: {
+      background: 'linear-gradient(135deg, #1a0008, #080a12)',
+      color: '#E31937',
+      border: '2px solid #E31937',
+      borderRadius: '16px',
+      padding: '14px 24px',
+      fontSize: 14,
+      fontWeight: 700,
+      width: 220,
+      textAlign: 'center',
+      boxShadow: '0 0 24px rgba(227,25,55,0.25), 0 0 48px rgba(227,25,55,0.08)',
+    },
+    draggable: true,
+  });
+
+  const totalWidth = Math.max(platforms.length * 260, 500);
+  const startX = 400 - totalWidth / 2 + 130;
+
+  platforms.forEach((platform, pIdx) => {
+    const px = startX + pIdx * 260;
+    const pColors = PLATFORM_COLORS[platform] || { bg: '#080a12', border: '#64748b', color: '#64748b' };
+    const roleInfo = PLATFORM_ROLES[platform] || { admin: 'Admin', standard: 'User', group: 'Users' };
+    const username = generateUsername(id.display_name || 'user', platform);
+    const isAdminOnPlatform = id.is_admin && ['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(platform);
+    const isDormant = (id.max_dormancy_days || 0) > 90;
+
+    const platformNodeId = `platform-${platform}`;
+    nodes.push({
+      id: platformNodeId,
+      position: { x: px, y: 160 },
+      data: { label: `🖥️ ${PLATFORM_LABELS[platform] || platform}` },
+      style: {
+        background: pColors.bg, color: pColors.color,
+        border: `2px solid ${pColors.border}`, borderRadius: '12px',
+        padding: '10px 18px', fontSize: 12, fontWeight: 600,
+        width: 170, textAlign: 'center',
+        boxShadow: `0 0 12px ${pColors.border}22`,
+      },
+      draggable: true,
+    });
+    edges.push({
+      id: `e-person-${platform}`, source: 'person', target: platformNodeId,
+      animated: true, label: 'has_account',
+      style: { stroke: pColors.border, strokeWidth: 2 },
+      labelStyle: { fontSize: 9, fill: '#64748b' },
+    });
+
+    const acctColor = isAdminOnPlatform ? '#ef4444' : isDormant ? '#eab308' : pColors.color;
+    const acctBorder = isAdminOnPlatform ? '#ef4444' : isDormant ? '#eab308' : pColors.border;
+    const acctNodeId = `acct-${platform}`;
+    nodes.push({
+      id: acctNodeId,
+      position: { x: px, y: 290 },
+      data: { label: `${isAdminOnPlatform ? '🔑 ' : isDormant ? '💤 ' : ''}${username}` },
+      style: {
+        background: pColors.bg, color: acctColor,
+        border: `1.5px solid ${acctBorder}`, borderRadius: '8px',
+        padding: '8px 14px', fontSize: 11, fontWeight: 500,
+        width: 150, textAlign: 'center',
+      },
+      draggable: true,
+    });
+    edges.push({
+      id: `e-${platformNodeId}-${acctNodeId}`, source: platformNodeId, target: acctNodeId,
+      style: { stroke: pColors.border + '88', strokeWidth: 1.5 },
+    });
+
+    const roleNodeId = `role-${platform}`;
+    const roleName = isAdminOnPlatform ? roleInfo.admin : roleInfo.standard;
+    nodes.push({
+      id: roleNodeId,
+      position: { x: px - 70, y: 410 },
+      data: { label: `🛡️ ${roleName}` },
+      style: {
+        background: isAdminOnPlatform ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.03)',
+        color: isAdminOnPlatform ? '#ef4444' : '#94a3b8',
+        border: `1px solid ${isAdminOnPlatform ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.1)'}`,
+        borderRadius: '8px', padding: '6px 12px', fontSize: 10,
+        fontWeight: 500, width: 140, textAlign: 'center',
+      },
+      draggable: true,
+    });
+    edges.push({
+      id: `e-${acctNodeId}-${roleNodeId}`, source: acctNodeId, target: roleNodeId,
+      label: 'has_role', style: { stroke: '#64748b88', strokeWidth: 1 },
+      labelStyle: { fontSize: 8, fill: '#475569' },
+    });
+
+    const groupNodeId = `group-${platform}`;
+    nodes.push({
+      id: groupNodeId,
+      position: { x: px + 70, y: 410 },
+      data: { label: `👥 ${roleInfo.group}` },
+      style: {
+        background: 'rgba(255,255,255,0.03)', color: '#94a3b8',
+        border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px',
+        padding: '6px 12px', fontSize: 10, fontWeight: 500,
+        width: 140, textAlign: 'center',
+      },
+      draggable: true,
+    });
+    edges.push({
+      id: `e-${acctNodeId}-${groupNodeId}`, source: acctNodeId, target: groupNodeId,
+      label: 'member_of', style: { stroke: '#64748b88', strokeWidth: 1 },
+      labelStyle: { fontSize: 8, fill: '#475569' },
+    });
+  });
+
+  return { nodes, edges };
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TAB 3 : PRIVILEGES
+   ══════════════════════════════════════════════════════════════════════ */
+function PrivilegesTab({ identity: id }) {
+  const entitlements = id.entitlements || [];
+
+  /* Group by platform */
+  const grouped = {};
+  entitlements.forEach(ent => {
+    const p = ent.platform || 'unknown';
+    if (!grouped[p]) grouped[p] = [];
+    grouped[p].push(ent);
+  });
+
+  return (
+    <div className="space-y-6">
+      {/* Top stats */}
+      <div className="flex flex-wrap gap-4">
+        <MiniStatCard icon={ShieldAlert} label="Admin Entitlements" value={id.admin_entitlement_count} color="#ef4444" delay={0.05} />
+        <MiniStatCard icon={AlertTriangle} label="Sensitive Permissions" value={id.sensitive_permission_count} color="#f97316" delay={0.1} />
+        <MiniStatCard icon={Key} label="Total Entitlements" value={id.entitlement_count} color="#E31937" delay={0.15} />
+      </div>
+
+      {/* Entitlement groups */}
+      {Object.keys(grouped).length > 0 ? (
+        Object.entries(grouped).map(([platform, ents], gIdx) => (
+          <GlassCard key={platform} hover={false} delay={0.05 + gIdx * 0.05}>
+            <div className="flex items-center gap-3 mb-4">
+              <PlatformIcon platform={platform} size="lg" />
+              <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+                {PLATFORM_LABELS[platform] || platform}
+              </h3>
+              <span className="text-xs text-slate-500">({ents.length} entitlement{ents.length !== 1 ? 's' : ''})</span>
+            </div>
+
+            <div className="space-y-3">
+              {ents.map((ent, eIdx) => (
+                <motion.div
+                  key={eIdx}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.02 * eIdx }}
+                  className="rounded-lg px-4 py-3"
+                  style={{
+                    background: ent.is_admin_role ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.02)',
+                    border: `1px solid ${ent.is_admin_role ? 'rgba(239,68,68,0.18)' : 'rgba(255,255,255,0.06)'}`,
+                  }}
+                >
+                  <div className="flex items-center flex-wrap gap-2 mb-2">
+                    <span className="text-sm font-semibold text-white">{ent.role_name || 'Direct Permission'}</span>
+                    {ent.is_admin_role && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-semibold uppercase">
+                        Admin
+                      </span>
+                    )}
+                    {ent.is_sensitive && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 font-semibold uppercase">
+                        Sensitive
+                      </span>
+                    )}
+                    {ent.privilege_level && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400 border border-slate-500/20 font-medium">
+                        {ent.privilege_level}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
+                    {ent.permission_id && (
+                      <span className="flex items-center gap-1">
+                        <Hash size={10} className="text-slate-500" /> {ent.permission_id}
+                      </span>
+                    )}
+                    {ent.resource && (
+                      <span className="flex items-center gap-1">
+                        <Target size={10} className="text-slate-500" /> {ent.resource}
+                      </span>
+                    )}
+                    {ent.action && (
+                      <span className="flex items-center gap-1">
+                        <Zap size={10} className="text-slate-500" /> {ent.action}
+                      </span>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </GlassCard>
+        ))
+      ) : (
+        <GlassCard hover={false} delay={0.1}>
+          <div className="flex flex-col items-center gap-3 py-8">
+            <Key size={36} className="text-slate-600" />
+            <p className="text-sm text-slate-500">No detailed entitlement data available</p>
+            <p className="text-xs text-slate-600">
+              {id.entitlement_count ? `${id.entitlement_count} entitlements reported but details not loaded` : 'No entitlements found'}
+            </p>
+          </div>
+        </GlassCard>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TAB 4 : RISK ANALYSIS
+   ══════════════════════════════════════════════════════════════════════ */
+function RiskAnalysisTab({ identity: id }) {
+  const scoreBreakdown = id.score_breakdown || [];
+  const totalScore = id.risk_score ?? 0;
+  const maxFactor = Math.max(...scoreBreakdown.map(f => f.value), 1);
+
+  return (
+    <div className="space-y-6">
+      {/* Score summary */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Score breakdown */}
+        <GlassCard hover={false} delay={0.05} className="lg:col-span-2">
+          <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
+            <Activity size={14} className="text-red-400" /> Explainable Risk Score
+          </h3>
+
+          {scoreBreakdown.length > 0 ? (
+            <div className="space-y-4">
+              {scoreBreakdown.map((factor, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.06 * i }}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm text-slate-300 font-medium">{factor.factor}</span>
+                    <span className="text-sm font-bold" style={{ color: riskScoreColor(factor.value * (100 / maxFactor)) }}>
+                      +{factor.value}
+                    </span>
+                  </div>
+                  {factor.description && (
+                    <p className="text-xs text-slate-500 mb-1.5">{factor.description}</p>
+                  )}
+                  {/* Bar */}
+                  <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(factor.value / maxFactor) * 100}%` }}
+                      transition={{ duration: 0.8, delay: 0.1 * i, ease: 'easeOut' }}
+                      style={{
+                        background: `linear-gradient(90deg, ${riskScoreColor(factor.value * (100 / maxFactor))}, ${riskScoreColor(factor.value * (100 / maxFactor))}88)`,
+                        boxShadow: `0 0 8px ${riskScoreColor(factor.value * (100 / maxFactor))}44`,
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* Total */}
+              <div
+                className="flex items-center justify-between pt-4 mt-4"
+                style={{ borderTop: '1px solid rgba(227,25,55,0.18)' }}
+              >
+                <span className="text-sm font-semibold text-white uppercase tracking-wider">Total Risk Score</span>
+                <span className="text-2xl font-bold" style={{ color: riskScoreColor(totalScore) }}>
+                  {totalScore}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-3 py-8">
+              <Info size={32} className="text-slate-600" />
+              <p className="text-sm text-slate-500">No score breakdown data available</p>
+            </div>
+          )}
+        </GlassCard>
+
+        {/* Right column: severity + compliance */}
+        <div className="space-y-6">
+          {/* Severity */}
+          <GlassCard hover={false} delay={0.1}>
+            <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <Shield size={14} className="text-red-400" /> Severity Assessment
+            </h3>
+            <div className="flex flex-col items-center gap-3 py-4">
+              <div className="relative">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+                  <circle
+                    cx="50" cy="50" r="42"
+                    fill="none"
+                    stroke={severityColor(id.severity)}
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(totalScore / 100) * 263.9} 263.9`}
+                    transform="rotate(-90 50 50)"
+                    style={{ filter: `drop-shadow(0 0 8px ${severityColor(id.severity)}66)` }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <SeverityBadge severity={id.severity || 'medium'} pulse />
+                </div>
+              </div>
+              <p className="text-xs text-slate-500 text-center mt-1">
+                Score of {totalScore}/100 maps to {(id.severity || 'medium').toUpperCase()} severity
+              </p>
+            </div>
+          </GlassCard>
+
+          {/* Compliance references */}
+          <GlassCard hover={false} delay={0.15}>
+            <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <FileText size={14} className="text-red-400" /> Compliance References
+            </h3>
+            {(id.compliance_refs && id.compliance_refs.length > 0) ? (
+              <div className="space-y-2">
+                {id.compliance_refs.map((ref, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.05 * i }}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg"
+                    style={{ background: 'rgba(227,25,55,0.06)', border: '1px solid rgba(227,25,55,0.12)' }}
+                  >
+                    <ChevronRight size={12} className="text-red-400 shrink-0" />
+                    <span className="text-sm text-slate-300 font-medium">{ref}</span>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500 italic">No compliance references</p>
+            )}
+          </GlassCard>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TAB 5 : REMEDIATION
+   ══════════════════════════════════════════════════════════════════════ */
+function RemediationTab({ identity: id }) {
+  const steps = id.remediation_steps || [];
+
+  return (
+    <div className="space-y-6">
+      <GlassCard hover={false} delay={0.05}>
+        <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
+          <Wrench size={14} className="text-red-400" /> Remediation Action Plan
+        </h3>
+
+        {steps.length > 0 ? (
+          <div className="space-y-4">
+            {steps.map((step, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.08 * i }}
+                className="flex items-start gap-4 rounded-xl p-4"
+                style={{
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(227,25,55,0.12)',
+                }}
+              >
+                {/* Step number badge */}
+                <div
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(227,25,55,0.2), rgba(227,25,55,0.08))',
+                    border: '1px solid rgba(227,25,55,0.3)',
+                    color: '#E31937',
+                  }}
+                >
+                  {i + 1}
+                </div>
+
+                <div className="flex-1">
+                  <p className="text-sm text-slate-200 leading-relaxed">{step}</p>
+                </div>
+
+                {/* Action indicator */}
+                <div className="shrink-0">
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  >
+                    <Target size={12} className="text-slate-500" />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-4 py-12">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <CheckCircle size={48} className="text-emerald-400" />
+            </motion.div>
+            <p className="text-lg text-emerald-400 font-semibold">No remediation actions required</p>
+            <p className="text-sm text-slate-500">This identity meets current security standards</p>
+          </div>
+        )}
+      </GlassCard>
+
+      {/* Compliance context (if available, also show here) */}
+      {id.compliance_refs && id.compliance_refs.length > 0 && (
+        <GlassCard hover={false} delay={0.15}>
+          <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <FileText size={14} className="text-red-400" /> Related Compliance Frameworks
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {id.compliance_refs.map((ref, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.04 * i }}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300"
+                style={{ background: 'rgba(227,25,55,0.08)', border: '1px solid rgba(227,25,55,0.15)' }}
+              >
+                {ref}
+              </motion.span>
+            ))}
+          </div>
+        </GlassCard>
+      )}
+    </div>
+  );
+}

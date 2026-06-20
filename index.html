@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IdentitySphere AI – AI-Powered Identity Intelligence Platform | Société Générale</title>
+  <meta name="description" content="IdentitySphere AI is an enterprise-grade AI-Powered Identity Intelligence Platform by Société Générale. Detect identity sprawl, prevent privileged access abuse, simulate attack paths, and automate governance." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #E31937;
+      --red-dark: #b01028;
+      --red-glow: rgba(227,25,55,0.6);
+      --blue: #1a56db;
+      --blue-light: #3b82f6;
+      --blue-glow: rgba(59,130,246,0.5);
+      --gold: #f59e0b;
+      --white: #ffffff;
+      --bg-dark: #05060d;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── CANVAS BG ─── */
+    #particleCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── BG IMAGE ─── */
+    .bg-image {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: url('background.jpg') center center / cover no-repeat;
+      opacity: 0.55;
+    }
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      background: radial-gradient(ellipse at 50% 0%, rgba(5,6,13,0.1) 0%, rgba(5,6,13,0.65) 70%, rgba(5,6,13,0.97) 100%);
+    }
+
+    /* ─── MAIN WRAPPER ─── */
+    .page-wrap {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(5,6,13,0.55);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(227,25,55,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: slideDown 0.8s ease both;
+    }
+    @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      animation: floatLogo 5s ease-in-out infinite;
+    }
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0px) rotateY(0deg); }
+      25% { transform: translateY(-6px) rotateY(3deg); }
+      50% { transform: translateY(-3px) rotateY(-2deg); }
+      75% { transform: translateY(-8px) rotateY(2deg); }
+    }
+    .logo-pill {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 6px 14px;
+      box-shadow:
+        0 0 0 1px rgba(227,25,55,0.35),
+        0 4px 20px rgba(227,25,55,0.25),
+        0 0 30px rgba(227,25,55,0.12);
+      transition: box-shadow 0.3s ease;
+    }
+    .logo-pill:hover {
+      box-shadow:
+        0 0 0 1.5px rgba(227,25,55,0.6),
+        0 6px 28px rgba(227,25,55,0.4),
+        0 0 50px rgba(227,25,55,0.2);
+    }
+    .logo-pill img {
+      height: 40px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .nav-pill {
+      background: rgba(227,25,55,0.12);
+      border: 1px solid rgba(227,25,55,0.3);
+      border-radius: 30px;
+      padding: 6px 18px;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+      perspective: 1200px;
+    }
+
+    /* 3D floating screen card */
+    .floating-screen {
+      position: relative;
+      width: min(780px, 92vw);
+      background: rgba(5,6,13,0.6);
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(227,25,55,0.25);
+      border-radius: 28px;
+      padding: 60px 52px 52px;
+      box-shadow:
+        0 0 60px rgba(227,25,55,0.18),
+        0 0 120px rgba(59,130,246,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      animation: float3d 7s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+
+    @keyframes float3d {
+      0%   { transform: translateY(0px)  rotateX(1deg)  rotateY(-1deg); box-shadow: 0 0 60px rgba(227,25,55,0.18), 0 0 120px rgba(59,130,246,0.10), 0 30px 60px rgba(0,0,0,0.6); }
+      25%  { transform: translateY(-18px) rotateX(-2deg) rotateY(2deg);  box-shadow: 0 0 80px rgba(227,25,55,0.28), 0 0 140px rgba(59,130,246,0.16), 0 50px 80px rgba(0,0,0,0.5); }
+      50%  { transform: translateY(-8px)  rotateX(2deg)  rotateY(-2deg); box-shadow: 0 0 70px rgba(227,25,55,0.22), 0 0 130px rgba(59,130,246,0.12), 0 40px 70px rgba(0,0,0,0.55); }
+      75%  { transform: translateY(-22px) rotateX(-1deg) rotateY(1.5deg);box-shadow: 0 0 90px rgba(227,25,55,0.32), 0 0 150px rgba(59,130,246,0.18), 0 55px 90px rgba(0,0,0,0.45); }
+      100% { transform: translateY(0px)  rotateX(1deg)  rotateY(-1deg); box-shadow: 0 0 60px rgba(227,25,55,0.18), 0 0 120px rgba(59,130,246,0.10), 0 30px 60px rgba(0,0,0,0.6); }
+    }
+
+    /* corner decorators */
+    .floating-screen::before,
+    .floating-screen::after {
+      content: '';
+      position: absolute;
+      width: 40px; height: 40px;
+      border-color: var(--red);
+      border-style: solid;
+    }
+    .floating-screen::before { top: -1px; left: -1px; border-width: 3px 0 0 3px; border-radius: 10px 0 0 0; }
+    .floating-screen::after  { bottom: -1px; right: -1px; border-width: 0 3px 3px 0; border-radius: 0 0 10px 0; }
+
+    /* scan line */
+    .scan-line {
+      position: absolute;
+      left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(227,25,55,0.8), transparent);
+      animation: scan 4s linear infinite;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+    @keyframes scan {
+      0%   { top: 0%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(227,25,55,0.15);
+      border: 1px solid rgba(227,25,55,0.4);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 28px;
+      animation: pulse-badge 2.5s ease-in-out infinite;
+    }
+    .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s ease infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+    @keyframes pulse-badge { 0%,100%{box-shadow:0 0 0 0 rgba(227,25,55,0.3);} 50%{box-shadow:0 0 0 8px rgba(227,25,55,0);} }
+
+    .hero-title {
+      font-family: 'Orbitron', 'Inter', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4.4rem);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1.08;
+      color: #fff;
+      text-shadow:
+        0 0 40px rgba(227,25,55,0.7),
+        0 0 80px rgba(227,25,55,0.3),
+        0 2px 0 rgba(0,0,0,0.8);
+      margin-bottom: 20px;
+      animation: titleReveal 1s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+    }
+    @keyframes titleReveal {
+      from { transform: translateY(30px) scale(0.95); opacity: 0; filter: blur(6px); }
+      to   { transform: translateY(0) scale(1);    opacity: 1; filter: blur(0); }
+    }
+
+    /* Sphere icon in title */
+    .sphere-icon {
+      display: inline-block;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff 0%, var(--red) 40%, var(--red-dark) 70%, #000 100%);
+      box-shadow: 0 0 30px rgba(227,25,55,0.8), inset -8px -8px 20px rgba(0,0,0,0.5);
+      vertical-align: middle;
+      margin: 0 10px;
+      animation: rotateSphere 8s linear infinite;
+      position: relative;
+      top: -4px;
+    }
+    @keyframes rotateSphere {
+      0%   { box-shadow: 0 0 30px rgba(227,25,55,0.8), inset -8px -8px 20px rgba(0,0,0,0.5); }
+      33%  { box-shadow: 0 0 30px rgba(59,130,246,0.8), inset -8px -8px 20px rgba(0,0,0,0.5); }
+      66%  { box-shadow: 0 0 30px rgba(227,25,55,0.8), inset 8px -8px 20px rgba(0,0,0,0.5); }
+      100% { box-shadow: 0 0 30px rgba(227,25,55,0.8), inset -8px -8px 20px rgba(0,0,0,0.5); }
+    }
+
+    .hero-tagline {
+      font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+      font-weight: 400;
+      color: rgba(255,255,255,0.72);
+      letter-spacing: 0.04em;
+      margin-bottom: 40px;
+      animation: titleReveal 1s cubic-bezier(0.22,1,0.36,1) 0.55s both;
+    }
+    .hero-tagline span { color: var(--red); font-weight: 600; }
+
+    /* ─── CTA BUTTONS ─── */
+    .cta-group {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: titleReveal 1s cubic-bezier(0.22,1,0.36,1) 0.75s both;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 15px 36px;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-3px) scale(1.03); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1a56db 0%, #1e40af 60%, #1d4ed8 100%);
+      color: #fff;
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.4), 0 8px 32px rgba(26,86,219,0.5);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.7), 0 12px 40px rgba(26,86,219,0.7), 0 0 50px rgba(59,130,246,0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.95);
+      color: #111;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .btn-secondary:hover {
+      background: #fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4), 0 0 30px rgba(255,255,255,0.15);
+    }
+
+    /* ─── FEATURES ─── */
+    .features-section {
+      padding: 70px 24px 80px;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      font-weight: 800;
+      margin-bottom: 56px;
+      color: #fff;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+    }
+
+    /* Base card */
+    .feature-card {
+      position: relative;
+      border-radius: 20px;
+      padding: 36px 30px;
+      overflow: hidden;
+      cursor: default;
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+      animation: cardIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .feature-card:hover { transform: translateY(-10px) scale(1.02); }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.25s; }
+    .feature-card:nth-child(3) { animation-delay: 0.4s; }
+    .feature-card:nth-child(4) { animation-delay: 0.55s; }
+
+    /* ─ Card 1: Identity Sprawl ─ */
+    .card-sprawl {
+      background: rgba(8,10,24,0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(59,130,246,0.25);
+      box-shadow: 0 0 40px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .card-sprawl::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 110%, rgba(59,130,246,0.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .card-sprawl:hover { box-shadow: 0 0 60px rgba(59,130,246,0.22), 0 20px 60px rgba(0,0,0,0.5); }
+
+    /* ─ Card 2: Privileged Access ─ */
+    .card-shield {
+      background: rgba(12,5,5,0.78);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(227,25,55,0.22);
+      box-shadow: 0 0 40px rgba(227,25,55,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .card-shield::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 110%, rgba(227,25,55,0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .card-shield:hover { box-shadow: 0 0 60px rgba(227,25,55,0.28), 0 20px 60px rgba(0,0,0,0.5); }
+
+    /* ─ Card 3: Attack Paths ─ */
+    .card-attack {
+      background: rgba(10,5,5,0.78);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(180,20,40,0.3);
+      box-shadow: 0 0 40px rgba(180,20,40,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .card-attack::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 110%, rgba(180,20,40,0.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .card-attack:hover { box-shadow: 0 0 60px rgba(180,20,40,0.28), 0 20px 60px rgba(0,0,0,0.5); }
+
+    /* ─ Card 4: Governance ─ */
+    .card-govern {
+      background: rgba(5,10,24,0.78);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(59,130,246,0.28);
+      box-shadow: 0 0 40px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .card-govern::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 110%, rgba(59,130,246,0.2) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .card-govern:hover { box-shadow: 0 0 60px rgba(59,130,246,0.26), 0 20px 60px rgba(0,0,0,0.5); }
+
+    /* Icon wrappers */
+    .icon-wrap {
+      width: 64px; height: 64px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+      position: relative;
+    }
+    .card-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .card-desc {
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.6);
+    }
+    .card-tag {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ─── SVG ANIMATIONS ─── */
+
+    /* 1. Network nodes */
+    .network-svg circle { animation: nodePulse 2s ease-in-out infinite; }
+    .network-svg circle:nth-child(2) { animation-delay: 0.3s; }
+    .network-svg circle:nth-child(3) { animation-delay: 0.6s; }
+    .network-svg circle:nth-child(4) { animation-delay: 0.9s; }
+    .network-svg circle:nth-child(5) { animation-delay: 1.2s; }
+    .network-svg line  { animation: lineGlow 2s ease-in-out infinite; stroke-dasharray: 60; animation: lineDash 2s linear infinite; }
+    @keyframes nodePulse { 0%,100%{r:5;opacity:1;} 50%{r:7.5;opacity:0.7;} }
+    @keyframes lineDash  { from{stroke-dashoffset:60;} to{stroke-dashoffset:0;} }
+
+    /* 2. Shield pulse */
+    .shield-outer { animation: shieldPulse 1.8s ease-in-out infinite; }
+    @keyframes shieldPulse {
+      0%,100%{ stroke-opacity:1; filter:drop-shadow(0 0 4px var(--red)); }
+      50%    { stroke-opacity:0.3; filter:drop-shadow(0 0 14px var(--red)); }
+    }
+
+    /* 3. Attack flow */
+    .atk-line { stroke-dasharray: 80; animation: atkFlow 1.6s linear infinite; }
+    .atk-line:nth-child(2) { animation-delay: -0.5s; }
+    .atk-line:nth-child(3) { animation-delay: -1s; }
+    @keyframes atkFlow { from{stroke-dashoffset:80;} to{stroke-dashoffset:0;} }
+
+    /* 4. Gear rotate + sparks */
+    .gear-icon { animation: gearSpin 4s linear infinite; transform-origin: 32px 32px; }
+    @keyframes gearSpin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+    .spark { animation: sparkFly 1.5s ease-out infinite; }
+    .spark:nth-child(2) { animation-delay: 0.3s; }
+    .spark:nth-child(3) { animation-delay: 0.6s; }
+    .spark:nth-child(4) { animation-delay: 0.9s; }
+    .spark:nth-child(5) { animation-delay: 1.2s; }
+    @keyframes sparkFly {
+      0%   { transform: translate(0,0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx,10px), var(--ty,-15px)) scale(0); opacity: 0; }
+    }
+
+    /* ─── TRUST BAR ─── */
+    .trust-bar {
+      text-align: center;
+      padding: 36px 24px 48px;
+      position: relative;
+    }
+    .trust-line {
+      width: 120px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(227,25,55,0.6), transparent);
+      margin: 0 auto 20px;
+    }
+    .trust-text {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+    .trust-icons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .trust-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.45;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      transition: opacity 0.3s;
+    }
+    .trust-icon:hover { opacity: 0.85; }
+    .trust-icon svg { width: 28px; height: 28px; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.25);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      nav { padding: 14px 20px; }
+      .floating-screen { padding: 40px 24px 36px; }
+      .features-section { padding: 50px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Animated particle canvas -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- Background -->
+<div class="bg-image"></div>
+<div class="bg-overlay"></div>
+
+<div class="page-wrap">
+
+  <!-- ─── NAVIGATION ─── -->
+  <nav>
+    <div class="logo-wrap" title="Société Générale">
+      <div class="logo-pill">
+        <img src="logo.png" alt="Société Générale Logo" id="sg-logo" />
+      </div>
+    </div>
+    <span class="nav-pill">🔴 LIVE THREAT MONITORING</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span style="font-size:0.78rem;color:rgba(255,255,255,0.5);">Enterprise Security</span>
+      <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;animation:blink 1.4s ease infinite;"></div>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="floating-screen" id="heroCard">
+      <div class="scan-line"></div>
+
+      <div class="badge">
+        <div class="badge-dot"></div>
+        Powered by Société Générale AI Research
+      </div>
+
+      <h1 class="hero-title">
+        Identity<span class="sphere-icon" title="Sphere"></span>Sphere AI
+      </h1>
+
+      <p class="hero-tagline">
+        <span>AI-Powered</span> Identity Intelligence Platform
+      </p>
+
+      <div class="cta-group">
+        <a href="login.html" class="btn btn-primary" id="get-started-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8l4 4-4 4M8 12h8"/>
+          </svg>
+          Get Started
+        </a>
+        <a href="#" class="btn btn-secondary" id="request-demo-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+          </svg>
+          Request Demo
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FEATURES ─── -->
+  <section class="features-section" id="features">
+    <p class="section-label">Core Capabilities</p>
+    <h2 class="section-title">Enterprise-Grade Identity Security</h2>
+
+    <div class="features-grid">
+
+      <!-- Card 1: Detect Identity Sprawl -->
+      <div class="feature-card card-sprawl" id="feature-sprawl">
+        <div class="icon-wrap" style="background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.35);">
+          <svg class="network-svg" width="40" height="40" viewBox="0 0 64 64" fill="none">
+            <!-- Center -->
+            <circle cx="32" cy="32" r="5" fill="#3b82f6" />
+            <!-- Outer nodes -->
+            <circle cx="10" cy="20" r="4" fill="#60a5fa" />
+            <circle cx="54" cy="16" r="3.5" fill="#60a5fa" />
+            <circle cx="12" cy="50" r="3.5" fill="#60a5fa" />
+            <circle cx="52" cy="48" r="4" fill="#60a5fa" />
+            <!-- Lines -->
+            <line x1="32" y1="32" x2="10" y2="20" stroke="#3b82f6" stroke-width="1.5" stroke-opacity="0.7"/>
+            <line x1="32" y1="32" x2="54" y2="16" stroke="#3b82f6" stroke-width="1.5" stroke-opacity="0.7"/>
+            <line x1="32" y1="32" x2="12" y2="50" stroke="#3b82f6" stroke-width="1.5" stroke-opacity="0.7"/>
+            <line x1="32" y1="32" x2="52" y2="48" stroke="#3b82f6" stroke-width="1.5" stroke-opacity="0.7"/>
+            <!-- Outer rings (glow) -->
+            <circle cx="32" cy="32" r="14" stroke="#3b82f6" stroke-width="0.7" stroke-opacity="0.35" fill="none"/>
+            <circle cx="32" cy="32" r="22" stroke="#3b82f6" stroke-width="0.5" stroke-opacity="0.18" fill="none"/>
+          </svg>
+        </div>
+        <div class="card-title">Detect Identity Sprawl</div>
+        <div class="card-desc">Real-time network graph analysis identifies orphaned accounts, duplicate identities, and over-provisioned access across your entire enterprise ecosystem.</div>
+        <span class="card-tag" style="background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);">NETWORK INTELLIGENCE</span>
+      </div>
+
+      <!-- Card 2: Privileged Access Abuse -->
+      <div class="feature-card card-shield" id="feature-shield">
+        <div class="icon-wrap" style="background:rgba(227,25,55,0.1);border:1.5px solid rgba(227,25,55,0.35);">
+          <svg width="40" height="40" viewBox="0 0 64 64" fill="none">
+            <path class="shield-outer" d="M32 6L10 16v16c0 14 12 22 22 26 10-4 22-12 22-26V16L32 6z"
+              stroke="#E31937" stroke-width="2.5" fill="rgba(227,25,55,0.08)"/>
+            <path d="M32 10L14 18v14c0 11.5 10 18.5 18 22 8-3.5 18-10.5 18-22V18L32 10z"
+              stroke="#E31937" stroke-width="1" stroke-opacity="0.4" fill="none"/>
+            <!-- Lock -->
+            <rect x="26" y="32" width="12" height="10" rx="2" fill="#E31937" opacity="0.85"/>
+            <path d="M28 32v-3a4 4 0 018 0v3" stroke="#E31937" stroke-width="2" fill="none"/>
+            <circle cx="32" cy="37" r="1.5" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="card-title">Prevent Privileged Access Abuse</div>
+        <div class="card-desc">AI-driven behavioral analytics continuously monitors privileged accounts, flagging anomalous access patterns before they escalate to critical breaches.</div>
+        <span class="card-tag" style="background:rgba(227,25,55,0.12);color:#f87171;border:1px solid rgba(227,25,55,0.3);">THREAT PREVENTION</span>
+      </div>
+
+      <!-- Card 3: Simulate Attack Paths -->
+      <div class="feature-card card-attack" id="feature-attack">
+        <div class="icon-wrap" style="background:rgba(180,20,40,0.12);border:1.5px solid rgba(180,20,40,0.38);">
+          <svg width="40" height="40" viewBox="0 0 64 64" fill="none">
+            <!-- Source node -->
+            <circle cx="8" cy="32" r="5" fill="#b41428"/>
+            <!-- Target node -->
+            <circle cx="56" cy="32" r="5" fill="#E31937"/>
+            <!-- Attack paths -->
+            <path class="atk-line" d="M13 32 Q24 10 32 20 Q40 30 51 32" stroke="#E31937" stroke-width="2" fill="none" stroke-dasharray="80"/>
+            <path class="atk-line" d="M13 32 Q24 54 32 44 Q40 34 51 32" stroke="#b41428" stroke-width="1.5" fill="none" stroke-dasharray="80"/>
+            <path class="atk-line" d="M13 32 L51 32" stroke="#ff4455" stroke-width="1.2" fill="none" stroke-dasharray="80"/>
+            <!-- Arrowhead -->
+            <polygon points="51,28 58,32 51,36" fill="#E31937"/>
+          </svg>
+        </div>
+        <div class="card-title">Simulate Attack Paths</div>
+        <div class="card-desc">Advanced adversarial simulation maps lateral movement routes and credential-based attack chains, exposing hidden vulnerabilities before attackers do.</div>
+        <span class="card-tag" style="background:rgba(180,20,40,0.14);color:#fca5a5;border:1px solid rgba(180,20,40,0.35);">RED TEAM AI</span>
+      </div>
+
+      <!-- Card 4: Automate Governance -->
+      <div class="feature-card card-govern" id="feature-govern">
+        <div class="icon-wrap" style="background:rgba(59,130,246,0.1);border:1.5px solid rgba(59,130,246,0.32);">
+          <svg width="40" height="40" viewBox="0 0 64 64" fill="none">
+            <!-- Gear -->
+            <g class="gear-icon">
+              <path d="M32 20a12 12 0 100 24 12 12 0 000-24z" stroke="#3b82f6" stroke-width="2" fill="rgba(59,130,246,0.1)"/>
+              <path d="M32 14v4M32 46v4M18.3 18.3l2.8 2.8M42.9 42.9l2.8 2.8M14 32h4M46 32h4M18.3 45.7l2.8-2.8M42.9 21.1l2.8-2.8" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="4" fill="#3b82f6"/>
+            </g>
+            <!-- Sparks -->
+            <circle class="spark" cx="46" cy="18" r="2" fill="#60a5fa" style="--tx:8px;--ty:-12px;"/>
+            <circle class="spark" cx="50" cy="24" r="1.5" fill="#93c5fd" style="--tx:10px;--ty:-8px;"/>
+            <circle class="spark" cx="48" cy="14" r="1.5" fill="#bfdbfe" style="--tx:6px;--ty:-14px;"/>
+            <circle class="spark" cx="52" cy="20" r="1" fill="#60a5fa" style="--tx:12px;--ty:-10px;"/>
+            <circle class="spark" cx="44" cy="16" r="1" fill="#93c5fd" style="--tx:4px;--ty:-16px;"/>
+          </svg>
+        </div>
+        <div class="card-title">Automate Governance</div>
+        <div class="card-desc">Policy-driven automation enforces access certifications, SoD controls, and regulatory compliance workflows across hybrid multi-cloud environments continuously.</div>
+        <span class="card-tag" style="background:rgba(59,130,246,0.12);color:#93c5fd;border:1px solid rgba(59,130,246,0.28);">POLICY AUTOMATION</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── STATS ROW ─── -->
+  <section style="max-width:1100px;margin:0 auto 60px;padding:0 24px;width:100%;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px;text-align:center;">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px 20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:var(--red);margin-bottom:6px;" id="stat1">0</div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">Identities Scanned</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px 20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:#3b82f6;margin-bottom:6px;" id="stat2">0</div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">Threats Blocked</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px 20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:#22c55e;margin-bottom:6px;" id="stat3">0</div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">Compliance Score</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px 20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:#f59e0b;margin-bottom:6px;" id="stat4">0</div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">Policies Automated</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TRUST BAR ─── -->
+  <div class="trust-bar">
+    <div class="trust-line"></div>
+    <p class="trust-text">Trusted By Enterprise Security Teams</p>
+    <div class="trust-icons">
+      <!-- Generic enterprise icons -->
+      <div class="trust-icon">
+        <svg viewBox="0 0 28 28" fill="none"><rect x="2" y="2" width="24" height="24" rx="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 14h12M14 8v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Global Bank
+      </div>
+      <div class="trust-icon">
+        <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="1.5"/><path d="M14 6v8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Fintech Corp
+      </div>
+      <div class="trust-icon">
+        <svg viewBox="0 0 28 28" fill="none"><path d="M14 3L4 8v6c0 5.5 4.3 10.7 10 12 5.7-1.3 10-6.5 10-12V8L14 3z" stroke="currentColor" stroke-width="1.5"/></svg>
+        SecureOps
+      </div>
+      <div class="trust-icon">
+        <svg viewBox="0 0 28 28" fill="none"><rect x="4" y="6" width="20" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 10h20" stroke="currentColor" stroke-width="1.5"/></svg>
+        PrivateBank
+      </div>
+      <div class="trust-icon">
+        <svg viewBox="0 0 28 28" fill="none"><polygon points="14,3 25,9.5 25,20.5 14,27 3,20.5 3,9.5" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="14" cy="14" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+        InfraSec
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    © 2025 Société Générale · IdentitySphere AI · All rights reserved · Enterprise Identity Intelligence
+  </footer>
+
+</div>
+
+<script>
+/* ─── PARTICLE CANVAS ─── */
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [], connections = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.4;
+    this.vy = (Math.random() - 0.5) * 0.4;
+    this.r  = Math.random() * 2 + 0.5;
+    this.red = Math.random() > 0.5;
+    this.opacity = Math.random() * 0.5 + 0.2;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = this.red
+      ? `rgba(227,25,55,${this.opacity})`
+      : `rgba(59,130,246,${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+function drawConnections() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 140) {
+        const alpha = (1 - dist/140) * 0.18;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(227,25,55,${alpha})`;
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, W, H);
+  drawConnections();
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* ─── 3D MOUSE TILT ─── */
+const card = document.getElementById('heroCard');
+document.addEventListener('mousemove', e => {
+  const cx = W / 2, cy = H / 2;
+  const rx = (e.clientY - cy) / cy * -8;
+  const ry = (e.clientX - cx) / cx * 8;
+  card.style.transform = `translateY(-10px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+});
+document.addEventListener('mouseleave', () => {
+  card.style.transform = '';
+});
+
+/* ─── COUNTER ANIMATION ─── */
+function animateCounter(el, target, suffix='', duration=2000) {
+  let start = null;
+  const step = ts => {
+    if (!start) start = ts;
+    const progress = Math.min((ts - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target).toLocaleString() + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter(document.getElementById('stat1'), 2400000, '+');
+      animateCounter(document.getElementById('stat2'), 99800, '+');
+      animateCounter(document.getElementById('stat3'), 99, '%');
+      animateCounter(document.getElementById('stat4'), 12500, '+');
+      observer.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+observer.observe(document.getElementById('stat1'));
+
+/* ─── CARD TILT (features) ─── */
+document.querySelectorAll('.feature-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const rx = (e.clientY - cy) / (rect.height/2) * -6;
+    const ry = (e.clientX - cx) / (rect.width/2) * 6;
+    card.style.transform = `translateY(-10px) scale(1.02) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+</script>
+</body>
+</html>

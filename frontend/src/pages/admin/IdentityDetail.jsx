@@ -12,15 +12,15 @@ import 'reactflow/dist/style.css';
 import GlassCard from '../../components/shared/GlassCard';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
-import FloatingCounter from '../../components/shared/FloatingCounter';
-import { getIdentities as getStoredIdentities, getRiskEvents } from '../../services/storageService';
+import AnimatedCounter from '../../components/shared/AnimatedCounter';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { getIdentities as getStoredIdentities, getRiskEvents, getLifecycleEvents, getReviewHistory } from '../../services/storageService';
 
 /* ── Platform colors for correlation graph ─────────────────────────── */
 const PLATFORM_COLORS = {
   active_directory: { bg: '#080a12', border: '#00a4ef', color: '#00a4ef' },
   aws_iam:          { bg: '#080a12', border: '#ff9900', color: '#ff9900' },
   okta:             { bg: '#080a12', border: '#007dc1', color: '#007dc1' },
-  github:           { bg: '#080a12', border: '#f0f6fc', color: '#f0f6fc' },
   salesforce:       { bg: '#080a12', border: '#00a1e0', color: '#00a1e0' },
 };
 
@@ -28,7 +28,6 @@ const PLATFORM_LABELS = {
   active_directory: 'Active Directory',
   aws_iam: 'AWS IAM',
   okta: 'Okta',
-  github: 'GitHub',
   salesforce: 'Salesforce',
 };
 
@@ -38,6 +37,7 @@ const TABS = [
   { key: 'correlation', label: 'Correlation',  icon: Globe },
   { key: 'privileges',  label: 'Privileges',   icon: Key },
   { key: 'risk',        label: 'Risk Analysis', icon: AlertTriangle },
+  { key: 'timeline',    label: 'Risk Timeline', icon: Clock },
   { key: 'remediation', label: 'Remediation',  icon: Wrench },
 ];
 
@@ -78,25 +78,24 @@ function StatusChip({ status }) {
 function MiniStatCard({ icon: Icon, label, value, color = '#E31937', delay = 0 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay }}
-      className="flex-1 min-w-[120px] rounded-xl p-3 relative overflow-hidden"
+      transition={{ duration: 0.4, delay }}
+      className="flex-1 min-w-[140px] rounded-xl p-4"
       style={{
-        background: 'linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%)',
-        border: '1px solid rgba(227,25,55,0.2)',
-        backdropFilter: 'blur(12px)',
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(227,25,55,0.15)',
+        backdropFilter: 'blur(8px)',
       }}
     >
-      <div className="absolute top-0 inset-x-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${color}88, transparent)` }} />
-      <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-white/10" style={{ background: color + '18' }}>
-          <Icon size={14} style={{ color }} />
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: color + '18' }}>
+          <Icon size={16} style={{ color }} />
         </div>
-        <div className="min-w-0">
-          <FloatingCounter value={value || 0} color="white" size="2xl" />
-          <span className="text-[9px] text-slate-500 uppercase tracking-[0.16em] font-orbitron block mt-0.5 truncate">{label}</span>
-        </div>
+        <span className="text-xs text-slate-500 uppercase tracking-wider">{label}</span>
+      </div>
+      <div className="text-2xl font-bold text-white">
+        <AnimatedCounter value={value || 0} />
       </div>
     </motion.div>
   );
@@ -284,6 +283,7 @@ export default function IdentityDetail() {
           {activeTab === 'correlation' && <CorrelationTab identity={id} />}
           {activeTab === 'privileges'  && <PrivilegesTab identity={id} />}
           {activeTab === 'risk'        && <RiskAnalysisTab identity={id} />}
+          {activeTab === 'timeline'    && <TimelineTab identity={id} />}
           {activeTab === 'remediation' && <RemediationTab identity={id} />}
         </motion.div>
       </AnimatePresence>
@@ -325,7 +325,7 @@ function Header({ identity: id, navigate }) {
               {(id.display_name || '?')[0].toUpperCase()}
             </div>
             <div className="space-y-1.5">
-              <h1 className="text-2xl font-bold text-white leading-tight font-orbitron">
+              <h1 className="text-2xl font-bold text-white leading-tight">
                 {id.display_name || 'Unknown Identity'}
               </h1>
               <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400">
@@ -660,7 +660,6 @@ const PLATFORM_ROLES = {
   active_directory: { admin: 'Domain Admin', standard: 'Domain User', group: 'Server-Admins' },
   aws_iam: { admin: 'AdministratorAccess', standard: 'ReadOnlyAccess', group: 'AWS-Users' },
   okta: { admin: 'Org Admin', standard: 'SSO User', group: 'Privileged Users' },
-  github: { admin: 'Owner', standard: 'Contributor', group: 'Dev-Team' },
   salesforce: { admin: 'System Administrator', standard: 'Standard User', group: 'CRM-Users' },
 };
 
@@ -671,7 +670,7 @@ function generateUsername(displayName, platform) {
     case 'active_directory': return `${parts[0]}.${parts[parts.length - 1]}`;
     case 'aws_iam': return `${parts[0][0]}${parts[parts.length - 1]}`;
     case 'okta': return `${parts[0]}.${parts[parts.length - 1]}`;
-    case 'github': return `${parts[0]}-${parts[parts.length - 1][0]}`;
+    case 'salesforce': return `${parts[0]}-${parts[parts.length - 1][0]}`;
     case 'salesforce': return `${parts[0]}.${parts[parts.length - 1][0]}`;
     default: return `${parts[0]}.${parts[parts.length - 1]}`;
   }
@@ -813,12 +812,84 @@ function buildCorrelationGraph(id) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   TAB 3 : PRIVILEGES
+   TAB 3 : PRIVILEGES (Effective Privilege Calculator)
    ══════════════════════════════════════════════════════════════════════ */
+
+const PRIV_RESOURCE_MAP = {
+  active_directory: ['domain-controller', 'dns-server', 'file-server', 'gpo-management'],
+  aws_iam: ['iam-console', 'ec2-instances', 's3-prod-data', 'kms-keys'],
+  okta: ['sso-config', 'api-tokens', 'mfa-policies', 'user-provisioning'],
+  salesforce: ['crm-data', 'user-management', 'reports', 'apex-classes'],
+};
+
+const PRIV_PERMISSION_MAP = {
+  active_directory: { admin: ['full-control', 'gpo-edit', 'user-mgmt', 'dns-admin'], user: ['read', 'logon'] },
+  aws_iam: { admin: ['iam:*', 'ec2:*', 's3:*', 'kms:*'], user: ['s3:GetObject', 'ec2:Describe*'] },
+  okta: { admin: ['admin:api-tokens', 'admin:users', 'admin:apps', 'admin:mfa'], user: ['sso:login'] },
+  salesforce: { admin: ['setup:all', 'user:manage', 'apex:execute', 'api:full'], user: ['report:view', 'record:read'] },
+};
+
+const HIGH_RISK_ROLES = ['Domain Admin', 'AdministratorAccess', 'Org Admin', 'System Administrator', 'Owner'];
+
+function buildPrivilegeGraph(id) {
+  const nodes = [];
+  const edges = [];
+  const platforms = id.platforms || [];
+  if (platforms.length === 0) return { nodes, edges };
+
+  nodes.push({
+    id: 'identity', position: { x: 400, y: 20 },
+    data: { label: `👤 ${id.display_name}` },
+    style: { background: 'linear-gradient(135deg, #1a0008, #080a12)', color: '#E31937', border: '2px solid #E31937', borderRadius: '16px', padding: '12px 22px', fontSize: 13, fontWeight: 700, width: 200, textAlign: 'center', boxShadow: '0 0 20px rgba(227,25,55,0.2)' },
+    draggable: true,
+  });
+
+  const totalW = Math.max(platforms.length * 280, 500);
+  const startX = 400 - totalW / 2 + 140;
+
+  platforms.forEach((p, pIdx) => {
+    const px = startX + pIdx * 280;
+    const pColors = PLATFORM_COLORS[p] || { bg: '#080a12', border: '#64748b', color: '#64748b' };
+    const roleInfo = PLATFORM_ROLES[p] || { admin: 'Admin', standard: 'User', group: 'Users' };
+    const isAdm = id.is_admin && ['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(p);
+    const roleName = isAdm ? roleInfo.admin : roleInfo.standard;
+    const isHighRisk = HIGH_RISK_ROLES.includes(roleName);
+    const perms = isAdm ? (PRIV_PERMISSION_MAP[p]?.admin || ['admin:*']) : (PRIV_PERMISSION_MAP[p]?.user || ['read']);
+    const resources = isAdm ? (PRIV_RESOURCE_MAP[p] || ['resource']) : (PRIV_RESOURCE_MAP[p] || ['resource']).slice(0, 2);
+    const username = generateUsername(id.display_name || 'user', p);
+
+    const pId = `p-${p}`;
+    nodes.push({ id: pId, position: { x: px, y: 120 }, data: { label: `🖥️ ${PLATFORM_LABELS[p] || p}` }, style: { background: pColors.bg, color: pColors.color, border: `2px solid ${pColors.border}`, borderRadius: '10px', padding: '8px 16px', fontSize: 11, fontWeight: 600, width: 160, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-id-${p}`, source: 'identity', target: pId, animated: true, style: { stroke: pColors.border, strokeWidth: 2 }, labelStyle: { fontSize: 8, fill: '#64748b' } });
+
+    const aId = `a-${p}`;
+    nodes.push({ id: aId, position: { x: px, y: 210 }, data: { label: `${isAdm ? '🔑 ' : ''}${username}` }, style: { background: pColors.bg, color: isAdm ? '#ef4444' : pColors.color, border: `1.5px solid ${isAdm ? '#ef4444' : pColors.border}`, borderRadius: '8px', padding: '6px 12px', fontSize: 10, width: 140, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-${pId}-${aId}`, source: pId, target: aId, label: 'account', style: { stroke: pColors.border + '88', strokeWidth: 1.5 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+
+    const gId = `g-${p}`;
+    nodes.push({ id: gId, position: { x: px - 60, y: 300 }, data: { label: `👥 ${roleInfo.group}` }, style: { background: 'rgba(255,255,255,0.03)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '5px 10px', fontSize: 9, width: 120, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-${aId}-${gId}`, source: aId, target: gId, label: 'member_of', style: { stroke: '#64748b55', strokeWidth: 1 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+
+    const rId = `r-${p}`;
+    nodes.push({ id: rId, position: { x: px + 60, y: 300 }, data: { label: `🛡️ ${roleName}` }, style: { background: isHighRisk ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)', color: isHighRisk ? '#ef4444' : '#94a3b8', border: `1.5px solid ${isHighRisk ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.08)'}`, borderRadius: '8px', padding: '5px 10px', fontSize: 9, fontWeight: isHighRisk ? 700 : 500, width: 130, textAlign: 'center', boxShadow: isHighRisk ? '0 0 12px rgba(239,68,68,0.15)' : 'none' }, draggable: true });
+    edges.push({ id: `e-${aId}-${rId}`, source: aId, target: rId, label: 'has_role', style: { stroke: isHighRisk ? '#ef444488' : '#64748b55', strokeWidth: isHighRisk ? 2 : 1 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+
+    const permId = `perm-${p}`;
+    nodes.push({ id: permId, position: { x: px, y: 400 }, data: { label: `🔐 ${perms[0]}` }, style: { background: isAdm ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.02)', color: isAdm ? '#f97316' : '#64748b', border: `1px solid ${isAdm ? 'rgba(249,115,22,0.2)' : 'rgba(255,255,255,0.06)'}`, borderRadius: '6px', padding: '4px 10px', fontSize: 9, width: 130, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-${rId}-${permId}`, source: rId, target: permId, label: 'grants', style: { stroke: isAdm ? '#f9731644' : '#64748b33', strokeWidth: 1 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+
+    const resId = `res-${p}`;
+    nodes.push({ id: resId, position: { x: px, y: 490 }, data: { label: `📦 ${resources[0]}` }, style: { background: isAdm ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.02)', color: isAdm ? '#ef4444' : '#64748b', border: `1px solid ${isAdm ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)'}`, borderRadius: '6px', padding: '4px 10px', fontSize: 9, width: 130, textAlign: 'center' }, draggable: true });
+    edges.push({ id: `e-${permId}-${resId}`, source: permId, target: resId, label: 'accesses', style: { stroke: isAdm ? '#ef444433' : '#64748b22', strokeWidth: 1 }, labelStyle: { fontSize: 7, fill: '#475569' } });
+  });
+
+  return { nodes, edges };
+}
+
 function PrivilegesTab({ identity: id }) {
   const entitlements = id.entitlements || [];
+  const platforms = id.platforms || [];
 
-  /* Group by platform */
   const grouped = {};
   entitlements.forEach(ent => {
     const p = ent.platform || 'unknown';
@@ -826,88 +897,150 @@ function PrivilegesTab({ identity: id }) {
     grouped[p].push(ent);
   });
 
+  const { nodes: privNodes, edges: privEdges } = useMemo(() => buildPrivilegeGraph(id), [id]);
+
+  const directPrivs = entitlements.filter(e => e.privilege_level === 'high' || e.is_admin_role);
+  const inheritedPrivs = entitlements.filter(e => !e.is_admin_role && e.privilege_level !== 'high');
+  const effectivePrivs = entitlements;
+  const totalResources = platforms.reduce((a, p) => {
+    const res = PRIV_RESOURCE_MAP[p] || [];
+    return a + (id.is_admin ? res.length : Math.min(res.length, 2));
+  }, 0);
+
   return (
     <div className="space-y-6">
       {/* Top stats */}
       <div className="flex flex-wrap gap-4">
-        <MiniStatCard icon={ShieldAlert} label="Admin Entitlements" value={id.admin_entitlement_count} color="#ef4444" delay={0.05} />
-        <MiniStatCard icon={AlertTriangle} label="Sensitive Permissions" value={id.sensitive_permission_count} color="#f97316" delay={0.1} />
-        <MiniStatCard icon={Key} label="Total Entitlements" value={id.entitlement_count} color="#E31937" delay={0.15} />
+        <MiniStatCard icon={ShieldAlert} label="Admin Entitlements" value={id.admin_entitlement_count || directPrivs.length} color="#ef4444" delay={0.05} />
+        <MiniStatCard icon={AlertTriangle} label="Sensitive Permissions" value={id.sensitive_permission_count || directPrivs.length} color="#f97316" delay={0.1} />
+        <MiniStatCard icon={Key} label="Total Entitlements" value={id.entitlement_count || effectivePrivs.length} color="#E31937" delay={0.15} />
       </div>
+
+      {/* Privilege Type Summary */}
+      <div className="grid grid-cols-3 gap-4">
+        <GlassCard hover={false} delay={0.05} className="border-red-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Direct Privileges</span>
+          </div>
+          <p className="text-2xl font-black text-red-400">{directPrivs.length}</p>
+          <p className="text-[10px] text-slate-500 mt-1">Explicitly assigned admin/high-privilege roles</p>
+        </GlassCard>
+        <GlassCard hover={false} delay={0.1} className="border-blue-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-blue-400" />
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Inherited Privileges</span>
+          </div>
+          <p className="text-2xl font-black text-blue-400">{inheritedPrivs.length}</p>
+          <p className="text-[10px] text-slate-500 mt-1">Inherited via group membership and role hierarchy</p>
+        </GlassCard>
+        <GlassCard hover={false} delay={0.15} className="border-purple-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-purple-400" />
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Effective Privileges</span>
+          </div>
+          <p className="text-2xl font-black text-purple-400">{effectivePrivs.length}</p>
+          <p className="text-[10px] text-slate-500 mt-1">{totalResources} reachable resources across {platforms.length} platform(s)</p>
+        </GlassCard>
+      </div>
+
+      {/* Privilege Relationship Graph */}
+      {privNodes.length > 0 && (
+        <GlassCard hover={false} delay={0.2} className="p-0 overflow-hidden" style={{ height: 580 }}>
+          <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+            <h3 className="text-sm text-slate-500 uppercase tracking-wider flex items-center gap-2">
+              <Layers size={14} className="text-red-400" /> Privilege Relationship Graph
+            </h3>
+            <div className="flex gap-3 text-[9px]">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" /> Direct / Admin</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" /> Inherited</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-400" /> Resource</span>
+            </div>
+          </div>
+          <div style={{ height: 530 }}>
+            <ReactFlow
+              nodes={privNodes}
+              edges={privEdges}
+              fitView
+              fitViewOptions={{ padding: 0.2 }}
+              panOnDrag
+              zoomOnScroll
+              minZoom={0.3}
+              maxZoom={2}
+              className="bg-navy-950"
+              proOptions={{ hideAttribution: true }}
+            >
+              <Background color="#E3193706" gap={30} />
+              <Controls className="bg-navy-800 border border-white/10 rounded-xl" />
+            </ReactFlow>
+          </div>
+        </GlassCard>
+      )}
 
       {/* Entitlement groups */}
       {Object.keys(grouped).length > 0 ? (
-        Object.entries(grouped).map(([platform, ents], gIdx) => (
-          <GlassCard key={platform} hover={false} delay={0.05 + gIdx * 0.05}>
-            <div className="flex items-center gap-3 mb-4">
-              <PlatformIcon platform={platform} size="lg" />
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-                {PLATFORM_LABELS[platform] || platform}
-              </h3>
-              <span className="text-xs text-slate-500">({ents.length} entitlement{ents.length !== 1 ? 's' : ''})</span>
-            </div>
+        Object.entries(grouped).map(([platform, ents], gIdx) => {
+          const isAdmP = id.is_admin && ['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(platform);
+          const perms = isAdmP ? (PRIV_PERMISSION_MAP[platform]?.admin || []) : (PRIV_PERMISSION_MAP[platform]?.user || []);
+          const resources = isAdmP ? (PRIV_RESOURCE_MAP[platform] || []) : (PRIV_RESOURCE_MAP[platform] || []).slice(0, 2);
+          return (
+            <GlassCard key={platform} hover={false} delay={0.05 + gIdx * 0.05}>
+              <div className="flex items-center gap-3 mb-4">
+                <PlatformIcon platform={platform} size="lg" />
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+                  {PLATFORM_LABELS[platform] || platform}
+                </h3>
+                <span className="text-xs text-slate-500">({ents.length} entitlement{ents.length !== 1 ? 's' : ''})</span>
+              </div>
 
-            <div className="space-y-3">
-              {ents.map((ent, eIdx) => (
-                <motion.div
-                  key={eIdx}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.02 * eIdx }}
-                  className="rounded-lg px-4 py-3"
-                  style={{
-                    background: ent.is_admin_role ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.02)',
-                    border: `1px solid ${ent.is_admin_role ? 'rgba(239,68,68,0.18)' : 'rgba(255,255,255,0.06)'}`,
-                  }}
-                >
-                  <div className="flex items-center flex-wrap gap-2 mb-2">
-                    <span className="text-sm font-semibold text-white">{ent.role_name || 'Direct Permission'}</span>
-                    {ent.is_admin_role && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-semibold uppercase">
-                        Admin
-                      </span>
-                    )}
-                    {ent.is_sensitive && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 font-semibold uppercase">
-                        Sensitive
-                      </span>
-                    )}
-                    {ent.privilege_level && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400 border border-slate-500/20 font-medium">
-                        {ent.privilege_level}
-                      </span>
-                    )}
+              <div className="space-y-3">
+                {ents.map((ent, eIdx) => (
+                  <motion.div key={eIdx} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 * eIdx }}
+                    className="rounded-lg px-4 py-3"
+                    style={{ background: ent.is_admin_role ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.02)', border: `1px solid ${ent.is_admin_role ? 'rgba(239,68,68,0.18)' : 'rgba(255,255,255,0.06)'}` }}>
+                    <div className="flex items-center flex-wrap gap-2 mb-2">
+                      <span className="text-sm font-semibold text-white">{ent.role_name || 'Direct Permission'}</span>
+                      {ent.is_admin_role && <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-semibold uppercase">Admin</span>}
+                      {ent.is_sensitive && <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 font-semibold uppercase">Sensitive</span>}
+                      {ent.privilege_level && <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400 border border-slate-500/20 font-medium">{ent.privilege_level}</span>}
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 font-medium">{ent.is_admin_role ? 'Direct' : 'Inherited'}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
+                      {ent.permission_id && <span className="flex items-center gap-1"><Hash size={10} className="text-slate-500" /> {ent.permission_id}</span>}
+                      {ent.resource && <span className="flex items-center gap-1"><Target size={10} className="text-slate-500" /> {ent.resource}</span>}
+                      {ent.action && <span className="flex items-center gap-1"><Zap size={10} className="text-slate-500" /> {ent.action}</span>}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Reachable resources for this platform */}
+              <div className="mt-4 pt-3 border-t border-white/5">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">Reachable Resources ({resources.length})</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {resources.map(r => (
+                    <span key={r} className={`text-[10px] px-2 py-1 rounded font-mono ${isAdmP ? 'bg-red-500/10 text-red-400 border border-red-500/15' : 'bg-white/5 text-slate-400 border border-white/5'}`}>{r}</span>
+                  ))}
+                </div>
+                {perms.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1.5">Permissions ({perms.length})</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {perms.map(pm => (
+                        <span key={pm} className={`text-[10px] px-2 py-0.5 rounded font-mono ${isAdmP ? 'bg-orange-500/10 text-orange-400 border border-orange-500/15' : 'bg-white/5 text-slate-500 border border-white/5'}`}>{pm}</span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
-                    {ent.permission_id && (
-                      <span className="flex items-center gap-1">
-                        <Hash size={10} className="text-slate-500" /> {ent.permission_id}
-                      </span>
-                    )}
-                    {ent.resource && (
-                      <span className="flex items-center gap-1">
-                        <Target size={10} className="text-slate-500" /> {ent.resource}
-                      </span>
-                    )}
-                    {ent.action && (
-                      <span className="flex items-center gap-1">
-                        <Zap size={10} className="text-slate-500" /> {ent.action}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </GlassCard>
-        ))
+                )}
+              </div>
+            </GlassCard>
+          );
+        })
       ) : (
         <GlassCard hover={false} delay={0.1}>
           <div className="flex flex-col items-center gap-3 py-8">
             <Key size={36} className="text-slate-600" />
             <p className="text-sm text-slate-500">No detailed entitlement data available</p>
-            <p className="text-xs text-slate-600">
-              {id.entitlement_count ? `${id.entitlement_count} entitlements reported but details not loaded` : 'No entitlements found'}
-            </p>
           </div>
         </GlassCard>
       )}
@@ -1050,7 +1183,199 @@ function RiskAnalysisTab({ identity: id }) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   TAB 5 : REMEDIATION
+   TAB 5 : RISK TIMELINE
+   ══════════════════════════════════════════════════════════════════════ */
+
+const EVENT_COLORS = { positive: '#22c55e', warning: '#eab308', danger: '#ef4444' };
+const PLAT_LABELS = { active_directory: 'AD', aws_iam: 'AWS', okta: 'Okta', salesforce: 'SF' };
+
+function generateTimelineEvents(id) {
+  const events = [];
+  const platforms = id.platforms || [];
+  const name = id.display_name;
+  const pid = id.person_id;
+  const baseDate = new Date('2026-01-15');
+
+  platforms.forEach((p, i) => {
+    const d = new Date(baseDate); d.setDate(d.getDate() + i * 2);
+    events.push({ date: d.toISOString(), type: 'Account Created', desc: `Account provisioned on ${PLAT_LABELS[p] || p}`, platform: p, impact: 5, category: 'warning', icon: UserCheck });
+  });
+
+  if (id.is_admin) {
+    platforms.forEach((p, i) => {
+      if (['active_directory', 'aws_iam', 'okta', 'salesforce'].includes(p)) {
+        const d = new Date(baseDate); d.setDate(d.getDate() + 10 + i * 3);
+        events.push({ date: d.toISOString(), type: 'Admin Privilege Granted', desc: `Admin role assigned on ${PLAT_LABELS[p]}`, platform: p, impact: 15, category: 'danger', icon: ShieldAlert });
+      }
+    });
+  }
+
+  if (id.mfa_complete) {
+    const d = new Date(baseDate); d.setDate(d.getDate() + 20);
+    events.push({ date: d.toISOString(), type: 'MFA Enabled', desc: 'Multi-factor authentication enabled on all accounts', platform: null, impact: -10, category: 'positive', icon: Lock });
+  } else {
+    const d = new Date(baseDate); d.setDate(d.getDate() + 45);
+    events.push({ date: d.toISOString(), type: 'MFA Not Enrolled', desc: 'MFA enrollment deadline passed without activation', platform: null, impact: 10, category: 'danger', icon: Unlock });
+  }
+
+  if (platforms.length >= 3) {
+    const d = new Date(baseDate); d.setDate(d.getDate() + 60);
+    events.push({ date: d.toISOString(), type: 'Cross-Platform Detected', desc: `Identity active on ${platforms.length} platforms — cross-platform exposure flagged`, platform: null, impact: 8, category: 'warning', icon: Globe });
+  }
+
+  if ((id.max_dormancy_days || 0) > 90) {
+    const d = new Date(baseDate); d.setDate(d.getDate() + 90);
+    events.push({ date: d.toISOString(), type: 'Dormant Account Detected', desc: `No login activity for ${id.max_dormancy_days} days`, platform: null, impact: 12, category: 'danger', icon: Clock });
+  }
+
+  const lifecycle = getLifecycleEvents().filter(e => e.identity === name);
+  lifecycle.forEach(e => {
+    events.push({
+      date: e.date + 'T10:00:00', type: e.type === 'joiner' ? 'Joiner Event' : e.type === 'mover' ? 'Mover Event' : 'Leaver Event',
+      desc: `${e.type === 'joiner' ? 'Identity onboarded' : e.type === 'mover' ? `Transferred ${e.department}→${e.newDepartment}` : 'Identity offboarded'} — ${e.status}`,
+      platform: e.platforms?.[0] || null, impact: e.type === 'leaver' ? -20 : e.type === 'joiner' ? 5 : 0,
+      category: e.type === 'leaver' ? 'positive' : e.type === 'joiner' ? 'warning' : 'warning', icon: e.type === 'joiner' ? UserCheck : e.type === 'leaver' ? UserX : Activity,
+    });
+  });
+
+  const risks = getRiskEvents().filter(r => r.identityId === pid);
+  risks.forEach(r => {
+    const d = new Date('2026-06-15');
+    events.push({ date: d.toISOString(), type: 'Risk Finding', desc: r.title, platform: r.platforms?.[0] || null, impact: Math.round(r.score * 0.3), category: 'danger', icon: AlertTriangle });
+  });
+
+  const reviews = getReviewHistory().filter(h => h.identity === name);
+  reviews.forEach(h => {
+    events.push({
+      date: h.timestamp, type: h.action === 'approved' ? 'Access Approved' : h.action === 'revoked' ? 'Privilege Revoked' : 'Access Escalated',
+      desc: `${h.role} on ${PLAT_LABELS[h.platform] || h.platform} — ${h.action} by ${h.reviewer}`,
+      platform: h.platform, impact: h.action === 'revoked' ? -(h.riskBefore - h.riskAfter || 5) : 0,
+      category: h.action === 'revoked' ? 'positive' : h.action === 'escalated' ? 'warning' : 'positive', icon: h.action === 'revoked' ? XCircle : CheckCircle,
+    });
+  });
+
+  if (id.status === 'Orphaned') {
+    events.push({ date: new Date('2026-06-16').toISOString(), type: 'Orphaned Account', desc: 'Identity terminated but platform accounts remain active — compliance violation', platform: null, impact: 20, category: 'danger', icon: AlertTriangle });
+  }
+
+  const d2 = new Date('2026-06-01');
+  events.push({ date: d2.toISOString(), type: 'Access Review Due', desc: 'Q2 2026 privileged access review campaign initiated', platform: null, impact: 0, category: 'warning', icon: Eye });
+
+  return events.sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+function buildRiskEvolution(events, baseScore) {
+  let score = 0;
+  const points = [{ date: 'Start', score: 0 }];
+  events.forEach(e => {
+    score = Math.max(0, Math.min(100, score + e.impact));
+    points.push({ date: new Date(e.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }), score, event: e.type });
+  });
+  if (Math.abs(points[points.length - 1].score - baseScore) > 5) {
+    points.push({ date: 'Current', score: baseScore });
+  }
+  return points;
+}
+
+function TimelineTab({ identity: id }) {
+  const events = useMemo(() => generateTimelineEvents(id), [id]);
+  const evolutionData = useMemo(() => buildRiskEvolution(events, id.risk_score || 0), [events, id.risk_score]);
+
+  return (
+    <div className="space-y-6">
+      {/* Risk Evolution Chart */}
+      <GlassCard hover={false} delay={0.05}>
+        <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <Activity size={14} className="text-red-400" /> Risk Score Evolution
+        </h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <AreaChart data={evolutionData}>
+            <defs>
+              <linearGradient id="riskEvoGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} />
+            <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} wrapperStyle={{ zIndex: 1000 }} />
+            <Area type="monotone" dataKey="score" stroke="#ef4444" fill="url(#riskEvoGrad)" strokeWidth={2} dot={{ r: 3, fill: '#ef4444', strokeWidth: 0 }} />
+          </AreaChart>
+        </ResponsiveContainer>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-[10px] text-slate-500">Risk score progression from account creation to present</span>
+          <span className="text-xs font-mono font-bold" style={{ color: riskScoreColor(id.risk_score || 0) }}>Current: {id.risk_score || 0}/100</span>
+        </div>
+      </GlassCard>
+
+      {/* Event Summary */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: 'Positive Events', count: events.filter(e => e.category === 'positive').length, color: '#22c55e', bg: 'rgba(34,197,94,0.06)', border: 'rgba(34,197,94,0.15)' },
+          { label: 'Warnings', count: events.filter(e => e.category === 'warning').length, color: '#eab308', bg: 'rgba(234,179,8,0.06)', border: 'rgba(234,179,8,0.15)' },
+          { label: 'High Risk Events', count: events.filter(e => e.category === 'danger').length, color: '#ef4444', bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.15)' },
+        ].map((s, i) => (
+          <GlassCard key={s.label} hover={false} delay={0.1 + i * 0.05}>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full" style={{ background: s.color }} />
+              <div>
+                <p className="text-xl font-bold" style={{ color: s.color }}>{s.count}</p>
+                <p className="text-[10px] text-slate-500 uppercase">{s.label}</p>
+              </div>
+            </div>
+          </GlassCard>
+        ))}
+      </div>
+
+      {/* Visual Timeline */}
+      <GlassCard hover={false} delay={0.2}>
+        <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
+          <Clock size={14} className="text-red-400" /> Identity Risk Timeline
+        </h3>
+        <div className="relative">
+          <div className="absolute left-5 top-0 bottom-0 w-px" style={{ background: 'rgba(227,25,55,0.15)' }} />
+          <div className="space-y-1">
+            {events.map((evt, i) => {
+              const Icon = evt.icon;
+              const dotColor = EVENT_COLORS[evt.category];
+              return (
+                <motion.div key={i} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 + i * 0.04 }}
+                  className="flex items-start gap-4 pl-0 relative">
+                  <div className="relative z-10 w-10 flex justify-center shrink-0">
+                    <div className="w-3 h-3 rounded-full mt-1.5" style={{ background: dotColor, boxShadow: `0 0 8px ${dotColor}66` }} />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <div className="rounded-lg px-4 py-3" style={{ background: `${dotColor}08`, border: `1px solid ${dotColor}20` }}>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <Icon size={13} style={{ color: dotColor }} />
+                          <span className="text-sm font-semibold text-white">{evt.type}</span>
+                          {evt.platform && <PlatformIcon platform={evt.platform} size="sm" />}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {evt.impact !== 0 && (
+                            <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold ${evt.impact > 0 ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
+                              {evt.impact > 0 ? '+' : ''}{evt.impact} pts
+                            </span>
+                          )}
+                          <span className="text-[10px] text-slate-500">{new Date(evt.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-slate-400">{evt.desc}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </GlassCard>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TAB 6 : REMEDIATION
    ══════════════════════════════════════════════════════════════════════ */
 function RemediationTab({ identity: id }) {
   const steps = id.remediation_steps || [];

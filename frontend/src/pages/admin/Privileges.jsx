@@ -1,19 +1,15 @@
 import { useMemo } from 'react';
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };const PLATFORM_COLORS = { active_directory: '#00a4ef', aws_iam: '#ff9900', okta: '#007dc1', salesforce: '#00a1e0' };
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Shield, Key, AlertTriangle, Users, Eye } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
-import FloatingCounter from '../../components/shared/FloatingCounter';
-import PageHeader from '../../components/shared/PageHeader';
-import StatCard from '../../components/shared/StatCard';
-import SectionHeader from '../../components/shared/SectionHeader';
-import InteractiveBarChart from '../../components/charts/InteractiveBarChart';
+import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { getIdentities } from '../../services/storageService';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', github: 'GitHub', salesforce: 'Salesforce' };
-const PLATFORM_COLORS = { active_directory: '#00a4ef', aws_iam: '#ff9900', okta: '#007dc1', github: '#f0f6fc', salesforce: '#00a1e0' };
 
 export default function Privileges() {
   const navigate = useNavigate();
@@ -52,21 +48,22 @@ export default function Privileges() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        badge="Privilege Intelligence"
-        title="Effective Privilege Explorer"
-        subtitle="Visualize privilege inheritance: Identity → Platform → Group → Role → Permission"
-      />
+      <div>
+        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <Shield className="w-7 h-7 text-sg-red" /> Effective Privilege Explorer
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">Visualize privilege inheritance: Identity → Platform → Group → Role → Permission</p>
+      </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
-        <StatCard label="Over-Privileged" value={overPrivileged.length} color="text-orange-400" bg="from-orange-500/10 to-amber-500/5" icon={AlertTriangle} delay={0.05} />
-        <StatCard label="Cross-Platform Admins" value={crossPlatformAdmins.length} color="text-red-400" bg="from-red-500/10 to-rose-500/5" icon={Key} delay={0.1} />
-        <StatCard label="Sensitive Access" value={sensitiveAccess.length} color="text-purple-400" bg="from-purple-500/10 to-violet-500/5" icon={Shield} delay={0.15} />
+        <GlassCard delay={0.05}><p className="text-[11px] text-slate-500 uppercase">Over-Privileged</p><p className="text-3xl font-black text-orange-400 mt-1"><AnimatedCounter value={overPrivileged.length} /></p></GlassCard>
+        <GlassCard delay={0.1}><p className="text-[11px] text-slate-500 uppercase">Cross-Platform Admins</p><p className="text-3xl font-black text-red-400 mt-1"><AnimatedCounter value={crossPlatformAdmins.length} /></p></GlassCard>
+        <GlassCard delay={0.15}><p className="text-[11px] text-slate-500 uppercase">Sensitive Access</p><p className="text-3xl font-black text-purple-400 mt-1"><AnimatedCounter value={sensitiveAccess.length} /></p></GlassCard>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         <GlassCard delay={0.2} hover={false}>
-          <SectionHeader title="Privilege Hierarchy" className="mb-3" />
+          <h3 className="text-sm font-semibold text-slate-300 mb-5">Privilege Hierarchy</h3>
           <div className="space-y-2">
             {PRIV_HIERARCHY.map((h, i) => (
               <motion.div key={h.level} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.08 }}
@@ -83,23 +80,28 @@ export default function Privileges() {
         </GlassCard>
 
         <GlassCard delay={0.25} hover={false}>
-          <InteractiveBarChart
-            title="Admin Distribution by Platform"
-            data={platformStats.map(d => ({ label: d.platform, value: d.admins, color: d.color }))}
-            dataKey="value"
-            labelKey="label"
-            layout="vertical"
-            height={300}
-          />
+          <h3 className="text-sm font-semibold text-slate-300 mb-4">Admin Distribution by Platform</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={platformStats} layout="vertical">
+              <XAxis type="number" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="platform" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={120} />
+              <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} wrapperStyle={{ zIndex: 1000 }} />
+              <Bar dataKey="admins" radius={[0, 6, 6, 0]} barSize={20}>
+                {platformStats.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.7} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </GlassCard>
       </div>
 
       {/* Privileged Users Table */}
       <GlassCard hover={false} delay={0.3}>
-        <SectionHeader title="Privileged Identities" icon={Key} className="mb-3" />
+        <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
+          <Key size={14} className="text-red-400" /> Privileged Identities
+        </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="text-[11px] text-slate-500 uppercase border-b border-white/5 font-orbitron">
+            <thead><tr className="text-[11px] text-slate-500 uppercase border-b border-white/5">
               <th className="text-left pb-3 font-medium">Identity</th>
               <th className="text-left pb-3 font-medium">Department</th>
               <th className="text-left pb-3 font-medium">Platforms</th>

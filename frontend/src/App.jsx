@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ScenarioProvider } from './context/ScenarioContext';
 
+import Landing from './pages/landing/Landing';
 import DashboardLayout from './components/layout/DashboardLayout';
 
 import Overview from './pages/admin/Overview';
@@ -21,6 +22,11 @@ import Scenarios from './pages/admin/Scenarios';
 import AuditorDashboard, { EvidencePage, ExportsPage } from './pages/auditor/AuditorDashboard';
 import ExecutiveDashboard from './pages/executive/ExecutiveDashboard';
 import EmployeeDashboard from './pages/employee/EmployeeDashboard';
+import EmployeeApps from './pages/employee/EmployeeApps';
+import EmployeeRoles from './pages/employee/EmployeeRoles';
+import EmployeeRequests from './pages/employee/EmployeeRequests';
+import EmployeeActivity from './pages/employee/EmployeeActivity';
+import EmployeeSecurity from './pages/employee/EmployeeSecurity';
 import ContractorDashboard from './pages/contractor/ContractorDashboard';
 
 function RedirectToLogin() {
@@ -35,14 +41,10 @@ function RoleGuard({ allowed, children }) {
   return children;
 }
 
-function GoHome() {
-  window.location.replace('/');
-  return null;
-}
-
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<RedirectToLogin />} />
 
       <Route path="/admin" element={<RoleGuard allowed={['admin']}><DashboardLayout /></RoleGuard>}>
@@ -76,13 +78,18 @@ function AppRoutes() {
 
       <Route path="/employee" element={<RoleGuard allowed={['employee']}><DashboardLayout /></RoleGuard>}>
         <Route index element={<EmployeeDashboard />} />
+        <Route path="apps" element={<EmployeeApps />} />
+        <Route path="roles" element={<EmployeeRoles />} />
+        <Route path="requests" element={<EmployeeRequests />} />
+        <Route path="activity" element={<EmployeeActivity />} />
+        <Route path="security" element={<EmployeeSecurity />} />
       </Route>
 
       <Route path="/contractor" element={<RoleGuard allowed={['contractor']}><DashboardLayout /></RoleGuard>}>
         <Route index element={<ContractorDashboard />} />
       </Route>
 
-      <Route path="*" element={<GoHome />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

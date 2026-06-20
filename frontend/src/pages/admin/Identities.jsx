@@ -5,8 +5,7 @@ import { Search, Users, Shield, AlertTriangle, Eye, ChevronLeft, ChevronRight, D
 import GlassCard from '../../components/shared/GlassCard';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
-import FloatingCounter from '../../components/shared/FloatingCounter';
-import PageHeader from '../../components/shared/PageHeader';
+import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { getIdentities as getStoredIdentities } from '../../services/storageService';
 
 const STATUS_CHIP_STYLES = {
@@ -129,28 +128,32 @@ export default function Identities() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6"
+      className="p-6 space-y-6"
     >
-      <PageHeader
-        badge="Identity Inventory"
-        title="Identity Inventory"
-        subtitle={`Monitoring ${totalIdentities} identities across all connected platforms`}
-      />
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <Shield className="w-7 h-7 text-sg-red" />
+          Identity Inventory
+        </h1>
+        <p className="text-slate-400 text-sm mt-1">
+          Monitoring <span className="text-white font-semibold">{totalIdentities}</span> identities across all connected platforms
+        </p>
+      </div>
 
       {/* Status Summary Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
         {STATUS_SUMMARY.map((item, index) => {
           const Icon = item.icon;
           return (
-            <GlassCard key={item.key} delay={index * 0.05} className={`!p-3 border ${item.borderColor}`}>
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/[0.04] border border-white/10 shrink-0">
-                  <Icon className={`w-4 h-4 ${item.color}`} />
-                </div>
-                <div className="min-w-0">
-                  <FloatingCounter value={statusCounts[item.key] || 0} color={item.key === 'orphaned' ? 'red' : item.key === 'dormant' ? 'amber' : item.key === 'active' ? 'green' : 'blue'} size="2xl" />
-                  <span className="text-[9px] text-slate-500 uppercase tracking-[0.16em] font-orbitron block mt-0.5">{item.label}</span>
-                </div>
+            <GlassCard key={item.key} delay={index * 0.05} className={`border ${item.borderColor}`}>
+              <div className="p-4 flex flex-col items-center gap-2">
+                <Icon className={`w-5 h-5 ${item.color}`} />
+                <AnimatedCounter
+                  value={statusCounts[item.key] || 0}
+                  className={`text-2xl font-bold ${item.color}`}
+                />
+                <span className="text-[11px] text-slate-500 uppercase tracking-wider">{item.label}</span>
               </div>
             </GlassCard>
           );
@@ -162,15 +165,16 @@ export default function Identities() {
         {TYPE_SUMMARY.map((item, index) => {
           const Icon = item.icon;
           return (
-            <GlassCard key={item.key} delay={index * 0.05 + 0.25} className={`!p-3 border ${item.borderColor}`}>
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/[0.04] border border-white/10 shrink-0">
-                    <Icon className={`w-4 h-4 ${item.color}`} />
-                  </div>
-                  <span className="text-xs text-slate-300 font-orbitron tracking-wide truncate">{item.label}</span>
+            <GlassCard key={item.key} delay={index * 0.05 + 0.25} className={`border ${item.borderColor}`}>
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Icon className={`w-5 h-5 ${item.color}`} />
+                  <span className="text-sm text-slate-300">{item.label}</span>
                 </div>
-                <FloatingCounter value={typeCounts[item.key] || 0} color="blue" size="2xl" />
+                <AnimatedCounter
+                  value={typeCounts[item.key] || 0}
+                  className={`text-xl font-bold ${item.color}`}
+                />
               </div>
             </GlassCard>
           );
@@ -194,7 +198,7 @@ export default function Identities() {
             <button
               key={filter}
               onClick={() => setStatusFilter(filter)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium font-orbitron uppercase tracking-wider transition-all ${
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                 statusFilter === filter
                   ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                   : 'bg-white/3 text-slate-400 border border-white/6 hover:bg-white/6'

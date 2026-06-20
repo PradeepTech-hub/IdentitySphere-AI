@@ -6,9 +6,7 @@ import {
   TrendingDown, Key, ArrowRight,
 } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
-import FloatingCounter from '../../components/shared/FloatingCounter';
-import PageHeader from '../../components/shared/PageHeader';
-import StatCard from '../../components/shared/StatCard';
+import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { COMPLIANCE_MAP } from '../../data/mockData';
@@ -102,33 +100,40 @@ export default function Compliance() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-      <PageHeader
-        badge="Compliance"
-        title="Compliance Center"
-        subtitle="Continuous compliance monitoring across NIST, CIS, ISO 27001, and GDPR"
-      />
+      <div>
+        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <ShieldCheck className="w-7 h-7 text-sg-red" />
+          Compliance Center
+        </h1>
+        <p className="text-slate-400 text-sm mt-1">Continuous compliance monitoring across NIST, CIS, ISO 27001, and GDPR</p>
+      </div>
 
       {/* Clickable Stats Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
-          { key: 'score', label: 'Overall Score', value: overallScore, suffix: '%', color: 'text-emerald-400', bg: 'from-emerald-500/10 to-green-500/5', icon: ShieldCheck },
-          { key: 'total', label: 'Total Controls', value: totalControls, color: 'text-white', bg: 'from-white/5 to-transparent', icon: Shield },
-          { key: 'passing', label: 'Passing', value: passControls, color: 'text-green-400', bg: 'from-green-500/10 to-emerald-500/5', icon: CheckCircle },
-          { key: 'partial', label: 'Partial', value: partialControls, color: 'text-yellow-400', bg: 'from-yellow-500/10 to-amber-500/5', icon: AlertTriangle },
-          { key: 'failing', label: 'Failing', value: failControls, color: 'text-red-400', bg: 'from-red-500/10 to-rose-500/5', icon: XCircle },
+          { key: 'score', label: 'Overall Score', value: overallScore, suffix: '%', color: 'text-emerald-400', activeColor: 'border-emerald-500/40', icon: ShieldCheck },
+          { key: 'total', label: 'Total Controls', value: totalControls, color: 'text-white', activeColor: 'border-white/30', icon: Shield },
+          { key: 'passing', label: 'Passing', value: passControls, color: 'text-green-400', activeColor: 'border-green-500/40', icon: CheckCircle },
+          { key: 'partial', label: 'Partial', value: partialControls, color: 'text-yellow-400', activeColor: 'border-yellow-500/40', icon: AlertTriangle },
+          { key: 'failing', label: 'Failing', value: failControls, color: 'text-red-400', activeColor: 'border-red-500/40', icon: XCircle },
         ].map((s, i) => (
-          <StatCard
-            key={s.key}
-            label={s.label}
-            value={s.value}
-            suffix={s.suffix}
-            icon={s.icon}
-            color={s.color}
-            bg={s.bg}
-            delay={i * 0.05}
+          <motion.div key={s.key} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: i * 0.05 }}
+            whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.97 }}
             onClick={() => setActivePanel(activePanel === s.key ? null : s.key)}
-            active={activePanel === s.key}
-          />
+            className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 ${activePanel === s.key ? `${s.activeColor} border` : ''}`}
+            style={{
+              background: activePanel === s.key ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.04)',
+              border: activePanel === s.key ? undefined : '1px solid rgba(227,25,55,0.18)',
+              backdropFilter: 'blur(12px)',
+              ...(activePanel === s.key ? { boxShadow: '0 0 20px rgba(227,25,55,0.12)' } : {}),
+            }}>
+            <div className="p-2 text-center">
+              <s.icon className={`w-5 h-5 ${s.color} mx-auto mb-2 ${activePanel === s.key ? 'opacity-100' : 'opacity-50'}`} />
+              <AnimatedCounter value={s.value} suffix={s.suffix || ''} className={`text-3xl font-bold ${s.color}`} />
+              <p className={`text-[10px] uppercase tracking-wider mt-1 ${activePanel === s.key ? 'text-slate-300' : 'text-slate-500'}`}>{s.label}</p>
+            </div>
+          </motion.div>
         ))}
       </div>
 

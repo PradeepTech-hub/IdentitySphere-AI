@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ReactFlow, Background, Controls } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -8,10 +9,9 @@ import {
   ShieldAlert, CheckCircle, FileText, Hash,
 } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
-import PageHeader from '../../components/shared/PageHeader';
-import FloatingCounter from '../../components/shared/FloatingCounter';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
+import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import {
   getIdentities as getStoredIdentities,
   getRiskEvents,
@@ -22,7 +22,6 @@ const PLATFORM_LABELS = {
   active_directory: 'Active Directory',
   aws_iam: 'AWS IAM',
   okta: 'Okta',
-  github: 'GitHub',
   salesforce: 'Salesforce',
 };
 
@@ -30,7 +29,6 @@ const PLATFORM_COLORS = {
   active_directory: '#00a4ef',
   aws_iam: '#ff9900',
   okta: '#007dc1',
-  github: '#f0f6fc',
   salesforce: '#00a1e0',
 };
 
@@ -38,7 +36,6 @@ const ROLE_MAP = {
   active_directory: ['Domain Admin', 'Server Admin', 'Helpdesk Operator', 'User'],
   aws_iam: ['AdministratorAccess', 'PowerUserAccess', 'ReadOnlyAccess', 'ViewOnlyAccess'],
   okta: ['Org Admin', 'App Admin', 'Group Admin', 'SSO User'],
-  github: ['Owner', 'Admin', 'Maintainer', 'Contributor'],
   salesforce: ['System Administrator', 'Standard User', 'Report Viewer', 'Read Only'],
 };
 
@@ -46,7 +43,6 @@ const RESOURCE_MAP = {
   active_directory: ['domain-controller', 'dns-server', 'file-server', 'gpo-management'],
   aws_iam: ['iam:*', 'ec2:*', 's3://prod-data', 'kms:*'],
   okta: ['api-tokens', 'sso-config', 'mfa-policy', 'user-provisioning'],
-  github: ['repos:private', 'org-settings', 'actions-secrets', 'deploy-keys'],
   salesforce: ['setup', 'user-management', 'reports', 'apex-classes'],
 };
 
@@ -219,7 +215,7 @@ function buildNarrative(identity, riskEvent) {
     }
   }
 
-  const blastEntry = BLAST_RADII.find(b => b.id === identity.person_id);
+  const blastEntry = getBlastRadii().find(b => b.id === identity.person_id);
   const resourceCount = blastEntry?.resources || platforms.length * 3;
 
   steps.push({
@@ -233,19 +229,24 @@ function buildNarrative(identity, riskEvent) {
 }
 
 export default function AttackPaths() {
-  const [identities, setIdentities] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+
+  const preSelected = useMemo(() => {
+    const pid = location.state?.personId;
+    if (!pid) return null;
+    const match = getStoredIdentities().find(i => i.person_id === pid);
+    if (match) window.history.replaceState({}, '');
+    return match || null;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [identities, setIdentities] = useState(() => getStoredIdentities());
+  const [loading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedIdentity, setSelectedIdentity] = useState(null);
-  const [identityDetail, setIdentityDetail] = useState(null);
+  const [selectedIdentity, setSelectedIdentity] = useState(preSelected);
+  const [identityDetail, setIdentityDetail] = useState(preSelected);
   const [filter, setFilter] = useState('all');
   const [selectedNode, setSelectedNode] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-
-  useEffect(() => {
-    setIdentities(getStoredIdentities());
-    setLoading(false);
-  }, []);
 
   const filteredIdentities = useMemo(() => {
     let list = identities;
@@ -302,11 +303,14 @@ export default function AttackPaths() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        badge="Attack Paths"
-        title="Cyber Attack Path Visualization"
-        subtitle="Identity-driven privilege escalation and lateral movement analysis"
-      />
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <Route className="w-7 h-7 text-sg-red" />
+          Cyber Attack Path Visualization
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">Identity-driven privilege escalation and lateral movement analysis</p>
+      </div>
 
       {/* Identity Selector + Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -364,7 +368,7 @@ export default function AttackPaths() {
       <div className="flex gap-2 flex-wrap">
         {FILTER_OPTS.map(f => (
           <button key={f.key} onClick={() => { setFilter(f.key); setShowDropdown(true); }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium font-orbitron uppercase tracking-wider transition-all ${filter === f.key ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-slate-400 hover:text-slate-300 hover:bg-white/5 border border-transparent'}`}>
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${filter === f.key ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'text-slate-400 hover:text-slate-300 hover:bg-white/5 border border-transparent'}`}>
             {f.label}
           </button>
         ))}
@@ -394,7 +398,7 @@ export default function AttackPaths() {
                     <span className="flex items-center gap-1"><Hash size={10} /> {selectedIdentity.person_id}</span>
                     <span className="flex items-center gap-1"><Users size={10} /> {selectedIdentity.department}</span>
                     <span className="flex items-center gap-1"><Server size={10} /> {selectedIdentity.platforms?.length || 0} platforms</span>
-                    <span className="flex items-center gap-1">Score: <FloatingCounter value={selectedIdentity.risk_score ?? 0} color="red" size="2xl" className="!text-sm" /></span>
+                    <span className="font-mono text-red-400">Score: {selectedIdentity.risk_score ?? 0}</span>
                   </div>
                 </div>
               </div>

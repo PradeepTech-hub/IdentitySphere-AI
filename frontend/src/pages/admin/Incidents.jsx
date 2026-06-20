@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Clock, Eye, AlertTriangle } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
-import PageHeader from '../../components/shared/PageHeader';
-import StatCard from '../../components/shared/StatCard';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import { getIncidents, saveIncidents } from '../../services/storageService';
 import { useScenario } from '../../context/ScenarioContext';
@@ -47,34 +45,30 @@ export default function Incidents() {
     }
   };
 
-  const statusCounts = {
-    open: allIncidents.filter(i => i.status === 'open').length,
-    review: allIncidents.filter(i => i.status === 'review').length,
-    approved: allIncidents.filter(i => i.status === 'approved').length,
-    resolved: allIncidents.filter(i => i.status === 'resolved').length,
-  };
-
   return (
     <div className="space-y-6">
-      <PageHeader
-        badge="Incident Response"
-        title="Security Incident Command Center"
-        subtitle="Workflow: Open → Review → Approve → Resolved"
-      />
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-        <StatCard label="Open" value={statusCounts.open} icon={AlertTriangle} color="text-red-400" bg="from-red-500/10 to-rose-500/5" delay={0.05} />
-        <StatCard label="In Review" value={statusCounts.review} icon={Eye} color="text-yellow-400" bg="from-yellow-500/10 to-amber-500/5" delay={0.1} />
-        <StatCard label="Approved" value={statusCounts.approved} icon={Clock} color="text-blue-400" bg="from-blue-500/10 to-cyan-500/5" delay={0.15} />
-        <StatCard label="Resolved" value={statusCounts.resolved} icon={CheckCircle} color="text-green-400" bg="from-green-500/10 to-emerald-500/5" delay={0.2} />
+      <div>
+        <h1 className="text-2xl font-bold text-white">Security Incident Command Center</h1>
+        <p className="text-sm text-slate-500 mt-1">{"Workflow: Open -> Review -> Approve -> Resolved"}</p>
       </div>
-
+      <div className="flex gap-4 mb-2">
+        {['open', 'review', 'approved', 'resolved'].map(s => {
+          const cfg = STATUS_CONFIG[s];
+          const count = allIncidents.filter(i => i.status === s).length;
+          return (
+            <div key={s} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${cfg.bg}`}>
+              <cfg.icon size={14} className={cfg.color} />
+              <span className="text-xs font-medium text-slate-300">{cfg.label} ({count})</span>
+            </div>
+          );
+        })}
+      </div>
       <div className="space-y-3">
         {allIncidents.map((inc, i) => {
           const cfg = STATUS_CONFIG[inc.status] || STATUS_CONFIG.open;
           return (
             <motion.div key={inc.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-              <GlassCard className={`${inc.isSimulated ? 'border-purple-500/20' : ''} !p-3`}>
+              <GlassCard className={inc.isSimulated ? 'border-purple-500/20' : ''}>
                 <div className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-xl ${cfg.bg} flex items-center justify-center`}>
                     <cfg.icon size={18} className={cfg.color} />
@@ -82,7 +76,7 @@ export default function Incidents() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold text-white">{inc.title}</span>
-                      {inc.isSimulated && <span className="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full font-bold font-orbitron">SIMULATED</span>}
+                      {inc.isSimulated && <span className="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full font-bold">SIMULATED</span>}
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-[11px] text-slate-500">
                       <span>{inc.id}</span><span className="text-white/10">|</span>
@@ -91,7 +85,7 @@ export default function Incidents() {
                     </div>
                   </div>
                   <SeverityBadge severity={inc.severity} pulse />
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-lg font-orbitron uppercase tracking-wider ${cfg.bg} ${cfg.color}`}>{cfg.label}</span>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-lg ${cfg.bg} ${cfg.color}`}>{cfg.label}</span>
                   {inc.status !== 'resolved' && (
                     <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                       onClick={() => advance(inc.id, inc.scenarioId)}

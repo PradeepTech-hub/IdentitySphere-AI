@@ -1,16 +1,17 @@
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, UserX, KeyRound, ShieldAlert, Key, Users, CheckCircle, AlertTriangle, Loader, Bot, Target, Route } from 'lucide-react';
+import { Zap, UserX, KeyRound, ShieldAlert, Key, Users, CheckCircle, AlertTriangle, Loader, Bot, Target, Route, ChevronDown, ChevronUp } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
-import PageHeader from '../../components/shared/PageHeader';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import { useScenario } from '../../context/ScenarioContext';
+import { getIdentities, getRiskEvents } from '../../services/storageService';
 
 const SCENARIO_BUTTONS = [
-  { key: 'dormant_admin', icon: KeyRound, label: 'Create Dormant Admin', desc: 'AWS Administrator, 180 days inactive', color: 'from-orange-500 to-red-600' },
-  { key: 'offboarding_failure', icon: UserX, label: 'Create Offboarding Failure', desc: 'Terminated employee, AWS + Okta active', color: 'from-red-500 to-pink-600' },
-  { key: 'privilege_escalation', icon: ShieldAlert, label: 'Create Privilege Escalation', desc: 'Unauthorized Org Admin role on Okta', color: 'from-purple-500 to-indigo-600' },
-  { key: 'token_abuse', icon: Key, label: 'Create Token Abuse', desc: 'GitHub PAT, 540 days old, anomalous usage', color: 'from-amber-500 to-orange-600' },
-  { key: 'cross_platform_admin', icon: Users, label: 'Create Cross Platform Admin', desc: 'Admin on AD + AWS + Okta, no justification', color: 'from-red-500 to-rose-600' },
+  { key: 'dormant_admin', icon: KeyRound, label: 'Create Dormant Admin', color: 'from-orange-500 to-red-600' },
+  { key: 'offboarding_failure', icon: UserX, label: 'Create Offboarding Failure', color: 'from-red-500 to-pink-600' },
+  { key: 'privilege_escalation', icon: ShieldAlert, label: 'Create Privilege Escalation', color: 'from-purple-500 to-indigo-600' },
+  { key: 'token_abuse', icon: Key, label: 'Create Token Abuse', color: 'from-amber-500 to-orange-600' },
+  { key: 'cross_platform_admin', icon: Users, label: 'Create Cross Platform Admin', color: 'from-red-500 to-rose-600' },
 ];
 
 const STATUS_STEPS = [
@@ -20,19 +21,59 @@ const STATUS_STEPS = [
   { key: 'resolved', icon: CheckCircle, label: 'Resolved', color: 'text-green-400' },
 ];
 
+function CopilotCard({ text }) {
+  const [expanded, setExpanded] = useState(false);
+  if (!text) return null;
+  return (
+    <div className="glass rounded-xl p-4">
+      <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-amber-400">
+        <Bot size={14} /> AI Copilot
+      </div>
+      <p className={`text-xs text-slate-400 leading-relaxed ${expanded ? '' : 'line-clamp-4'}`}>{text}</p>
+      <button
+        onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+        className="mt-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-[11px] font-semibold border border-red-500/20 hover:bg-red-500/20 hover:text-red-300 transition-all cursor-pointer"
+      >
+        {expanded ? <><ChevronUp size={12} /> Show Less</> : <><ChevronDown size={12} /> Show More</>}
+      </button>
+    </div>
+  );
+}
+
 export default function Scenarios() {
   const { scenarios, processing, runScenario, resolveScenario, clearScenarios } = useScenario();
 
+  const liveStats = useMemo(() => {
+    const ids = getIdentities();
+    const risks = getRiskEvents();
+    const dormant = ids.filter(i => i.status === 'Dormant' || (i.max_dormancy_days || 0) > 90).length;
+    const orphaned = ids.filter(i => i.status === 'Orphaned' || i.status === 'Offboarded').length;
+    const admins = ids.filter(i => i.is_admin).length;
+    const crossAdmins = ids.filter(i => i.is_admin && (i.platforms?.length || 0) >= 2).length;
+    const tokenRisks = risks.filter(r => r.type === 'token_abuse').length;
+    const privEsc = risks.filter(r => r.type === 'privilege_escalation').length;
+    return { dormant, orphaned, admins, crossAdmins, tokenRisks, privEsc, total: ids.length, totalRisks: risks.length };
+  }, [scenarios]);
+
+  const buttonDescs = {
+    dormant_admin: `${liveStats.dormant} dormant account(s) detected`,
+    offboarding_failure: `${liveStats.orphaned} orphaned/offboarded identity(s)`,
+    privilege_escalation: `${liveStats.privEsc} escalation finding(s) active`,
+    token_abuse: `${liveStats.tokenRisks} token abuse finding(s) active`,
+    cross_platform_admin: `${liveStats.crossAdmins} cross-platform admin(s) of ${liveStats.admins} total`,
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <PageHeader
-          badge="Scenario Lab"
-          title="Scenario Simulator"
-          subtitle="Create live risk scenarios — watch detection, attack graph, blast radius, and AI copilot respond in real-time"
-        />
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <Zap size={24} className="text-red-400" /> Scenario Simulator
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">{liveStats.total} identities monitored | {liveStats.totalRisks} risk findings | Create live scenarios to test detection response</p>
+        </div>
         {scenarios.length > 0 && (
-          <button onClick={clearScenarios} className="px-3 py-1.5 rounded-lg text-xs font-orbitron uppercase tracking-wider text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-white/5 transition-all shrink-0 mt-2">
+          <button onClick={clearScenarios} className="px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-white/5 transition-all">
             Clear All
           </button>
         )}
@@ -48,7 +89,7 @@ export default function Scenarios() {
             <div className="relative">
               <s.icon size={24} className="mb-3 opacity-80 group-hover:opacity-100 transition-opacity" />
               <p className="text-sm font-bold mb-1">{s.label}</p>
-              <p className="text-[10px] opacity-70">{s.desc}</p>
+              <p className="text-[10px] opacity-70">{buttonDescs[s.key]}</p>
             </div>
           </motion.button>
         ))}
@@ -110,12 +151,7 @@ export default function Scenarios() {
                     <p className="text-sm text-slate-300">{s.platforms?.join(' -> ')}</p>
                     <p className="text-[10px] text-slate-500 mt-1">Cross-platform: {(s.platforms?.length || 0) >= 2 ? 'Yes' : 'No'}</p>
                   </div>
-                  <div className="glass rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-amber-400">
-                      <Bot size={14} /> AI Copilot
-                    </div>
-                    <p className="text-xs text-slate-400 leading-relaxed line-clamp-4">{s.copilotExplanation}</p>
-                  </div>
+                  <CopilotCard text={s.copilotExplanation} />
                 </div>
               )}
 

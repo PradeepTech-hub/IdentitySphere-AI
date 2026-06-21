@@ -2,5 +2,11 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "installCommand": "cd frontend && npm install",
-  "framework": "vite"
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/login.html", "destination": "/login.html" },
+    { "source": "/background.jpg", "destination": "/background.jpg" },
+    { "source": "/data/(.*)", "destination": "/data/$1" },
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+  ]
 }

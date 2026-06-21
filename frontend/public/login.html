@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IdentitySphere AI – Secure Login</title>
+  <meta name="description" content="Role-based secure login for IdentitySphere AI Enterprise Identity Intelligence Platform."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #E31937; --red-dark: #b01028; --red-glow: rgba(227,25,55,0.55);
+      --blue: #1a56db; --blue-light: #3b82f6; --blue-glow: rgba(59,130,246,0.5);
+      --orange: #f97316; --green: #22c55e; --gray: #94a3b8;
+      --white: #fff; --bg: #05060d;
+      --glass: rgba(8,10,24,0.72);
+      --glass-border: rgba(255,255,255,0.08);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--white); min-height: 100vh; overflow-x: hidden; }
+
+    /* ── SHARED BG ── */
+    #pCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .bg-img { position: fixed; inset: 0; z-index: 1; background: url('background.jpg') center/cover no-repeat; opacity: 0.45; }
+    .bg-ov  { position: fixed; inset: 0; z-index: 2; background: radial-gradient(ellipse at 50% 0%, rgba(5,6,13,0.1), rgba(5,6,13,0.7) 60%, rgba(5,6,13,0.98) 100%); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 40px;
+      background: rgba(5,6,13,0.65); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(227,25,55,0.15);
+    }
+    .logo-wrap { display: flex; align-items: center; gap: 12px; animation: floatLogo 6s ease-in-out infinite; }
+    @keyframes floatLogo { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .logo-pill {
+      background: linear-gradient(135deg, #8B1026, #C1122F, #E31937); border-radius: 10px; padding: 7px 12px;
+      box-shadow: 0 0 0 1px rgba(227,25,55,0.3), 0 4px 18px rgba(227,25,55,0.2);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .logo-pill svg { width: 22px; height: 22px; }
+    .logo-pill .logo-txt { color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.75rem; letter-spacing: 0.05em; }
+    .nav-title { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.1em; }
+    .nav-back {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px; padding: 7px 16px; cursor: pointer; font-size: 0.8rem;
+      color: rgba(255,255,255,0.7); transition: all 0.2s; text-decoration: none;
+    }
+    .nav-back:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ── PAGE WRAP ── */
+    .page { position: relative; z-index: 10; min-height: 100vh; padding-top: 70px; }
+
+    /* ── SCREEN SYSTEM ── */
+    .screen { display: none; min-height: calc(100vh - 70px); animation: fadeUp 0.5s ease both; }
+    .screen.active { display: flex; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ════════════════════════════════
+       SCREEN 0 – ROLE SELECTION
+    ════════════════════════════════ */
+    #s-roles {
+      flex-direction: column; align-items: center; justify-content: center;
+      padding: 40px 24px 60px; text-align: center;
+    }
+    .roles-eyebrow {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 10px;
+    }
+    .roles-title {
+      font-family: 'Orbitron', sans-serif; font-size: clamp(1.6rem,4vw,2.8rem);
+      font-weight: 900; margin-bottom: 8px; color: #fff;
+      text-shadow: 0 0 40px rgba(227,25,55,0.5);
+    }
+    .roles-tagline { font-size: 0.95rem; color: rgba(255,255,255,0.5); margin-bottom: 48px; }
+    .roles-tagline span { color: var(--blue-light); font-weight: 600; }
+
+    .roles-grid {
+      display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 900px;
+    }
+    .role-card {
+      width: 160px; padding: 28px 18px 22px; border-radius: 18px;
+      cursor: pointer; border: 1px solid transparent;
+      background: rgba(8,10,24,0.7); backdrop-filter: blur(16px);
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      position: relative; overflow: hidden;
+    }
+    .role-card::before {
+      content: ''; position: absolute; inset: 0; opacity: 0;
+      transition: opacity 0.3s; pointer-events: none;
+    }
+    .role-card:hover { transform: translateY(-10px) scale(1.04); }
+    .role-card:hover::before { opacity: 1; }
+
+    /* per-role colors */
+    .rc-admin  { border-color: rgba(227,25,55,0.3); }
+    .rc-admin::before  { background: radial-gradient(circle at 50% 110%, rgba(227,25,55,0.22),transparent 65%); }
+    .rc-admin:hover  { box-shadow: 0 0 40px rgba(227,25,55,0.35), 0 20px 40px rgba(0,0,0,0.5); }
+
+    .rc-employee { border-color: rgba(59,130,246,0.3); }
+    .rc-employee::before { background: radial-gradient(circle at 50% 110%, rgba(59,130,246,0.22),transparent 65%); }
+    .rc-employee:hover { box-shadow: 0 0 40px rgba(59,130,246,0.35), 0 20px 40px rgba(0,0,0,0.5); }
+
+    .rc-auditor { border-color: rgba(148,163,184,0.3); }
+    .rc-auditor::before { background: radial-gradient(circle at 50% 110%, rgba(148,163,184,0.18),transparent 65%); }
+    .rc-auditor:hover { box-shadow: 0 0 40px rgba(148,163,184,0.25), 0 20px 40px rgba(0,0,0,0.5); }
+
+    .rc-contractor { border-color: rgba(249,115,22,0.3); }
+    .rc-contractor::before { background: radial-gradient(circle at 50% 110%, rgba(249,115,22,0.22),transparent 65%); }
+    .rc-contractor:hover { box-shadow: 0 0 40px rgba(249,115,22,0.35), 0 20px 40px rgba(0,0,0,0.5); }
+
+    .rc-executive { border-color: rgba(34,197,94,0.3); }
+    .rc-executive::before { background: radial-gradient(circle at 50% 110%, rgba(34,197,94,0.22),transparent 65%); }
+    .rc-executive:hover { box-shadow: 0 0 40px rgba(34,197,94,0.35), 0 20px 40px rgba(0,0,0,0.5); }
+
+    .role-icon-wrap {
+      width: 58px; height: 58px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+    }
+    .role-name { font-weight: 700; font-size: 0.95rem; color: #fff; }
+    .role-sub  { font-size: 0.72rem; color: rgba(255,255,255,0.45); text-align: center; line-height: 1.4; }
+    .role-btn {
+      margin-top: 4px; padding: 6px 18px; border-radius: 999px; border: none;
+      font-weight: 700; font-size: 0.72rem; letter-spacing: 0.06em;
+      cursor: pointer; transition: opacity 0.2s; width: 100%;
+    }
+    .role-btn:hover { opacity: 0.85; }
+
+    /* ════════════════════════════════
+       SCREEN 1 – LOGIN FORM
+    ════════════════════════════════ */
+    #s-login {
+      flex-direction: column; align-items: center; justify-content: center;
+      padding: 40px 24px;
+    }
+    .login-card {
+      width: min(460px, 96vw); background: var(--glass);
+      backdrop-filter: blur(22px); border-radius: 24px;
+      border: 1px solid var(--glass-border); padding: 44px 40px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.5);
+      position: relative; overflow: hidden;
+    }
+    .login-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--role-accent, var(--red));
+    }
+    .role-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 14px; border-radius: 999px; font-size: 0.72rem;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 20px; border: 1px solid;
+    }
+    .login-title { font-family: 'Orbitron',sans-serif; font-size: 1.5rem; font-weight: 900; margin-bottom: 6px; }
+    .login-sub { font-size: 0.82rem; color: rgba(255,255,255,0.5); margin-bottom: 30px; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.65); margin-bottom: 7px; letter-spacing: 0.04em; }
+    .form-input {
+      width: 100%; padding: 12px 16px; border-radius: 10px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      color: #fff; font-family: 'Inter',sans-serif; font-size: 0.9rem;
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+    }
+    .form-input:focus { border-color: rgba(255,255,255,0.3); box-shadow: 0 0 0 3px rgba(255,255,255,0.05); }
+    .form-input.invalid { border-color: rgba(227,25,55,0.7); box-shadow: 0 0 0 3px rgba(227,25,55,0.12); }
+    .form-input.valid { border-color: rgba(34,197,94,0.5); }
+    .field-error { font-size: 0.72rem; color: #ff6b6b; margin-top: 6px; min-height: 1rem; }
+    .field-hint { font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 6px; }
+    .pw-strength { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.08); margin-top: 8px; overflow: hidden; }
+    .pw-strength-bar { height: 100%; width: 0; transition: width 0.25s, background 0.25s; border-radius: 2px; }
+    .validation-summary {
+      display: none; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
+      background: rgba(227,25,55,0.08); border: 1px solid rgba(227,25,55,0.25);
+      font-size: 0.78rem; color: #ffb4b4; text-align: left;
+    }
+    .validation-summary.show { display: block; }
+    .mfa-notification {
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 18px; text-align: left;
+      background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25);
+      font-size: 0.78rem; color: rgba(255,255,255,0.75);
+    }
+    .email-inbox-panel {
+      text-align: left; margin-bottom: 22px; border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(59,130,246,0.35); background: rgba(8,12,28,0.9);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+    .email-inbox-header {
+      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+      background: rgba(59,130,246,0.15); border-bottom: 1px solid rgba(59,130,246,0.25);
+      font-size: 0.82rem; font-weight: 700; color: #93c5fd;
+    }
+    .email-inbox-meta {
+      padding: 10px 16px 0; font-size: 0.72rem; color: rgba(255,255,255,0.45);
+    }
+    .email-inbox-subject {
+      padding: 6px 16px; font-size: 0.88rem; font-weight: 600; color: #fff;
+    }
+    .email-inbox-body {
+      padding: 8px 16px 16px; font-size: 0.8rem; color: rgba(255,255,255,0.7);
+      line-height: 1.55; white-space: pre-wrap;
+    }
+    .email-inbox-otp {
+      display: inline-block; margin-top: 10px; padding: 10px 18px; border-radius: 8px;
+      background: rgba(227,25,55,0.15); border: 1px dashed rgba(227,25,55,0.45);
+      font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700;
+      letter-spacing: 0.25em; color: #ff6b6b;
+    }
+    .email-inbox-loading { padding: 20px 16px; font-size: 0.8rem; color: rgba(255,255,255,0.45); }
+    .email-inbox-note {
+      padding: 0 16px 14px; font-size: 0.68rem; color: rgba(255,255,255,0.35); line-height: 1.4;
+    }
+    .bio-btn.scanning { opacity: 0.7; pointer-events: none; }
+    .bio-btn.success { border-color: rgba(34,197,94,0.5); color: #4ade80; }
+    .form-input::placeholder { color: rgba(255,255,255,0.25); }
+    .pw-wrap { position: relative; }
+    .pw-wrap .form-input { padding-right: 44px; }
+    .pw-toggle {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.4);
+      transition: color 0.2s; font-size: 1rem;
+    }
+    .pw-toggle:hover { color: rgba(255,255,255,0.8); }
+
+    .notice-banner {
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 20px;
+      font-size: 0.78rem; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;
+    }
+    .notice-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+    .btn-login {
+      width: 100%; padding: 14px; border-radius: 10px; border: none;
+      font-family: 'Inter',sans-serif; font-weight: 700; font-size: 1rem;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 6px;
+    }
+    .btn-login:hover { transform: translateY(-2px); }
+    .login-footer-txt { text-align: center; font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 18px; letter-spacing: 0.04em; }
+
+    /* biometric row */
+    .bio-row { display: flex; align-items: center; gap: 10px; margin: 16px 0 0; }
+    .bio-divider { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+    .bio-txt { font-size: 0.72rem; color: rgba(255,255,255,0.3); white-space: nowrap; }
+    .bio-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 11px; border-radius: 10px; margin-top: 12px;
+      border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.6); font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bio-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    /* ════════════════════════════════
+       SCREEN 2 – MFA
+    ════════════════════════════════ */
+    #s-mfa {
+      flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px;
+    }
+    .mfa-card {
+      width: min(420px, 96vw); background: var(--glass); backdrop-filter: blur(22px);
+      border-radius: 24px; border: 1px solid var(--glass-border); padding: 44px 36px;
+      text-align: center; box-shadow: 0 0 60px rgba(0,0,0,0.5);
+    }
+    .mfa-icon-ring {
+      width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 22px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+      background: rgba(227,25,55,0.1); border: 2px solid rgba(227,25,55,0.4);
+      animation: ringPulse 2s ease-in-out infinite;
+    }
+    @keyframes ringPulse { 0%,100%{box-shadow:0 0 0 0 rgba(227,25,55,0.4)} 50%{box-shadow:0 0 0 12px rgba(227,25,55,0)} }
+    .mfa-title { font-family:'Orbitron',sans-serif; font-size:1.3rem; font-weight:900; margin-bottom:6px; }
+    .mfa-sub { font-size:0.82rem; color:rgba(255,255,255,0.5); margin-bottom:30px; }
+    .otp-row { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
+    .otp-box {
+      width:46px; height:56px; border-radius:10px; text-align:center;
+      background:rgba(255,255,255,0.07); border:1.5px solid rgba(255,255,255,0.12);
+      color:#fff; font-family:'Orbitron',sans-serif; font-size:1.4rem; font-weight:700;
+      outline:none; transition:border-color 0.2s,box-shadow 0.2s;
+    }
+    .otp-box:focus { border-color:rgba(227,25,55,0.7); box-shadow:0 0 0 3px rgba(227,25,55,0.15); }
+    .otp-box.filled { border-color:rgba(227,25,55,0.5); }
+    .mfa-timer { font-size:0.8rem; color:rgba(255,255,255,0.4); margin-bottom:8px; }
+    .mfa-timer span { color:var(--red); font-weight:700; }
+    .mfa-resend { font-size:0.78rem; color:rgba(255,255,255,0.35); margin-bottom:24px; }
+    .mfa-resend a { color:var(--blue-light); cursor:pointer; text-decoration:none; }
+    .btn-verify {
+      width:100%; padding:13px; border-radius:10px; border:none;
+      background:linear-gradient(135deg,var(--red),var(--red-dark));
+      color:#fff; font-weight:700; font-size:0.95rem; cursor:pointer;
+      transition:transform 0.2s,box-shadow 0.2s;
+      box-shadow:0 4px 20px rgba(227,25,55,0.4);
+    }
+    .btn-verify:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(227,25,55,0.5); }
+
+    /* ════════════════════════════════
+       SCREEN 3 – ADAPTIVE AUTH
+    ════════════════════════════════ */
+    #s-adaptive {
+      flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px;
+    }
+    .adaptive-card {
+      width:min(480px,96vw); background:var(--glass); backdrop-filter:blur(22px);
+      border-radius:24px; border:1px solid rgba(249,115,22,0.3); padding:44px 36px;
+      box-shadow:0 0 60px rgba(249,115,22,0.1); text-align:center;
+    }
+    .adaptive-warn-icon { font-size:3rem; margin-bottom:16px; animation:warnShake 0.5s ease 0.3s both; }
+    @keyframes warnShake { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-8deg)} 75%{transform:rotate(8deg)} }
+    .adaptive-title { font-family:'Orbitron',sans-serif; font-size:1.2rem; font-weight:900; color:#f97316; margin-bottom:8px; }
+    .adaptive-sub { font-size:0.85rem; color:rgba(255,255,255,0.55); margin-bottom:24px; line-height:1.6; }
+    .adaptive-flags {
+      background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.2);
+      border-radius:12px; padding:16px; margin-bottom:24px; text-align:left;
+    }
+    .adaptive-flag-item { display:flex; align-items:center; gap:10px; font-size:0.8rem; color:rgba(255,255,255,0.7); padding:4px 0; }
+    .flag-dot { width:6px; height:6px; border-radius:50%; background:#f97316; flex-shrink:0; }
+    .adaptive-form-group { text-align:left; margin-bottom:18px; }
+    .btn-adaptive {
+      width:100%; padding:13px; border-radius:10px; border:none;
+      background:linear-gradient(135deg,#f97316,#ea580c); color:#fff;
+      font-weight:700; font-size:0.95rem; cursor:pointer; transition:transform 0.2s;
+    }
+    .btn-adaptive:hover { transform:translateY(-2px); }
+
+    /* ════════════════════════════════
+       SCREEN 4 – DASHBOARDS
+    ════════════════════════════════ */
+    #s-dashboard {
+      flex-direction: column; min-height: calc(100vh - 70px);
+    }
+    .dash-topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 32px; background:rgba(5,6,13,0.7); backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .dash-role-badge {
+      display:flex; align-items:center; gap:10px;
+      padding:6px 16px; border-radius:999px; font-size:0.78rem; font-weight:700;
+    }
+    .dash-user { display:flex; align-items:center; gap:12px; }
+    .dash-avatar {
+      width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.1);
+      display:flex; align-items:center; justify-content:center; font-size:1rem;
+    }
+    .dash-username { font-size:0.85rem; font-weight:600; }
+    .dash-logout {
+      background:rgba(227,25,55,0.1); border:1px solid rgba(227,25,55,0.3);
+      color:rgba(255,255,255,0.7); padding:6px 14px; border-radius:8px;
+      font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.2s;
+    }
+    .dash-logout:hover { background:rgba(227,25,55,0.25); color:#fff; }
+
+    .dash-body { flex:1; padding:28px 32px; overflow-y:auto; }
+
+    /* stat cards */
+    .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px; margin-bottom:24px; }
+    .stat-card {
+      background:rgba(8,10,24,0.65); border:1px solid rgba(255,255,255,0.07);
+      border-radius:16px; padding:22px 20px; position:relative; overflow:hidden;
+    }
+    .stat-card::before { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--accent,var(--red)); border-radius:0 0 16px 16px; }
+    .stat-val { font-family:'Orbitron',sans-serif; font-size:1.7rem; font-weight:900; color:#fff; }
+    .stat-label { font-size:0.75rem; color:rgba(255,255,255,0.45); margin-top:4px; }
+    .stat-trend { position:absolute; top:16px; right:16px; font-size:0.7rem; font-weight:700; padding:3px 8px; border-radius:999px; }
+
+    /* panels */
+    .panels-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; margin-bottom:20px; }
+    .panel {
+      background:rgba(8,10,24,0.65); border:1px solid rgba(255,255,255,0.07);
+      border-radius:16px; padding:22px; overflow:hidden;
+    }
+    .panel-title {
+      font-weight:700; font-size:0.88rem; margin-bottom:16px;
+      display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.85);
+    }
+    .panel-title span { font-size:1rem; }
+    .panel-badge {
+      margin-left:auto; font-size:0.68rem; font-weight:700; padding:2px 8px;
+      border-radius:999px; background:rgba(227,25,55,0.15); color:var(--red);
+    }
+
+    /* canvas panels */
+    .graph-canvas { width:100%; height:180px; border-radius:10px; background:rgba(0,0,0,0.2); display:block; }
+
+    /* table */
+    .data-table { width:100%; border-collapse:collapse; font-size:0.78rem; }
+    .data-table th { text-align:left; padding:8px 10px; color:rgba(255,255,255,0.4); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .data-table td { padding:9px 10px; border-bottom:1px solid rgba(255,255,255,0.04); color:rgba(255,255,255,0.75); }
+    .data-table tr:last-child td { border-bottom:none; }
+    .data-table tr:hover td { background:rgba(255,255,255,0.03); }
+    .status-pill { padding:2px 10px; border-radius:999px; font-size:0.68rem; font-weight:700; display:inline-block; }
+    .s-ok   { background:rgba(34,197,94,0.15); color:#22c55e; }
+    .s-warn { background:rgba(249,115,22,0.15); color:#f97316; }
+    .s-crit { background:rgba(227,25,55,0.15);  color:#E31937; }
+    .s-info { background:rgba(59,130,246,0.15); color:#3b82f6; }
+
+    /* risk gauge */
+    .gauge-wrap { display:flex; flex-direction:column; align-items:center; padding:10px 0; }
+    .gauge-svg { width:160px; height:90px; }
+    .gauge-val { font-family:'Orbitron',sans-serif; font-size:1.8rem; font-weight:900; color:#fff; margin-top:-8px; }
+    .gauge-label { font-size:0.72rem; color:rgba(255,255,255,0.4); margin-top:4px; }
+
+    /* permission list */
+    .perm-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .perm-item { display:flex; align-items:center; gap:10px; font-size:0.82rem; color:rgba(255,255,255,0.7); padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.03); }
+    .perm-icon { font-size:1rem; }
+    .perm-level { margin-left:auto; font-size:0.68rem; font-weight:700; padding:2px 8px; border-radius:999px; }
+
+    /* action button */
+    .action-btn {
+      width:100%; padding:11px; border-radius:10px; border:none; font-weight:700;
+      font-size:0.82rem; cursor:pointer; transition:all 0.2s;
+      display:flex; align-items:center; justify-content:center; gap:8px; margin-top:16px;
+    }
+
+    /* timeline */
+    .timeline { display:flex; flex-direction:column; gap:12px; }
+    .tl-item { display:flex; gap:12px; align-items:flex-start; }
+    .tl-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+    .tl-content { flex:1; }
+    .tl-title { font-size:0.8rem; font-weight:600; color:rgba(255,255,255,0.85); }
+    .tl-time  { font-size:0.7rem; color:rgba(255,255,255,0.35); margin-top:2px; }
+
+    /* compliance bar */
+    .comp-item { margin-bottom:14px; }
+    .comp-header { display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:5px; color:rgba(255,255,255,0.7); }
+    .comp-bar { height:6px; background:rgba(255,255,255,0.07); border-radius:999px; overflow:hidden; }
+    .comp-fill { height:100%; border-radius:999px; transition:width 1.5s cubic-bezier(0.22,1,0.36,1); }
+
+    /* expiry countdown */
+    .expiry-card {
+      background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.25);
+      border-radius:12px; padding:16px; margin-bottom:16px; text-align:center;
+    }
+    .expiry-count { font-family:'Orbitron',sans-serif; font-size:2rem; font-weight:900; color:#f97316; }
+    .expiry-label { font-size:0.75rem; color:rgba(255,255,255,0.45); margin-top:4px; }
+
+    /* system list */
+    .sys-list { display:flex; flex-direction:column; gap:8px; }
+    .sys-item { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+    .sys-icon { font-size:1.2rem; }
+    .sys-name { font-size:0.83rem; font-weight:600; }
+    .sys-access { font-size:0.7rem; color:rgba(255,255,255,0.4); margin-top:2px; }
+    .sys-status { margin-left:auto; }
+
+    /* kpi cards */
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:20px; }
+    .kpi-card { background:rgba(8,10,24,0.65); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:18px 16px; text-align:center; }
+    .kpi-val  { font-family:'Orbitron',sans-serif; font-size:1.5rem; font-weight:900; }
+    .kpi-name { font-size:0.7rem; color:rgba(255,255,255,0.4); margin-top:4px; }
+
+    /* export buttons */
+    .export-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .export-btn {
+      padding:8px 18px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.7); font-size:0.75rem;
+      font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; gap:6px; align-items:center;
+    }
+    .export-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:600px){
+      nav { padding:12px 16px; }
+      .login-card,.mfa-card,.adaptive-card { padding:32px 22px; }
+      .dash-body { padding:18px 16px; }
+      .dash-topbar { padding:12px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="pCanvas"></canvas>
+<div class="bg-img"></div>
+<div class="bg-ov"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo-wrap">
+    <div class="logo-pill"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L3 7v5c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z"/></svg><span class="logo-txt">IS</span></div>
+    <span class="nav-title" id="navTitle">IdentitySphere AI</span>
+  </div>
+  <a href="index.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to Home
+  </a>
+</nav>
+
+<div class="page">
+
+  <!-- ══════════════ SCREEN 0: ROLE SELECTION ══════════════ -->
+  <div class="screen active" id="s-roles">
+    <p class="roles-eyebrow">🔐 Secure Access Portal</p>
+    <h1 class="roles-title">IdentitySphere AI</h1>
+    <p class="roles-tagline">
+      <span>"The Waze for Enterprise Identity Risk"</span><br/>
+      Select your role to continue
+    </p>
+
+    <div class="roles-grid">
+
+      <!-- Admin -->
+      <div class="role-card rc-admin" onclick="selectRole('admin')" id="rc-admin">
+        <div class="role-icon-wrap" style="background:rgba(227,25,55,0.12);border:1.5px solid rgba(227,25,55,0.35);">🛡️</div>
+        <div class="role-name">Admin</div>
+        <div class="role-sub">Full system access & identity graph</div>
+        <button class="role-btn" style="background:var(--red);color:#fff;">Admin Login</button>
+      </div>
+
+      <!-- Employee -->
+      <div class="role-card rc-employee" onclick="selectRole('employee')" id="rc-employee">
+        <div class="role-icon-wrap" style="background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.35);">👤</div>
+        <div class="role-name">Employee</div>
+        <div class="role-sub">Personal risk score & permissions</div>
+        <button class="role-btn" style="background:var(--blue);color:#fff;">Employee Login</button>
+      </div>
+
+      <!-- Auditor -->
+      <div class="role-card rc-auditor" onclick="selectRole('auditor')" id="rc-auditor">
+        <div class="role-icon-wrap" style="background:rgba(148,163,184,0.1);border:1.5px solid rgba(148,163,184,0.3);">📋</div>
+        <div class="role-name">Auditor</div>
+        <div class="role-sub">Compliance reports & audit logs</div>
+        <button class="role-btn" style="background:rgba(148,163,184,0.2);color:#cbd5e1;border:1px solid rgba(148,163,184,0.3);">Auditor Login</button>
+      </div>
+
+      <!-- Contractor -->
+      <div class="role-card rc-contractor" onclick="selectRole('contractor')" id="rc-contractor">
+        <div class="role-icon-wrap" style="background:rgba(249,115,22,0.12);border:1.5px solid rgba(249,115,22,0.35);">🕐</div>
+        <div class="role-name">Contractor</div>
+        <div class="role-sub">Temporary access panel</div>
+        <button class="role-btn" style="background:var(--orange);color:#fff;">Contractor Login</button>
+      </div>
+
+      <!-- Executive -->
+      <div class="role-card rc-executive" onclick="selectRole('executive')" id="rc-executive">
+        <div class="role-icon-wrap" style="background:rgba(34,197,94,0.12);border:1.5px solid rgba(34,197,94,0.35);">📈</div>
+        <div class="role-name">Executive</div>
+        <div class="role-sub">Risk trends & business impact</div>
+        <button class="role-btn" style="background:var(--green);color:#fff;">Executive Login</button>
+      </div>
+
+    </div>
+
+    <p style="margin-top:36px;font-size:0.72rem;color:rgba(255,255,255,0.28);letter-spacing:0.06em;">
+      🔒 All access is monitored and logged for security purposes
+    </p>
+  </div>
+
+  <!-- ══════════════ SCREEN 1: LOGIN FORM ══════════════ -->
+  <div class="screen" id="s-login">
+    <div class="login-card" id="loginCard">
+      <div class="role-badge" id="loginRoleBadge"></div>
+      <h2 class="login-title">Welcome Back</h2>
+      <p class="login-sub" id="loginSub">Sign in to your account to continue</p>
+
+      <div id="loginNotice"></div>
+      <div class="validation-summary" id="loginValidationSummary"></div>
+
+      <form onsubmit="submitLogin(event)" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Work Email</label>
+          <input class="form-input" type="email" id="loginEmail" placeholder="firstname.lastname@socgen.com" autocomplete="username" oninput="validateLoginFields(false)"/>
+          <div class="field-error" id="emailError"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPass">Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" type="password" id="loginPass" placeholder="Strong password (12+ characters)" autocomplete="current-password" oninput="validateLoginFields(false)"/>
+            <button type="button" class="pw-toggle" onclick="togglePw()">👁️</button>
+          </div>
+          <div class="pw-strength"><div class="pw-strength-bar" id="pwStrengthBar"></div></div>
+          <div class="field-hint">At least 12 characters with uppercase, lowercase, number, and symbol.</div>
+          <div class="field-error" id="passwordError"></div>
+        </div>
+
+        <div id="biometricSection">
+          <div class="bio-row"><div class="bio-divider"></div><span class="bio-txt">or use biometric</span><div class="bio-divider"></div></div>
+          <button type="button" class="bio-btn" id="bioBtn" onclick="simulateBiometric()">🫆 Fingerprint / Face ID</button>
+          <div class="field-hint" style="text-align:center;margin-top:8px;">Biometric requires valid email and password first. OTP is still sent to your email.</div>
+        </div>
+
+        <button type="submit" class="btn-login" id="loginBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+          Sign In Securely
+        </button>
+      </form>
+
+      <p class="login-footer-txt">All access is monitored · IdentitySphere AI Security</p>
+    </div>
+  </div>
+
+  <!-- ══════════════ SCREEN 2: MFA ══════════════ -->
+  <div class="screen" id="s-mfa">
+    <div class="mfa-card">
+      <div class="mfa-icon-ring">🔐</div>
+      <h2 class="mfa-title">Two-Factor Authentication</h2>
+      <div class="mfa-notification" id="mfaNotification">A 6-digit verification code was sent to your email.</div>
+
+      <div class="email-inbox-panel" id="emailInboxPanel">
+        <div class="email-inbox-header">📬 Security Email Notification</div>
+        <div class="email-inbox-loading" id="emailInboxLoading">Loading your verification notification…</div>
+        <div id="emailInboxContent" style="display:none;">
+          <div class="email-inbox-meta">To: <span id="inboxTo">—</span> · <span id="inboxTime">—</span></div>
+          <div class="email-inbox-subject" id="inboxSubject">—</div>
+          <div class="email-inbox-body">
+            <span id="inboxBodyText">—</span>
+            <div class="email-inbox-otp" id="inboxOtp">------</div>
+          </div>
+          <div class="email-inbox-note" id="inboxNote"></div>
+        </div>
+      </div>
+
+      <p class="mfa-sub" id="mfaSub">Enter the code above or type it below.</p>
+
+      <div class="otp-row" id="otpRow">
+        <input class="otp-box" maxlength="1" id="otp0" oninput="otpInput(0)" onkeydown="otpKeydown(event,0)"/>
+        <input class="otp-box" maxlength="1" id="otp1" oninput="otpInput(1)" onkeydown="otpKeydown(event,1)"/>
+        <input class="otp-box" maxlength="1" id="otp2" oninput="otpInput(2)" onkeydown="otpKeydown(event,2)"/>
+        <input class="otp-box" maxlength="1" id="otp3" oninput="otpInput(3)" onkeydown="otpKeydown(event,3)"/>
+        <input class="otp-box" maxlength="1" id="otp4" oninput="otpInput(4)" onkeydown="otpKeydown(event,4)"/>
+        <input class="otp-box" maxlength="1" id="otp5" oninput="otpInput(5)" onkeydown="otpKeydown(event,5)"/>
+      </div>
+
+      <p class="mfa-timer">Code expires in <span id="otpTimer">300</span>s</p>
+      <p class="mfa-resend">Didn't receive it? <a onclick="resetTimer()">Resend OTP</a></p>
+
+      <button class="btn-verify" id="verifyBtn" onclick="verifyOtp()">✔ Verify &amp; Continue</button>
+
+      <p style="font-size:0.72rem;color:rgba(255,255,255,0.25);margin-top:18px;">
+        Having trouble? Contact <span style="color:rgba(255,255,255,0.5);">security@socgen.com</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ══════════════ SCREEN 3: ADAPTIVE AUTH ══════════════ -->
+  <div class="screen" id="s-adaptive">
+    <div class="adaptive-card">
+      <div class="adaptive-warn-icon">⚠️</div>
+      <h2 class="adaptive-title">Unusual Login Detected</h2>
+      <p class="adaptive-sub">Our security system has flagged this login attempt. Please complete additional verification to protect your account.</p>
+
+      <div class="adaptive-flags">
+        <div class="adaptive-flag-item"><div class="flag-dot"></div> Unrecognized device detected</div>
+        <div class="adaptive-flag-item"><div class="flag-dot"></div> Login from new location (IP: 192.168.xx.xx)</div>
+        <div class="adaptive-flag-item"><div class="flag-dot"></div> Outside normal working hours</div>
+      </div>
+
+      <div class="adaptive-form-group">
+        <label class="form-label">Security Question: What was the name of your first manager?</label>
+        <input class="form-input" type="text" placeholder="Enter your answer" id="adaptiveAnswer"/>
+      </div>
+
+      <button class="btn-adaptive" onclick="proceedFromAdaptive()">
+        🔓 Verify &amp; Proceed to Dashboard
+      </button>
+
+      <p style="font-size:0.72rem;color:rgba(255,255,255,0.28);margin-top:16px;">
+        This verification is required for your security. All attempts are logged.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══════════════ SCREEN 4: DASHBOARD ══════════════ -->
+  <div class="screen" id="s-dashboard" style="flex-direction:column;">
+
+    <!-- Topbar -->
+    <div class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="dash-role-badge" id="dashRoleBadge"></div>
+        <div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:0.85rem;font-weight:700;">IdentitySphere AI</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.35);">Secure Command Center</div>
+        </div>
+      </div>
+      <div class="dash-user">
+        <div class="dash-avatar" id="dashAvatar">👤</div>
+        <div>
+          <div class="dash-username" id="dashUserName">User</div>
+          <div style="font-size:0.68rem;color:rgba(255,255,255,0.35);" id="dashUserEmail">user@socgen.com</div>
+        </div>
+        <button class="dash-logout" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Dashboard Content (role-specific) -->
+    <div class="dash-body" id="dashBody"></div>
+
+  </div>
+
+</div><!-- end .page -->
+
+<script>
+/* API – same origin when served via Vite (5173) with proxy to backend */
+const API_BASE = '/api';
+
+const ROLE_DASHBOARD = {
+  admin: '/admin',
+  auditor: '/auditor',
+  employee: '/employee',
+  executive: '/executive',
+  contractor: '/contractor',
+};
+
+const ROLE_DEMO_EMAIL = {
+  admin: 'admin@identitysphere.ai',
+  auditor: 'auditor@identitysphere.ai',
+  employee: 'employee@identitysphere.ai',
+  executive: 'executive@identitysphere.ai',
+  contractor: 'contractor@identitysphere.ai',
+};
+
+function displayNameFromEmail(email) {
+  const local = String(email || '').split('@')[0] || 'User';
+  const parts = local.split(/[._-]+/).filter(Boolean);
+  if (!parts.length) return 'User';
+  return parts.map(function (part) {
+    return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+  }).join(' ');
+}
+
+function redirectToReactApp() {
+  if (!currentRole) {
+    alert('Session expired. Please select your role and sign in again.');
+    showScreen('s-roles');
+    return;
+  }
+  const emailInput = document.getElementById('loginEmail');
+  const email = (emailInput && emailInput.value.trim()) || ROLE_DEMO_EMAIL[currentRole] || 'admin@identitysphere.ai';
+  const name = displayNameFromEmail(email);
+  sessionStorage.setItem('is_auth', JSON.stringify({ email: email, role: currentRole, name: name }));
+  window.location.href = ROLE_DASHBOARD[currentRole] || '/admin';
+}
+
+/* ════════════════════════════
+   PARTICLE CANVAS
+════════════════════════════ */
+const cv = document.getElementById('pCanvas');
+const cx2 = cv.getContext('2d');
+let W, H, pts = [];
+function resize2(){ W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+resize2(); window.addEventListener('resize', resize2);
+class Pt{
+  constructor(){ this.reset(); }
+  reset(){ this.x=Math.random()*W; this.y=Math.random()*H; this.vx=(Math.random()-.5)*.4; this.vy=(Math.random()-.5)*.4; this.r=Math.random()*1.8+.4; this.red=Math.random()>.5; this.op=Math.random()*.45+.15; }
+  tick(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset(); }
+  draw(){ cx2.beginPath(); cx2.arc(this.x,this.y,this.r,0,Math.PI*2); cx2.fillStyle=this.red?`rgba(227,25,55,${this.op})`:`rgba(59,130,246,${this.op})`; cx2.fill(); }
+}
+for(let i=0;i<90;i++) pts.push(new Pt());
+function drawLines(){ for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){ const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y); if(d<130){ cx2.beginPath(); cx2.moveTo(pts[i].x,pts[i].y); cx2.lineTo(pts[j].x,pts[j].y); cx2.strokeStyle=`rgba(227,25,55,${(1-d/130)*.15})`; cx2.lineWidth=.5; cx2.stroke(); }}}
+(function loop(){ cx2.clearRect(0,0,W,H); drawLines(); pts.forEach(p=>{p.tick();p.draw();}); requestAnimationFrame(loop); })();
+
+/* ════════════════════════════
+   ROLE CONFIG
+════════════════════════════ */
+const ROLES = {
+  admin:      { label:'Admin',      icon:'🛡️', color:'#E31937', bg:'rgba(227,25,55,0.15)',   border:'rgba(227,25,55,0.4)',   accentVar:'#E31937',
+                notice:'<div class="notice-banner" style="background:rgba(227,25,55,0.08);border:1px solid rgba(227,25,55,0.2);"><span class="notice-icon">🔒</span><span><strong>ADMIN ACCESS:</strong> Use your work email and a strong password. A one-time code will be emailed to you for verification. All actions are logged to SOC.</span></div>',
+                sub:'IdentitySphere AI Security Operations · All access logged' },
+  employee:   { label:'Employee',   icon:'👤', color:'#3b82f6', bg:'rgba(59,130,246,0.15)',   border:'rgba(59,130,246,0.4)',  accentVar:'#3b82f6',
+                notice:'<div class="notice-banner" style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);"><span class="notice-icon">ℹ️</span><span>Sign in with any valid work email. Password must meet enterprise strength rules. OTP is delivered to your inbox.</span></div>',
+                sub:'Personal Identity Dashboard · IdentitySphere AI' },
+  auditor:    { label:'Auditor',    icon:'📋', color:'#94a3b8', bg:'rgba(148,163,184,0.12)',  border:'rgba(148,163,184,0.35)', accentVar:'#94a3b8',
+                notice:'<div class="notice-banner" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.35);"><span class="notice-icon">⚖️</span><span><strong>AUDITOR ACCESS:</strong> GDPR, NIST, ISO 27001 enforced. Enter your email — verification code sent by notification email.</span></div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"><span style="font-size:0.68rem;padding:4px 10px;border-radius:999px;background:rgba(34,197,94,0.15);color:#22c55e;">✓ GDPR</span><span style="font-size:0.68rem;padding:4px 10px;border-radius:999px;background:rgba(59,130,246,0.15);color:#3b82f6;">✓ NIST</span><span style="font-size:0.68rem;padding:4px 10px;border-radius:999px;background:rgba(148,163,184,0.15);color:#94a3b8;">✓ ISO 27001</span></div>',
+                sub:'Compliance & Audit Portal · Read-Only Access' },
+  contractor: { label:'Contractor', icon:'🕐', color:'#f97316', bg:'rgba(249,115,22,0.15)',   border:'rgba(249,115,22,0.4)',  accentVar:'#f97316',
+                notice:'<div class="notice-banner" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.4);"><span class="notice-icon">⏰</span><span><strong>TEMPORARY ACCOUNT</strong> — Use your assigned email. Strong password required. OTP notification sent to your mailbox.</span></div>',
+                sub:'Contractor Access Portal · Limited Scope' },
+  executive:  { label:'Executive',  icon:'📈', color:'#22c55e', bg:'rgba(34,197,94,0.15)',    border:'rgba(34,197,94,0.4)',   accentVar:'#22c55e',
+                notice:'<div class="notice-banner" style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.35);"><span class="notice-icon">👁</span><span><strong>EXECUTIVE ACCESS:</strong> Visibility only. Enter your email — verification code emailed to you.</span></div>',
+                sub:'Executive Access Portal · Visibility Only' },
+};
+
+let currentRole = null;
+let timerInterval = null;
+let timerVal = 300;
+let lastLoginResponse = null;
+
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+function validateEmailClient(email) {
+  if (!email) return 'Email address is required.';
+  if (email.length > 254) return 'Email address is too long.';
+  if (!EMAIL_REGEX.test(email)) return 'Enter a valid email address (e.g. name@company.com).';
+  return '';
+}
+
+function validatePasswordClient(password) {
+  const errors = [];
+  if (!password) errors.push('Password is required.');
+  if (password && password.length < 12) errors.push('Password must be at least 12 characters.');
+  if (password && !/[A-Z]/.test(password)) errors.push('Include at least one uppercase letter.');
+  if (password && !/[a-z]/.test(password)) errors.push('Include at least one lowercase letter.');
+  if (password && !/\d/.test(password)) errors.push('Include at least one number.');
+  if (password && !/[^A-Za-z0-9]/.test(password)) errors.push('Include at least one special character.');
+  if (password && /\s/.test(password)) errors.push('Password must not contain spaces.');
+  return errors;
+}
+
+function passwordStrengthScore(password) {
+  let score = 0;
+  if (password.length >= 12) score++;
+  if (password.length >= 16) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/\d/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+  return score;
+}
+
+function updatePasswordStrength(password) {
+  const bar = document.getElementById('pwStrengthBar');
+  if (!bar) return;
+  const score = passwordStrengthScore(password);
+  const pct = Math.min(100, (score / 6) * 100);
+  bar.style.width = pct + '%';
+  if (score <= 2) bar.style.background = '#E31937';
+  else if (score <= 4) bar.style.background = '#f97316';
+  else bar.style.background = '#22c55e';
+}
+
+function validateLoginFields(showSummary) {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const emailErr = validateEmailClient(email);
+  const pwErrors = validatePasswordClient(pass);
+  const emailEl = document.getElementById('loginEmail');
+  const passEl = document.getElementById('loginPass');
+  document.getElementById('emailError').textContent = emailErr;
+  document.getElementById('passwordError').textContent = pwErrors[0] || '';
+  emailEl.classList.toggle('invalid', !!emailErr);
+  emailEl.classList.toggle('valid', !emailErr && !!email);
+  passEl.classList.toggle('invalid', pwErrors.length > 0);
+  passEl.classList.toggle('valid', pwErrors.length === 0 && !!pass);
+  updatePasswordStrength(pass);
+  const summary = document.getElementById('loginValidationSummary');
+  if (showSummary && (emailErr || pwErrors.length)) {
+    summary.classList.add('show');
+    summary.innerHTML = '<strong>Please fix the following:</strong><ul style="margin:8px 0 0 18px;padding:0;">'
+      + [emailErr, ...pwErrors].filter(Boolean).map(e => '<li>' + e + '</li>').join('') + '</ul>';
+  } else if (!showSummary) {
+    summary.classList.remove('show');
+  }
+  return !emailErr && pwErrors.length === 0;
+}
+
+function showMfaScreen(data) {
+  lastLoginResponse = data;
+  const masked = data.masked_email || 'your email';
+  document.getElementById('mfaNotification').textContent =
+    (data.notification?.hint) || (data.message || ('Verification code sent to ' + masked + '.'));
+  timerVal = data.otp_expires_in || 300;
+  for (let i = 0; i < 6; i++) document.getElementById('otp' + i).value = '';
+  startOtpTimer();
+  showScreen('s-mfa');
+  loadEmailNotification();
+  document.getElementById('otp0').focus();
+}
+
+async function loadEmailNotification() {
+  const loading = document.getElementById('emailInboxLoading');
+  const content = document.getElementById('emailInboxContent');
+  loading.style.display = 'block';
+  content.style.display = 'none';
+  loading.textContent = 'Loading your verification notification…';
+  try {
+    const res = await fetch(API_BASE + '/auth/notification/inbox', { credentials: 'include' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not load notification');
+    loading.style.display = 'none';
+    content.style.display = 'block';
+    document.getElementById('inboxTo').textContent = data.to || '—';
+    document.getElementById('inboxTime').textContent = data.sent_at ? new Date(data.sent_at).toLocaleTimeString() : 'Just now';
+    document.getElementById('inboxSubject').textContent = data.subject || 'Verification code';
+    document.getElementById('inboxBodyText').textContent = 'Your one-time verification code:';
+    document.getElementById('inboxOtp').textContent = data.otp || '------';
+    document.getElementById('inboxNote').textContent = data.message || '';
+    if (data.otp) {
+      const boxes = [...Array(6)].map((_, i) => data.otp[i] || '');
+      boxes.forEach((ch, i) => {
+        const el = document.getElementById('otp' + i);
+        if (el) { el.value = ch; el.classList.toggle('filled', !!ch); }
+      });
+      checkAllOtp();
+    }
+  } catch (err) {
+    loading.textContent = err.message + ' — try Resend OTP.';
+  }
+}
+
+/* ════════════════════════════
+   SCREEN TRANSITIONS
+════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{ s.classList.remove('active'); s.style.display='none'; });
+  const el = document.getElementById(id);
+  el.style.display = 'flex';
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ el.classList.add('active'); }); });
+}
+
+/* ════════════════════════════
+   ROLE SELECTION
+════════════════════════════ */
+function selectRole(role){
+  currentRole = role;
+  const r = ROLES[role];
+
+  // Style the login card accent
+  document.getElementById('loginCard').style.setProperty('--role-accent', r.accentVar);
+  document.getElementById('loginCard').querySelector('::before'); // refresh
+
+  // Role badge
+  const badge = document.getElementById('loginRoleBadge');
+  badge.style.cssText = `background:${r.bg};border-color:${r.border};color:${r.color};`;
+  badge.innerHTML = `<span>${r.icon}</span> ${r.label} Access`;
+
+  // Subtitle
+  document.getElementById('loginSub').textContent = r.sub;
+
+  // Notice
+  document.getElementById('loginNotice').innerHTML = r.notice;
+
+  // Biometric available for all roles after credential validation
+  document.getElementById('biometricSection').style.display = 'block';
+
+  // Login button color
+  const btn = document.getElementById('loginBtn');
+  btn.style.background = `linear-gradient(135deg,${r.color},${r.color}cc)`;
+  btn.style.boxShadow = `0 4px 20px ${r.bg.replace('0.15','0.4')}`;
+
+  const footer = document.querySelector('.login-footer-txt');
+  if (footer) {
+    if (role === 'auditor') {
+      footer.textContent = 'Auditor access is read-only. All actions are logged.';
+    } else     if (role === 'contractor') {
+      footer.textContent = 'Contractor access is limited to assigned systems/resources. All actions are logged and monitored.';
+    } else if (role === 'executive') {
+      footer.textContent = 'Executives view risk and business impact dashboards only. No technical changes allowed.';
+    } else if (role === 'admin') {
+      footer.textContent = 'Admin access grants full enterprise controls. All actions are logged and monitored.';
+    } else {
+      footer.textContent = 'All access is monitored · IdentitySphere AI Security';
+    }
+  }
+
+  showScreen('s-login');
+}
+
+/* ════════════════════════════
+   LOGIN SUBMIT
+════════════════════════════ */
+async function submitLogin(e){
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const isDemoEmail = Object.values(ROLE_DEMO_EMAIL).map(e => e.toLowerCase()).includes(email);
+  if (!isDemoEmail && !validateLoginFields(true)) { shakCard(); return; }
+  const password = document.getElementById('loginPass').value || 'Admin123!Secure';
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch(API_BASE + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password, role: currentRole }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = data.error || data.detail?.error || (Array.isArray(data.detail) ? data.detail[0]?.msg : null) || 'Login failed';
+      throw new Error(msg);
+    }
+    showMfaScreen(data);
+    if (data.dev_otp) {
+      document.getElementById('emailInboxLoading').style.display = 'none';
+      document.getElementById('emailInboxContent').style.display = 'block';
+      document.getElementById('inboxTo').textContent = email;
+      document.getElementById('inboxOtp').textContent = data.dev_otp;
+    }
+  } catch (err) {
+    alert(err.message || 'Could not sign in. Is the API running on port 8000?');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function shakCard(){
+  const c = document.getElementById('loginCard');
+  c.style.animation = 'none';
+  c.style.transform = 'translateX(-10px)';
+  setTimeout(()=>{ c.style.transform='translateX(10px)'; }, 80);
+  setTimeout(()=>{ c.style.transform=''; }, 160);
+}
+
+function togglePw(){
+  const i = document.getElementById('loginPass');
+  i.type = i.type==='password' ? 'text' : 'password';
+}
+
+async function simulateBiometric(){
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const isDemoEmail = Object.values(ROLE_DEMO_EMAIL).map(e => e.toLowerCase()).includes(email);
+  if (!isDemoEmail && !validateLoginFields(true)) { shakCard(); return; }
+  if (!document.getElementById('loginPass').value) {
+    document.getElementById('loginPass').value = 'Admin123!Secure';
+  }
+  await submitLogin({ preventDefault: () => {} });
+}
+
+/* ════════════════════════════
+   OTP / MFA
+════════════════════════════ */
+function otpInput(idx){
+  const box = document.getElementById('otp'+idx);
+  box.classList.toggle('filled', box.value!=='');
+  if(box.value && idx<5) document.getElementById('otp'+(idx+1)).focus();
+  checkAllOtp();
+}
+function otpKeydown(e,idx){
+  if(e.key==='Backspace' && !document.getElementById('otp'+idx).value && idx>0)
+    document.getElementById('otp'+(idx-1)).focus();
+}
+function checkAllOtp(){
+  const all = [...Array(6)].map((_,i)=>document.getElementById('otp'+i).value).join('');
+  if(all.length===6) document.getElementById('verifyBtn').style.boxShadow='0 0 0 3px rgba(227,25,55,0.4)';
+}
+async function verifyOtp(){
+  const all = [...Array(6)].map((_,i)=>document.getElementById('otp'+i).value).join('');
+  if(all.length<6){ document.getElementById('otpRow').style.animation='warnShake 0.3s ease'; return; }
+  clearInterval(timerInterval);
+
+  try {
+    const res = await fetch(API_BASE + '/auth/verify-mfa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ otp: all })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || data.detail?.error || 'Invalid verification code');
+    sessionStorage.setItem('is_auth', JSON.stringify({
+      email: data.email,
+      role: data.role,
+      name: displayNameFromEmail(data.email),
+      auth_token: data.auth_token,
+    }));
+    window.location.href = data.redirect || ROLE_DASHBOARD[currentRole] || '/admin';
+  } catch (err) {
+    alert(err.message || 'Enter a 6-digit verification code from the API terminal or inbox panel.');
+    for(let i=0;i<6;i++){ document.getElementById('otp'+i).value=''; }
+    document.getElementById('otp0').focus();
+  }
+}
+
+function startOtpTimer(){
+  clearInterval(timerInterval);
+  timerVal = lastLoginResponse?.otp_expires_in || 300;
+  document.getElementById('otpTimer').textContent = timerVal;
+  timerInterval = setInterval(()=>{
+    timerVal--;
+    document.getElementById('otpTimer').textContent = Math.max(0, timerVal);
+    if(timerVal<=0){ clearInterval(timerInterval); }
+  }, 1000);
+}
+async function resetTimer(){
+  try {
+    const res = await fetch(API_BASE + '/auth/resend-mfa', {
+      method: 'POST', credentials: 'include',
+      headers: {'Content-Type':'application/json'}, body: '{}'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not resend code');
+    lastLoginResponse = { ...(lastLoginResponse || {}), ...data };
+    document.getElementById('mfaNotification').textContent = data.message || 'New code sent.';
+    if (data.masked_email) document.getElementById('mfaNotification').textContent = data.message || 'New code sent.';
+    startOtpTimer();
+    await loadEmailNotification();
+    for (let i = 0; i < 6; i++) document.getElementById('otp' + i).value = '';
+    document.getElementById('otp0').focus();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+/* ════════════════════════════
+   ADAPTIVE AUTH
+════════════════════════════ */
+function proceedFromAdaptive(){
+  const ans = document.getElementById('adaptiveAnswer').value.trim();
+  if(!ans){ document.getElementById('adaptiveAnswer').style.borderColor='var(--red)'; return; }
+  clearInterval(timerInterval);
+  showScreen('s-mfa');
+  startOtpTimer();
+  document.getElementById('otp0').focus();
+}
+
+/* ════════════════════════════
+   LOAD DASHBOARD
+════════════════════════════ */
+function loadDashboard(){
+  const r = ROLES[currentRole];
+
+  // Topbar badge
+  const badge = document.getElementById('dashRoleBadge');
+  badge.style.cssText = `background:${r.bg};border:1px solid ${r.border};color:${r.color};padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;`;
+  badge.innerHTML = `${r.icon} ${r.label}`;
+
+  // User info
+  document.getElementById('dashAvatar').textContent = r.icon;
+  const names = { admin:'Admin User', employee:'Jean Martin', auditor:'Sophie Dupont', contractor:'Carlos Ruiz', executive:'Marie Leclerc' };
+  const emails = { admin:'admin@socgen.com', employee:'j.martin@socgen.com', auditor:'s.dupont@socgen.com', contractor:'c.ruiz@ext.socgen.com', executive:'m.leclerc@socgen.com' };
+  document.getElementById('dashUserName').textContent = names[currentRole];
+  document.getElementById('dashUserEmail').textContent = emails[currentRole];
+
+  // Inject role dashboard
+  const body = document.getElementById('dashBody');
+  body.innerHTML = buildDash(currentRole, r.color);
+
+  showScreen('s-dashboard');
+
+  // Post-render tasks
+  setTimeout(()=>{
+    animateStats();
+    if(currentRole==='admin') drawNetworkGraph();
+    if(currentRole==='executive') drawRiskChart();
+    if(currentRole==='employee') drawGauge();
+    animateCompBars();
+  }, 200);
+}
+
+/* ════════════════════════════
+   DASHBOARD BUILDERS
+════════════════════════════ */
+function buildDash(role, color){
+  const builders = { admin: dashAdmin, employee: dashEmployee, auditor: dashAuditor, contractor: dashContractor, executive: dashExecutive };
+  return builders[role] ? builders[role](color) : '<p>Dashboard coming soon.</p>';
+}
+
+function dashAdmin(color){
+  return `
+  <div class="stats-row">
+    <div class="stat-card" style="--accent:#E31937"><div class="stat-val" data-target="2847" id="sc0">0</div><div class="stat-label">Active Identities</div><span class="stat-trend" style="background:rgba(34,197,94,0.15);color:#22c55e;">↑ 4.2%</span></div>
+    <div class="stat-card" style="--accent:#f97316"><div class="stat-val" data-target="23" id="sc1">0</div><div class="stat-label">Critical Alerts</div><span class="stat-trend" style="background:rgba(227,25,55,0.15);color:#E31937;">↑ 12%</span></div>
+    <div class="stat-card" style="--accent:#3b82f6"><div class="stat-val" data-target="147" id="sc2">0</div><div class="stat-label">Attack Paths Found</div><span class="stat-trend" style="background:rgba(249,115,22,0.15);color:#f97316;">⚠ High</span></div>
+    <div class="stat-card" style="--accent:#22c55e"><div class="stat-val" data-target="98" id="sc3">0</div><div class="stat-label">Compliance Score %</div><span class="stat-trend" style="background:rgba(34,197,94,0.15);color:#22c55e;">✓ Good</span></div>
+  </div>
+  <div class="panels-row">
+    <div class="panel" style="flex:2;">
+      <div class="panel-title"><span>🕸️</span> Identity Graph – Live Network<div class="panel-badge">LIVE</div></div>
+      <canvas class="graph-canvas" id="graphCanvas" height="200"></canvas>
+    </div>
+    <div class="panel" style="flex:1;">
+      <div class="panel-title"><span>🚨</span> Active Threats</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot" style="background:#E31937"></div><div class="tl-content"><div class="tl-title">Privilege escalation attempt – svc_account_07</div><div class="tl-time">2 minutes ago · CRITICAL</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:#f97316"></div><div class="tl-content"><div class="tl-title">Lateral movement detected – Paris DC</div><div class="tl-time">14 minutes ago · HIGH</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:#f59e0b"></div><div class="tl-content"><div class="tl-title">Stale privileged account reactivated</div><div class="tl-time">1 hour ago · MEDIUM</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:#3b82f6"></div><div class="tl-content"><div class="tl-title">New contractor account provisioned</div><div class="tl-time">3 hours ago · INFO</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="panels-row">
+    <div class="panel">
+      <div class="panel-title"><span>⚔️</span> Attack Path Simulator</div>
+      <table class="data-table">
+        <thead><tr><th>Source</th><th>Target</th><th>Hops</th><th>Risk</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>ext_user_203</td><td>PROD-DB-01</td><td>3</td><td>Critical</td><td><span class="status-pill s-crit">OPEN</span></td></tr>
+          <tr><td>svc_account_07</td><td>AD-DOMAIN</td><td>2</td><td>High</td><td><span class="status-pill s-warn">ANALYZING</span></td></tr>
+          <tr><td>contractor_ruiz</td><td>HR-SYSTEM</td><td>4</td><td>Medium</td><td><span class="status-pill s-info">SIMULATED</span></td></tr>
+          <tr><td>admin_backup</td><td>VAULT-SECRET</td><td>1</td><td>Critical</td><td><span class="status-pill s-crit">BLOCKED</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span>⚙️</span> Risk Engine – Policy Status</div>
+      <div class="comp-item"><div class="comp-header"><span>Privileged Access Reviews</span><span>87%</span></div><div class="comp-bar"><div class="comp-fill" data-w="87" style="background:#22c55e;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>SoD Policy Enforcement</span><span>94%</span></div><div class="comp-bar"><div class="comp-fill" data-w="94" style="background:#3b82f6;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>Orphan Account Cleanup</span><span>62%</span></div><div class="comp-bar"><div class="comp-fill" data-w="62" style="background:#f97316;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>MFA Enforcement</span><span>99%</span></div><div class="comp-bar"><div class="comp-fill" data-w="99" style="background:#22c55e;width:0%"></div></div></div>
+    </div>
+  </div>`;
+}
+
+function dashEmployee(color){
+  return `
+  <div class="panels-row" style="grid-template-columns:280px 1fr;">
+    <div class="panel" style="display:flex;flex-direction:column;align-items:center;">
+      <div class="panel-title" style="width:100%;"><span>📊</span> Your Risk Score</div>
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" id="gaugeEl" viewBox="0 0 160 90">
+          <path d="M20 80 A60 60 0 0 1 140 80" stroke="rgba(255,255,255,0.08)" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <path d="M20 80 A60 60 0 0 1 140 80" stroke="#22c55e" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5" id="gaugeArc"/>
+        </svg>
+        <div class="gauge-val" id="gaugeNum">0</div>
+        <div class="gauge-label">RISK SCORE (LOW)</div>
+      </div>
+      <div style="text-align:center;width:100%;margin-top:8px;">
+        <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);">Last assessed: Today, 09:14 AM</div>
+        <div style="margin-top:12px;padding:8px 14px;border-radius:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);font-size:0.75rem;color:#22c55e;">✓ No anomalies detected</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span>🔑</span> Your Permissions</div>
+      <ul class="perm-list">
+        <li class="perm-item"><span class="perm-icon">📁</span> SharePoint – HR Documents <span class="perm-level" style="background:rgba(34,197,94,0.15);color:#22c55e;">READ</span></li>
+        <li class="perm-item"><span class="perm-icon">💻</span> Workstation Local Admin <span class="perm-level" style="background:rgba(59,130,246,0.15);color:#3b82f6;">STANDARD</span></li>
+        <li class="perm-item"><span class="perm-icon">📧</span> Exchange – Send on Behalf <span class="perm-level" style="background:rgba(34,197,94,0.15);color:#22c55e;">DELEGATED</span></li>
+        <li class="perm-item"><span class="perm-icon">🗄️</span> CRM System – Restricted <span class="perm-level" style="background:rgba(249,115,22,0.15);color:#f97316;">LIMITED</span></li>
+        <li class="perm-item"><span class="perm-icon">🔒</span> VPN – Remote Access <span class="perm-level" style="background:rgba(34,197,94,0.15);color:#22c55e;">ACTIVE</span></li>
+      </ul>
+      <button class="action-btn" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;">
+        📝 Request Privilege Change
+      </button>
+    </div>
+  </div>
+  <div class="panels-row">
+    <div class="panel">
+      <div class="panel-title"><span>🔔</span> Recent Alerts<div class="panel-badge">3 New</div></div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot" style="background:#f97316"></div><div class="tl-content"><div class="tl-title">Login from new browser detected</div><div class="tl-time">Today, 08:42 AM · Review recommended</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:#3b82f6"></div><div class="tl-content"><div class="tl-title">Password changed successfully</div><div class="tl-time">Yesterday, 04:11 PM · Info</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:#22c55e"></div><div class="tl-content"><div class="tl-title">Quarterly access review completed</div><div class="tl-time">June 14 · Approved</div></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span>📋</span> Access History</div>
+      <table class="data-table">
+        <thead><tr><th>Resource</th><th>Time</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>SharePoint Portal</td><td>09:14 AM</td><td><span class="status-pill s-ok">Allowed</span></td></tr>
+          <tr><td>CRM System</td><td>09:02 AM</td><td><span class="status-pill s-ok">Allowed</span></td></tr>
+          <tr><td>Finance Module</td><td>08:57 AM</td><td><span class="status-pill s-crit">Denied</span></td></tr>
+          <tr><td>VPN Gateway</td><td>08:31 AM</td><td><span class="status-pill s-ok">Allowed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function dashAuditor(color){
+  return `
+  <div style="background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.2);border-radius:12px;padding:14px 18px;margin-bottom:22px;font-size:0.8rem;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:10px;">
+    ⚖️ <strong style="color:#94a3b8;">GDPR / NIST Compliance Session</strong> — Read-only access. All data queries are logged and attributed to your session ID: <code style="color:#3b82f6;">AUD-2025-0847</code>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card" style="--accent:#22c55e"><div class="stat-val" data-target="94" id="sc0">0</div><div class="stat-label">Overall Compliance %</div></div>
+    <div class="stat-card" style="--accent:#3b82f6"><div class="stat-val" data-target="1284" id="sc1">0</div><div class="stat-label">Audit Events Today</div></div>
+    <div class="stat-card" style="--accent:#f97316"><div class="stat-val" data-target="7" id="sc2">0</div><div class="stat-label">Open Findings</div></div>
+    <div class="stat-card" style="--accent:#94a3b8"><div class="stat-val" data-target="100" id="sc3">0</div><div class="stat-label">Reports Generated</div></div>
+  </div>
+  <div class="panels-row">
+    <div class="panel" style="flex:2;">
+      <div class="panel-title"><span>📊</span> Compliance Framework Status</div>
+      <div class="comp-item"><div class="comp-header"><span>GDPR – Data Protection</span><span>96%</span></div><div class="comp-bar"><div class="comp-fill" data-w="96" style="background:#22c55e;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>NIST CSF – Identity Management</span><span>88%</span></div><div class="comp-bar"><div class="comp-fill" data-w="88" style="background:#3b82f6;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>ISO 27001 – Access Controls</span><span>91%</span></div><div class="comp-bar"><div class="comp-fill" data-w="91" style="background:#3b82f6;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>SOX – Financial System Access</span><span>79%</span></div><div class="comp-bar"><div class="comp-fill" data-w="79" style="background:#f97316;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>PCI-DSS – Payment Systems</span><span>95%</span></div><div class="comp-bar"><div class="comp-fill" data-w="95" style="background:#22c55e;width:0%"></div></div></div>
+    </div>
+    <div class="panel" style="flex:1;">
+      <div class="panel-title"><span>📑</span> Audit Reports</div>
+      <table class="data-table">
+        <thead><tr><th>Report</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Q2 Access Review</td><td>Jun 15</td><td><span class="status-pill s-ok">Complete</span></td></tr>
+          <tr><td>PAM Audit</td><td>Jun 10</td><td><span class="status-pill s-ok">Complete</span></td></tr>
+          <tr><td>GDPR Assessment</td><td>Jun 01</td><td><span class="status-pill s-warn">Review</span></td></tr>
+          <tr><td>SOX Controls</td><td>May 28</td><td><span class="status-pill s-crit">Finding</span></td></tr>
+        </tbody>
+      </table>
+      <div class="export-row">
+        <button class="export-btn" onclick="alert('Exporting PDF...')">📄 Export PDF</button>
+        <button class="export-btn" onclick="alert('Exporting CSV...')">📊 Export CSV</button>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title"><span>🔍</span> Recent Audit Log</div>
+    <table class="data-table">
+      <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Resource</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>09:42:11</td><td>admin_sys</td><td>Privilege Escalation</td><td>PROD-DB-01</td><td><span class="status-pill s-crit">BLOCKED</span></td></tr>
+        <tr><td>09:38:05</td><td>j.martin</td><td>Login</td><td>HR Portal</td><td><span class="status-pill s-ok">SUCCESS</span></td></tr>
+        <tr><td>09:31:22</td><td>contractor_05</td><td>File Access</td><td>FINANCE-SRV</td><td><span class="status-pill s-crit">DENIED</span></td></tr>
+        <tr><td>09:28:47</td><td>svc_backup</td><td>Scheduled Task</td><td>BACKUP-SRV</td><td><span class="status-pill s-ok">SUCCESS</span></td></tr>
+        <tr><td>09:15:03</td><td>s.dupont</td><td>Report Export</td><td>Audit Module</td><td><span class="status-pill s-info">LOGGED</span></td></tr>
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function dashContractor(color){
+  return `
+  <div class="expiry-card">
+    <div style="font-size:0.75rem;color:rgba(249,115,22,0.8);font-weight:700;letter-spacing:0.1em;margin-bottom:8px;">⚠ ACCOUNT EXPIRY</div>
+    <div class="expiry-count" id="expiryCount">25</div>
+    <div class="expiry-label">Days remaining — Account expires July 15, 2025</div>
+    <button class="action-btn" style="background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;max-width:260px;margin:14px auto 0;">
+      📨 Request Access Extension
+    </button>
+  </div>
+  <div class="panels-row">
+    <div class="panel">
+      <div class="panel-title"><span>🖥️</span> Assigned Systems</div>
+      <div class="sys-list">
+        <div class="sys-item">
+          <span class="sys-icon">🌐</span>
+          <div><div class="sys-name">Web API Gateway – DEV</div><div class="sys-access">Read + Write · Expires Jul 15</div></div>
+          <div class="sys-status"><span class="status-pill s-ok">Active</span></div>
+        </div>
+        <div class="sys-item">
+          <span class="sys-icon">📦</span>
+          <div><div class="sys-name">Artifact Repository</div><div class="sys-access">Read Only · Expires Jul 15</div></div>
+          <div class="sys-status"><span class="status-pill s-ok">Active</span></div>
+        </div>
+        <div class="sys-item">
+          <span class="sys-icon">🐙</span>
+          <div><div class="sys-name">GitHub – Project Repos</div><div class="sys-access">Contributor · Scoped to team</div></div>
+          <div class="sys-status"><span class="status-pill s-ok">Active</span></div>
+        </div>
+        <div class="sys-item">
+          <span class="sys-icon">🔒</span>
+          <div><div class="sys-name">HR System</div><div class="sys-access">No access granted</div></div>
+          <div class="sys-status"><span class="status-pill s-crit">Blocked</span></div>
+        </div>
+        <div class="sys-item">
+          <span class="sys-icon">💰</span>
+          <div><div class="sys-name">Finance Module</div><div class="sys-access">No access granted</div></div>
+          <div class="sys-status"><span class="status-pill s-crit">Blocked</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span>📋</span> Access Policy</div>
+      <div class="comp-item"><div class="comp-header"><span>Permitted Resources</span><span>3 / 12</span></div><div class="comp-bar"><div class="comp-fill" data-w="25" style="background:#f97316;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>Data Sensitivity Allowed</span><span>Level 1 Only</span></div><div class="comp-bar"><div class="comp-fill" data-w="20" style="background:#f97316;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>Session Time Limit</span><span>8 hrs/day</span></div><div class="comp-bar"><div class="comp-fill" data-w="80" style="background:#3b82f6;width:0%"></div></div></div>
+      <div style="margin-top:18px;padding:12px;border-radius:10px;background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.15);font-size:0.75rem;color:rgba(255,255,255,0.55);line-height:1.6;">
+        🛡️ Your access is restricted to assigned project scope only. Any attempt to access unauthorized resources will be logged and reported to your supervisor.
+      </div>
+      <div class="export-row" style="margin-top:12px;">
+        <button class="export-btn">📄 Download Access Policy</button>
+        <button class="export-btn">📧 Contact Supervisor</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function dashExecutive(color){
+  return `
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-val" style="color:#E31937;" data-target="72" id="sc0">0</div><div class="kpi-name">Enterprise Risk Score</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:#22c55e;" data-target="94" id="sc1">0</div><div class="kpi-name">Identity Health %</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:#3b82f6;" data-target="3" id="sc2">0</div><div class="kpi-name">Critical Incidents</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:#f59e0b;" data-target="87" id="sc3">0</div><div class="kpi-name">Sustainability Index</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:#22c55e;" data-target="12" id="sc4">0M</div><div class="kpi-name">Est. Risk Savings €M</div></div>
+  </div>
+  <div class="panels-row">
+    <div class="panel" style="flex:2;">
+      <div class="panel-title"><span>📈</span> Enterprise Risk Trend – 6 Months</div>
+      <canvas id="riskChart" class="graph-canvas" height="180"></canvas>
+    </div>
+    <div class="panel" style="flex:1;">
+      <div class="panel-title"><span>🌱</span> Sustainability Index</div>
+      <div class="gauge-wrap" style="padding:0;">
+        <svg class="gauge-svg" id="sustainGauge" viewBox="0 0 160 90">
+          <path d="M20 80 A60 60 0 0 1 140 80" stroke="rgba(255,255,255,0.08)" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <path d="M20 80 A60 60 0 0 1 140 80" stroke="#22c55e" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5" id="sustainArc"/>
+        </svg>
+        <div class="gauge-val" id="sustainNum">0</div>
+        <div class="gauge-label">ESG SECURITY SCORE</div>
+      </div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:rgba(255,255,255,0.6);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <span>Carbon-neutral auth flows</span><span style="color:#22c55e;">✓</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:rgba(255,255,255,0.6);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <span>Zero-trust adoption</span><span style="color:#22c55e;">87%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:rgba(255,255,255,0.6);padding:6px 0;">
+          <span>Data minimization</span><span style="color:#f97316;">In Progress</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panels-row">
+    <div class="panel">
+      <div class="panel-title"><span>💼</span> Business Impact Summary</div>
+      <div class="comp-item"><div class="comp-header"><span>Revenue-at-risk reduction</span><span>↓ 34%</span></div><div class="comp-bar"><div class="comp-fill" data-w="66" style="background:#22c55e;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>Regulatory fine avoidance</span><span>€2.4M</span></div><div class="comp-bar"><div class="comp-fill" data-w="88" style="background:#3b82f6;width:0%"></div></div></div>
+      <div class="comp-item"><div class="comp-header"><span>Insider threat incidents</span><span>↓ 61%</span></div><div class="comp-bar"><div class="comp-fill" data-w="61" style="background:#22c55e;width:0%"></div></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span>📊</span> Risk by Division</div>
+      <table class="data-table">
+        <thead><tr><th>Division</th><th>Risk Score</th><th>Trend</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Investment Banking</td><td>68</td><td>↓ 5pts</td><td><span class="status-pill s-warn">Medium</span></td></tr>
+          <tr><td>Retail Banking</td><td>45</td><td>↓ 12pts</td><td><span class="status-pill s-ok">Low</span></td></tr>
+          <tr><td>Asset Management</td><td>82</td><td>↑ 3pts</td><td><span class="status-pill s-crit">High</span></td></tr>
+          <tr><td>Corporate & Markets</td><td>57</td><td>↓ 8pts</td><td><span class="status-pill s-warn">Medium</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ════════════════════════════
+   POST-RENDER ANIMATIONS
+════════════════════════════ */
+function animateStats(){
+  document.querySelectorAll('[data-target]').forEach(el=>{
+    const target = parseInt(el.dataset.target);
+    const suffix = el.id === 'sc4' ? 'M' : '';
+    let start = null;
+    const step = ts => {
+      if(!start) start = ts;
+      const p = Math.min((ts-start)/1600, 1);
+      const v = Math.floor((1-Math.pow(1-p,3))*target);
+      el.textContent = v.toLocaleString() + suffix;
+      if(p<1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+function animateCompBars(){
+  setTimeout(()=>{
+    document.querySelectorAll('.comp-fill[data-w]').forEach(el=>{
+      el.style.width = el.dataset.w + '%';
+    });
+  }, 300);
+}
+
+function drawNetworkGraph(){
+  const canvas = document.getElementById('graphCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight || 200;
+  const W = canvas.width, H = canvas.height;
+
+  const nodes = [];
+  for(let i=0;i<18;i++){
+    nodes.push({
+      x: Math.random()*W*.9 + W*.05,
+      y: Math.random()*H*.8 + H*.1,
+      r: Math.random()*4+3,
+      vx:(Math.random()-.5)*.6,
+      vy:(Math.random()-.5)*.6,
+      red: Math.random()>.5
+    });
+  }
+  function drawGraph(){
+    ctx.clearRect(0,0,W,H);
+    // connections
+    for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+      const d = Math.hypot(nodes[i].x-nodes[j].x, nodes[i].y-nodes[j].y);
+      if(d<110){ ctx.beginPath(); ctx.moveTo(nodes[i].x,nodes[i].y); ctx.lineTo(nodes[j].x,nodes[j].y); ctx.strokeStyle=`rgba(227,25,55,${(1-d/110)*.4})`; ctx.lineWidth=.8; ctx.stroke(); }
+    }
+    nodes.forEach(n=>{
+      n.x+=n.vx; n.y+=n.vy;
+      if(n.x<5||n.x>W-5) n.vx*=-1;
+      if(n.y<5||n.y>H-5) n.vy*=-1;
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle = n.red ? 'rgba(227,25,55,0.8)':'rgba(59,130,246,0.8)';
+      ctx.shadowColor = n.red ? '#E31937':'#3b82f6';
+      ctx.shadowBlur = 8; ctx.fill(); ctx.shadowBlur=0;
+    });
+    requestAnimationFrame(drawGraph);
+  }
+  drawGraph();
+}
+
+function drawRiskChart(){
+  const canvas = document.getElementById('riskChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight || 180;
+  const W = canvas.width, H = canvas.height;
+  const data = [91, 85, 79, 82, 74, 72];
+  const labels = ['Jan','Feb','Mar','Apr','May','Jun'];
+  const pad = { t:20,r:20,b:30,l:40 };
+  const gW = W-pad.l-pad.r, gH = H-pad.t-pad.b;
+  const minV = 60, maxV = 100;
+
+  ctx.clearRect(0,0,W,H);
+
+  // grid lines
+  for(let i=0;i<=4;i++){
+    const y = pad.t + (gH/4)*i;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+gW,y);
+    ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.font='10px Inter'; ctx.textAlign='right';
+    ctx.fillText(Math.round(maxV - (maxV-minV)*(i/4)), pad.l-6, y+4);
+  }
+
+  // area fill
+  const pts2 = data.map((v,i)=>({ x: pad.l + (gW/(data.length-1))*i, y: pad.t + gH*(1-(v-minV)/(maxV-minV)) }));
+  ctx.beginPath(); ctx.moveTo(pts2[0].x, pad.t+gH);
+  pts2.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts2[pts2.length-1].x, pad.t+gH);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0,pad.t,0,pad.t+gH);
+  grad.addColorStop(0,'rgba(227,25,55,0.25)'); grad.addColorStop(1,'rgba(227,25,55,0)');
+  ctx.fillStyle=grad; ctx.fill();
+
+  // line
+  ctx.beginPath(); ctx.moveTo(pts2[0].x,pts2[0].y);
+  pts2.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.strokeStyle='#E31937'; ctx.lineWidth=2.5; ctx.lineJoin='round'; ctx.stroke();
+
+  // dots + labels
+  pts2.forEach((p,i)=>{
+    ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2);
+    ctx.fillStyle='#E31937'; ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fillStyle='#fff'; ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.font='10px Inter'; ctx.textAlign='center';
+    ctx.fillText(labels[i], p.x, pad.t+gH+16);
+    ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.font='bold 10px Inter';
+    ctx.fillText(data[i], p.x, p.y-10);
+  });
+}
+
+function drawGauge(){
+  const arc = document.getElementById('gaugeArc');
+  const num = document.getElementById('gaugeNum');
+  if(!arc) return;
+  const score = 34; // low risk
+  const totalLen = 188.5;
+  const offset = totalLen - (score/100)*totalLen;
+  setTimeout(()=>{ arc.style.transition='stroke-dashoffset 1.5s cubic-bezier(0.22,1,0.36,1)'; arc.style.strokeDashoffset=offset; }, 300);
+  let n=0; const iv=setInterval(()=>{ n++; num.textContent=n; if(n>=score) clearInterval(iv); },30);
+
+  // Executive sustainability gauge
+  const sArc = document.getElementById('sustainArc');
+  const sNum = document.getElementById('sustainNum');
+  if(sArc){ const sc=87; const so=totalLen-(sc/100)*totalLen; setTimeout(()=>{ sArc.style.transition='stroke-dashoffset 1.5s cubic-bezier(0.22,1,0.36,1)'; sArc.style.strokeDashoffset=so; },300); let sn=0; const si=setInterval(()=>{ sn++; sNum.textContent=sn; if(sn>=sc)clearInterval(si); },18); }
+}
+
+/* ════════════════════════════
+   LOGOUT
+════════════════════════════ */
+function logout(){
+  currentRole = null;
+  clearInterval(timerInterval);
+  sessionStorage.removeItem('is_auth');
+  for(let i=0;i<6;i++){ const b=document.getElementById('otp'+i); if(b){b.value='';b.classList.remove('filled');} }
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPass').value='';
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

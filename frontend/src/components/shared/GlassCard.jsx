@@ -25,7 +25,7 @@ export default function GlassCard({
       transition={{ duration: 0.4, delay }}
       whileHover={hover ? { scale: 1.008, y: -1 } : {}}
       onClick={onClick}
-      className={`glass-card relative overflow-hidden rounded-xl ${padding} transition-all duration-300 ${hover || onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`glass-card relative rounded-xl ${padding} transition-all duration-300 ${hover || onClick ? 'cursor-pointer' : ''} ${className}`}
       style={{
         background: 'linear-gradient(145deg, rgba(8,10,18,0.82) 0%, rgba(5,6,13,0.85) 55%, rgba(13,17,26,0.80) 100%)',
         border: '1px solid rgba(227, 25, 55, 0.22)',

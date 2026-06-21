@@ -430,7 +430,7 @@ export default function Landing() {
                 </svg>
                 Get Started
               </button>
-              <button onClick={() => window.open('https://youtu.be/demo-video-link', '_blank')}
+              <button onClick={() => window.open('https://drive.google.com/file/d/1S0dyvAy0S6a2OOf8r5mFLgyA4MrnQk-5/view?usp=drivesdk', '_blank')}
                 className="inline-flex items-center gap-2.5 px-9 py-4 rounded-xl font-bold cursor-pointer border-none transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03]"
                 style={{
                   background: 'rgba(255,255,255,0.95)',

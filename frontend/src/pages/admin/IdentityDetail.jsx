@@ -13,7 +13,8 @@ import GlassCard from '../../components/shared/GlassCard';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import ChartContainer from '../../components/shared/ChartContainer';
 import { getIdentities as getStoredIdentities, getRiskEvents, getLifecycleEvents, getReviewHistory } from '../../services/storageService';
 
 /* ── Platform colors for correlation graph ─────────────────────────── */
@@ -1288,22 +1289,20 @@ function TimelineTab({ identity: id }) {
         <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
           <Activity size={14} className="text-red-400" /> Risk Score Evolution
         </h3>
-        <div style={{ width: '100%', height: 220 }}>
-          <ResponsiveContainer>
-            <AreaChart data={evolutionData}>
-              <defs>
-                <linearGradient id="riskEvoGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ef4444" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} width={30} />
-              <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} wrapperStyle={{ zIndex: 1000 }} />
-              <Area type="monotone" dataKey="score" stroke="#ef4444" fill="url(#riskEvoGrad)" strokeWidth={2} dot={{ r: 3, fill: '#ef4444', strokeWidth: 0 }} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+        <ChartContainer height={220}>
+          <AreaChart data={evolutionData}>
+            <defs>
+              <linearGradient id="riskEvoGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} width={30} />
+            <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} />
+            <Area type="monotone" dataKey="score" stroke="#ef4444" fill="url(#riskEvoGrad)" strokeWidth={2} dot={{ r: 3, fill: '#ef4444', strokeWidth: 0 }} />
+          </AreaChart>
+        </ChartContainer>
         <div className="flex items-center justify-between mt-2">
           <span className="text-[10px] text-slate-500">Risk score progression from account creation to present</span>
           <span className="text-xs font-mono font-bold" style={{ color: riskScoreColor(id.risk_score || 0) }}>Current: {id.risk_score || 0}/100</span>

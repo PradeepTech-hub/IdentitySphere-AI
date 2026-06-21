@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };const PLATFORM_COLORS = { active_directory: '#00a4ef', aws_iam: '#ff9900', okta: '#007dc1', salesforce: '#00a1e0' };
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import ChartContainer from '../../components/shared/ChartContainer';
 import { Shield, Key, AlertTriangle, Users, Eye } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
@@ -81,18 +82,16 @@ export default function Privileges() {
 
         <GlassCard delay={0.25} hover={false}>
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Admin Distribution by Platform</h3>
-          <div style={{ width: '100%', height: 300 }}>
-            <ResponsiveContainer>
-              <BarChart data={platformStats} layout="vertical">
-                <XAxis type="number" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="platform" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={100} />
-                <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} wrapperStyle={{ zIndex: 1000 }} />
-                <Bar dataKey="admins" radius={[0, 6, 6, 0]} barSize={20}>
-                  {platformStats.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.7} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <ChartContainer height={300}>
+            <BarChart data={platformStats} layout="vertical">
+              <XAxis type="number" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="platform" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={100} />
+              <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} />
+              <Bar dataKey="admins" radius={[0, 6, 6, 0]} barSize={20}>
+                {platformStats.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.7} />)}
+              </Bar>
+            </BarChart>
+          </ChartContainer>
         </GlassCard>
       </div>
 

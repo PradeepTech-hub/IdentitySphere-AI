@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import ChartContainer from '../../components/shared/ChartContainer';
 import {
   Target, Search, Shield, AlertTriangle, Key, Users, Server,
   Zap, Activity, ChevronRight, Eye, Globe, Info, X, ArrowRight,
@@ -305,18 +306,16 @@ export default function BlastRadius() {
                   </button>
                 )}
               </div>
-              <div style={{ width: '100%', height: 250 }}>
-              <ResponsiveContainer>
+              <ChartContainer height={250}>
                 <BarChart data={chartData}>
                   <XAxis dataKey="platform" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} width={30} />
-                  <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} wrapperStyle={{ zIndex: 1000 }} />
+                  <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} />
                   <Bar dataKey="resources" radius={[6, 6, 0, 0]} barSize={40}>
                     {chartData.map((d, i) => <Cell key={i} fill={COLORS[Object.keys(analysis.byPlatform)[i]] || '#64748b'} fillOpacity={0.8} />)}
                   </Bar>
                 </BarChart>
-              </ResponsiveContainer>
-              </div>
+              </ChartContainer>
             </GlassCard>
 
             {/* Simulation Panel */}

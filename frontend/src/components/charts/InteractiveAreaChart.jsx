@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
+  AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from 'recharts';
 import { GlassTooltip, AXIS_TICK, GRID_STROKE } from './chartTheme';
+import ChartContainer from '../shared/ChartContainer';
 
-/**
- * Interactive multi-series area chart with gradients, hover dots, and legend toggle.
- */
 export default function InteractiveAreaChart({
   data,
   series = [],
@@ -16,14 +14,12 @@ export default function InteractiveAreaChart({
   xKey = 'day',
 }) {
   const [hidden, setHidden] = useState({});
-
   const toggle = (key) => setHidden((h) => ({ ...h, [key]: !h[key] }));
 
   return (
     <div>
       {title && <h3 className="text-sm font-semibold text-slate-300 mb-4 font-orbitron">{title}</h3>}
-      <div style={{ width: '100%', height }}>
-      <ResponsiveContainer>
+      <ChartContainer height={height}>
         <AreaChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
           <defs>
             {series.map((s) => (
@@ -42,45 +38,25 @@ export default function InteractiveAreaChart({
               wrapperStyle={{ fontSize: 11, paddingTop: 12 }}
               formatter={(value, entry) => (
                 <span
-                  style={{
-                    color: hidden[entry.dataKey] ? '#475569' : entry.color,
-                    cursor: 'pointer',
-                    textTransform: 'capitalize',
-                  }}
+                  style={{ color: hidden[entry.dataKey] ? '#475569' : entry.color, cursor: 'pointer', textTransform: 'capitalize' }}
                   onClick={() => toggle(entry.dataKey)}
-                >
-                  {value}
-                </span>
+                >{value}</span>
               )}
             />
           )}
           {series.map((s) =>
             hidden[s.key] ? null : (
-              <Area
-                key={s.key}
-                type="monotone"
-                dataKey={s.key}
-                name={s.name || s.key}
-                stroke={s.color}
-                fill={s.dashed ? 'none' : `url(#grad-${s.key})`}
-                strokeWidth={s.dashed ? 2 : 2.5}
-                dot={false}
-                activeDot={{
-                  r: 6,
-                  fill: s.color,
-                  stroke: '#fff',
-                  strokeWidth: 2,
-                  style: { filter: `drop-shadow(0 0 6px ${s.color})` },
-                }}
-                animationDuration={1200}
-                animationEasing="ease-out"
+              <Area key={s.key} type="monotone" dataKey={s.key} name={s.name || s.key}
+                stroke={s.color} fill={s.dashed ? 'none' : `url(#grad-${s.key})`}
+                strokeWidth={s.dashed ? 2 : 2.5} dot={false}
+                activeDot={{ r: 6, fill: s.color, stroke: '#fff', strokeWidth: 2, style: { filter: `drop-shadow(0 0 6px ${s.color})` } }}
+                animationDuration={1200} animationEasing="ease-out"
                 strokeDasharray={s.dashed ? '6 4' : undefined}
               />
             )
           )}
         </AreaChart>
-      </ResponsiveContainer>
-      </div>
+      </ChartContainer>
     </div>
   );
 }

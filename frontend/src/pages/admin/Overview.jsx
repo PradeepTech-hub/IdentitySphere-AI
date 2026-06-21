@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Users, AlertTriangle, ShieldCheck, Bell, TrendingDown, Activity, Server, Key, Sparkles, Target, Shield } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from 'recharts';
+import ChartContainer from '../../components/shared/ChartContainer';
 import GlassCard from '../../components/shared/GlassCard';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import SeverityBadge from '../../components/shared/SeverityBadge';
@@ -122,38 +123,34 @@ export default function Overview() {
       <div className="grid lg:grid-cols-3 gap-6">
         <GlassCard delay={0.2} hover={false} className="lg:col-span-2">
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Risk Trend (30 Days)</h3>
-          <div style={{ width: '100%', height: 260 }}>
-            <ResponsiveContainer>
-              <AreaChart data={TREND_DATA} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="ovCritGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ef4444" stopOpacity={0.3}/><stop offset="100%" stopColor="#ef4444" stopOpacity={0}/></linearGradient>
-                  <linearGradient id="ovHighGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f97316" stopOpacity={0.2}/><stop offset="100%" stopColor="#f97316" stopOpacity={0}/></linearGradient>
-                </defs>
-                <XAxis dataKey="day" tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                <YAxis tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} width={30} />
-                <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} />
-                <Area type="monotone" dataKey="critical" stroke="#ef4444" fill="url(#ovCritGrad)" strokeWidth={2} />
-                <Area type="monotone" dataKey="high" stroke="#f97316" fill="url(#ovHighGrad)" strokeWidth={2} />
-                <Area type="monotone" dataKey="resolved" stroke="#22c55e" fill="none" strokeWidth={1.5} strokeDasharray="4 4" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          <ChartContainer height={260}>
+            <AreaChart data={TREND_DATA} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="ovCritGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ef4444" stopOpacity={0.3}/><stop offset="100%" stopColor="#ef4444" stopOpacity={0}/></linearGradient>
+                <linearGradient id="ovHighGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f97316" stopOpacity={0.2}/><stop offset="100%" stopColor="#f97316" stopOpacity={0}/></linearGradient>
+              </defs>
+              <XAxis dataKey="day" tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+              <YAxis tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} width={30} />
+              <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} />
+              <Area type="monotone" dataKey="critical" stroke="#ef4444" fill="url(#ovCritGrad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="high" stroke="#f97316" fill="url(#ovHighGrad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="resolved" stroke="#22c55e" fill="none" strokeWidth={1.5} strokeDasharray="4 4" />
+            </AreaChart>
+          </ChartContainer>
         </GlassCard>
 
         <GlassCard delay={0.3} hover={false}>
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Severity Distribution</h3>
           {pieData.length > 0 ? (
             <>
-              <div style={{ width: '100%', height: 200 }}>
-                <ResponsiveContainer>
-                  <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={4} dataKey="value">
-                      {pieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <ChartContainer height={200}>
+                <PieChart>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={4} dataKey="value">
+                    {pieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} />
+                </PieChart>
+              </ChartContainer>
               <div className="flex flex-wrap gap-3 justify-center mt-2">
                 {pieData.map((d, i) => (
                   <span key={d.name} className="flex items-center gap-1.5 text-[11px] text-slate-400">

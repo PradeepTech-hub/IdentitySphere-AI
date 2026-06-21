@@ -25,7 +25,7 @@ export default function SphereBackground() {
         this.vy = (Math.random() - 0.5) * 0.4;
         this.r = Math.random() * 2 + 0.5;
         this.isRed = Math.random() > 0.4;
-        this.opacity = Math.random() * 0.5 + 0.2;
+        this.opacity = Math.random() * 0.25 + 0.08;
       }
       update() {
         this.x += this.vx;
@@ -53,7 +53,7 @@ export default function SphereBackground() {
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 140) {
-            const alpha = (1 - dist / 140) * 0.12;
+            const alpha = (1 - dist / 140) * 0.06;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -82,7 +82,7 @@ export default function SphereBackground() {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
       <div
-        className="absolute inset-0 opacity-[0.45]"
+        className="absolute inset-0 opacity-[0.12]"
         style={{
           background: "url('/background.jpg') center center / cover no-repeat",
         }}
@@ -91,7 +91,7 @@ export default function SphereBackground() {
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse at 50% 0%, rgba(5,6,13,0.15) 0%, rgba(5,6,13,0.65) 70%, rgba(5,6,13,0.97) 100%)',
+            'radial-gradient(ellipse at 50% 0%, rgba(5,6,13,0.82) 0%, rgba(5,6,13,0.92) 50%, rgba(5,6,13,0.98) 100%)',
         }}
       />
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />

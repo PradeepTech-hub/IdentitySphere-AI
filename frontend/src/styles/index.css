@@ -55,12 +55,12 @@ body {
 
 @layer utilities {
   .glass {
-    background: rgba(255,255,255,0.04);
+    background: rgba(8,10,18,0.82);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(227,25,55,0.18);
   }
   .glass-hover:hover {
-    background: rgba(255,255,255,0.08);
+    background: rgba(13,17,26,0.88);
     border-color: rgba(227,25,55,0.35);
   }
   .glass-blue {

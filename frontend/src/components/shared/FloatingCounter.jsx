@@ -46,10 +46,10 @@ export default function FloatingCounter({
 
   return (
     <motion.span
-      className={`font-black inline-block animate-float ${sizeClass} ${className}`}
-      style={{ textShadow: COLOR_GLOW[color] || COLOR_GLOW.red }}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
+      className={`font-black inline-block font-orbitron ${sizeClass} ${className}`}
+      style={{ textShadow: COLOR_GLOW[color] || COLOR_GLOW.red, lineHeight: 1.2 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
       {prefix}{isFloat ? count.toFixed(1) : Math.floor(count).toLocaleString()}{suffix}

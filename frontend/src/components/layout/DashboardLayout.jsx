@@ -99,7 +99,7 @@ export default function DashboardLayout() {
       <Sidebar />
 
       <div className="fixed top-0 left-64 right-0 z-40 h-14 flex items-center justify-between px-6 gap-3"
-        style={{ background: 'rgba(5,6,13,0.75)', backdropFilter: 'blur(18px)', borderBottom: '1px solid rgba(227,25,55,0.18)' }}>
+        style={{ background: 'rgba(5,6,13,0.92)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(227,25,55,0.18)' }}>
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-orbitron font-bold uppercase tracking-[0.2em] text-red-400/90">{topBarLabel}</span>
           <span className="w-2 h-2 rounded-full bg-green-500 animate-blink" />

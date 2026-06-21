@@ -96,11 +96,11 @@ export default function Sidebar() {
         }
       `}</style>
 
-      {/* Logo — Société Générale + IdentitySphere AI */}
+      {/* Logo — IdentitySphere AI */}
       <div className="relative z-10 p-5" style={{ borderBottom: '1px solid rgba(227, 25, 55, 0.18)' }}>
         <a href="/" className="flex items-center gap-3 no-underline group">
-          <div className="logo-pill-dashboard shrink-0 rounded-lg bg-white px-2 py-1 shadow-[0_0_20px_rgba(227,25,55,0.25)]">
-            <img src="/logo.png" alt="Société Générale" className="h-8 object-contain" onError={(e) => { e.target.style.display = 'none'; }} />
+          <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #8B1026, #C1122F, #E31937)', boxShadow: '0 0 20px rgba(227,25,55,0.3)' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L3 7v5c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z" /></svg>
           </div>
           <div className="min-w-0">
             <h1 className="text-xs font-black font-orbitron tracking-wide text-white flex items-center gap-1 flex-wrap">

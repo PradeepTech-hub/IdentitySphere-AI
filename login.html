@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>IdentitySphere AI – Secure Login | Société Générale</title>
+  <title>IdentitySphere AI – Secure Login</title>
   <meta name="description" content="Role-based secure login for IdentitySphere AI Enterprise Identity Intelligence Platform."/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
@@ -35,10 +35,12 @@
     .logo-wrap { display: flex; align-items: center; gap: 12px; animation: floatLogo 6s ease-in-out infinite; }
     @keyframes floatLogo { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
     .logo-pill {
-      background: #fff; border-radius: 8px; padding: 5px 12px;
+      background: linear-gradient(135deg, #8B1026, #C1122F, #E31937); border-radius: 10px; padding: 7px 12px;
       box-shadow: 0 0 0 1px rgba(227,25,55,0.3), 0 4px 18px rgba(227,25,55,0.2);
+      display: flex; align-items: center; gap: 6px;
     }
-    .logo-pill img { height: 36px; object-fit: contain; display: block; }
+    .logo-pill svg { width: 22px; height: 22px; }
+    .logo-pill .logo-txt { color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.75rem; letter-spacing: 0.05em; }
     .nav-title { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.1em; }
     .nav-back {
       display: flex; align-items: center; gap: 8px;
@@ -476,7 +478,7 @@
 <!-- NAV -->
 <nav>
   <div class="logo-wrap">
-    <div class="logo-pill"><img src="logo.png" alt="Société Générale"/></div>
+    <div class="logo-pill"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L3 7v5c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z"/></svg><span class="logo-txt">IS</span></div>
     <span class="nav-title" id="navTitle">IdentitySphere AI</span>
   </div>
   <a href="index.html" class="nav-back">
@@ -584,7 +586,7 @@
         </button>
       </form>
 
-      <p class="login-footer-txt">All access is monitored · Société Générale Security</p>
+      <p class="login-footer-txt">All access is monitored · IdentitySphere AI Security</p>
     </div>
   </div>
 
@@ -754,10 +756,10 @@ function drawLines(){ for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j
 const ROLES = {
   admin:      { label:'Admin',      icon:'🛡️', color:'#E31937', bg:'rgba(227,25,55,0.15)',   border:'rgba(227,25,55,0.4)',   accentVar:'#E31937',
                 notice:'<div class="notice-banner" style="background:rgba(227,25,55,0.08);border:1px solid rgba(227,25,55,0.2);"><span class="notice-icon">🔒</span><span><strong>ADMIN ACCESS:</strong> Use your work email and a strong password. A one-time code will be emailed to you for verification. All actions are logged to SOC.</span></div>',
-                sub:'Société Générale Security Operations · All access logged' },
+                sub:'IdentitySphere AI Security Operations · All access logged' },
   employee:   { label:'Employee',   icon:'👤', color:'#3b82f6', bg:'rgba(59,130,246,0.15)',   border:'rgba(59,130,246,0.4)',  accentVar:'#3b82f6',
                 notice:'<div class="notice-banner" style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);"><span class="notice-icon">ℹ️</span><span>Sign in with any valid work email. Password must meet enterprise strength rules. OTP is delivered to your inbox.</span></div>',
-                sub:'Personal Identity Dashboard · Société Générale' },
+                sub:'Personal Identity Dashboard · IdentitySphere AI' },
   auditor:    { label:'Auditor',    icon:'📋', color:'#94a3b8', bg:'rgba(148,163,184,0.12)',  border:'rgba(148,163,184,0.35)', accentVar:'#94a3b8',
                 notice:'<div class="notice-banner" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.35);"><span class="notice-icon">⚖️</span><span><strong>AUDITOR ACCESS:</strong> GDPR, NIST, ISO 27001 enforced. Enter your email — verification code sent by notification email.</span></div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"><span style="font-size:0.68rem;padding:4px 10px;border-radius:999px;background:rgba(34,197,94,0.15);color:#22c55e;">✓ GDPR</span><span style="font-size:0.68rem;padding:4px 10px;border-radius:999px;background:rgba(59,130,246,0.15);color:#3b82f6;">✓ NIST</span><span style="font-size:0.68rem;padding:4px 10px;border-radius:999px;background:rgba(148,163,184,0.15);color:#94a3b8;">✓ ISO 27001</span></div>',
                 sub:'Compliance & Audit Portal · Read-Only Access' },
@@ -937,7 +939,7 @@ function selectRole(role){
     } else if (role === 'admin') {
       footer.textContent = 'Admin access grants full enterprise controls. All actions are logged and monitored.';
     } else {
-      footer.textContent = 'All access is monitored · Société Générale Security';
+      footer.textContent = 'All access is monitored · IdentitySphere AI Security';
     }
   }
 

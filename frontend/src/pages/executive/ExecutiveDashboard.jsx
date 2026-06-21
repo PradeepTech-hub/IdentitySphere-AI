@@ -159,7 +159,7 @@ export default function ExecutiveDashboard() {
 
       <GlassCard hover={false} glow="red" delay={0.02}>
         <div className="flex items-center gap-5 flex-wrap">
-          <div className="relative animate-float shrink-0">
+          <div className="relative shrink-0">
             <svg width="88" height="88" viewBox="0 0 90 90">
               <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
               <circle cx="45" cy="45" r="38" fill="none" stroke={businessRisk >= 60 ? '#E31937' : businessRisk >= 40 ? '#f97316' : '#22c55e'} strokeWidth="6" strokeLinecap="round"
@@ -354,7 +354,7 @@ export default function ExecutiveDashboard() {
                     <span className={`w-2 h-2 rounded-full shrink-0 ${exp.severity === 'critical' ? 'bg-red-400' : exp.severity === 'high' ? 'bg-orange-400' : 'bg-yellow-400'}`} />
                     <span className="text-sm text-white font-orbitron tracking-wide truncate">{exp.label}</span>
                   </div>
-                  <FloatingCounter value={exp.count} color="red" size="2xl" />
+                  <span className="text-xl font-black font-orbitron text-red-400" style={{ textShadow: '0 0 16px rgba(227,25,55,0.4)' }}>{exp.count}</span>
                 </motion.div>
               ))}
             </div>

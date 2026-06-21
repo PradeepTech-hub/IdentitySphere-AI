@@ -125,7 +125,7 @@ export function downloadReportPdf(report) {
   doc.setTextColor(140, 140, 140);
   y = addPageIfNeeded(doc, y, margin);
   doc.text('Visibility-only executive report. No technical controls included.', margin, y);
-  doc.text('IdentitySphere AI · Société Générale', margin, y + 12);
+  doc.text('IdentitySphere AI · Enterprise Identity Intelligence', margin, y + 12);
 
   doc.save(`business-impact-report-${report.generatedAt.slice(0, 10)}.pdf`);
 }

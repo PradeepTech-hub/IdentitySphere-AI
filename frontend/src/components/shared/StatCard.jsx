@@ -65,19 +65,19 @@ export default function StatCard({
             <Icon size={16} className={color} />
           </div>
         )}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 flex flex-col gap-0.5">
           <p className="text-[9px] text-slate-500 uppercase tracking-[0.16em] font-orbitron truncate leading-tight">{label}</p>
-          <div className={`${color} -mt-0.5`}>
+          <div className={`${color} leading-none`}>
             {displayValue ? (
-              <span className={`font-black text-2xl inline-block ${color}`} style={{ textShadow: `0 0 16px ${ACCENT_BAR[glowColor]}66` }}>
+              <span className={`font-black font-orbitron text-2xl inline-block ${color}`} style={{ textShadow: `0 0 16px ${ACCENT_BAR[glowColor]}66`, lineHeight: 1.2 }}>
                 {displayValue}
               </span>
             ) : (
               <FloatingCounter value={value} suffix={suffix || ''} color={glowColor} size="2xl" />
             )}
           </div>
-          {sublabel && <p className="text-[9px] text-slate-500 tracking-wide mt-0.5">{sublabel}</p>}
-          {trend && <p className={`text-[9px] tracking-wide mt-0.5 ${trend.color || 'text-slate-500'}`}>{trend.text}</p>}
+          {sublabel && <p className="text-[9px] text-slate-500 tracking-wide">{sublabel}</p>}
+          {trend && <p className={`text-[9px] tracking-wide ${trend.color || 'text-slate-500'}`}>{trend.text}</p>}
         </div>
         <div
           className="shrink-0 w-0.5 h-8 rounded-full opacity-80"

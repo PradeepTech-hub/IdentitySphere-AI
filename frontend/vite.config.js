@@ -11,7 +11,6 @@ const projectRoot = path.resolve(__dirname, '..')
 const ROOT_ASSETS = new Set([
   'index.html',
   'login.html',
-  'logo.png',
   'background.jpg',
   'favicon.ico',
 ])

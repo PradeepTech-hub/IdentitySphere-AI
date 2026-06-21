@@ -7,6 +7,10 @@
 </p>
 
 <p align="center">
+  <a href="https://identity-sphere-ai.vercel.app/" target="_blank"><strong>🚀 Live Demo</strong></a>
+</p>
+
+<p align="center">
   <a href="#features">Features</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#getting-started">Getting Started</a> •
@@ -26,6 +30,7 @@
   <img src="https://img.shields.io/badge/fastapi-latest-009688?logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/tailwindcss-4-38B2AC?logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" />
   <img src="https://img.shields.io/badge/license-educational-lightgrey" alt="License" />
+  <a href="https://identity-sphere-ai.vercel.app/" target="_blank"><img src="https://img.shields.io/badge/demo-live-00C853?logo=vercel&logoColor=white" alt="Live Demo" /></a>
 </p>
 
 ---
@@ -33,6 +38,18 @@
 IdentitySphere AI consolidates identity signals from **Active Directory, Azure AD, AWS IAM, Okta, Salesforce, and ServiceNow** into a unified graph. It computes effective privilege through nested group traversal, detects cross-platform abuse patterns using rule-based and ML-driven detectors, and surfaces explainable remediation through an interactive SOC dashboard.
 
 Built as the **Option A** implementation for the *Identity Sprawl & Privileged Access Abuse* hackathon challenge.
+
+## Live Demo
+
+**Production:** [https://identity-sphere-ai.vercel.app/](https://identity-sphere-ai.vercel.app/)
+
+| Portal | URL |
+|--------|-----|
+| Landing | https://identity-sphere-ai.vercel.app/ |
+| Login | https://identity-sphere-ai.vercel.app/login |
+| Admin SOC | https://identity-sphere-ai.vercel.app/admin |
+
+Use the [demo credentials](#demo-credentials) below to explore each role dashboard.
 
 ## Features
 
@@ -261,6 +278,12 @@ The test suite covers: pipeline orchestration, identity resolution, privilege ca
 
 ## Deployment
 
+### Live Application (Vercel)
+
+**URL:** [https://identity-sphere-ai.vercel.app/](https://identity-sphere-ai.vercel.app/)
+
+The frontend is deployed on Vercel via `vercel.json`. It builds the React app from `frontend/` and serves it as a static site with SPA routing.
+
 ### Frontend (Vercel)
 
 The frontend is configured for deployment on Vercel via `vercel.json`. It builds the React app from `frontend/` and serves it as a static site with SPA routing.
@@ -286,6 +309,8 @@ All configurable parameters (identity count, anomaly rates, scoring weights, det
 
 ## Documentation
 
+- [PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md) — Full project documentation (architecture, algorithms, UI design, screenshots)
+- [PROJECT_DOCUMENTATION.docx](docs/PROJECT_DOCUMENTATION.docx) — Word export (regenerate: `python scripts/md_to_docx.py`)
 - [ARCHITECTURE.md](ARCHITECTURE.md) — Pipeline stages, ML approach, evaluation metrics
 - [docs/DATA_DICTIONARY.md](docs/DATA_DICTIONARY.md) — Schema for all 8 export CSV/JSON files
 - [docs/ML_METHODOLOGY.md](docs/ML_METHODOLOGY.md) — Detailed ML methodology documentation

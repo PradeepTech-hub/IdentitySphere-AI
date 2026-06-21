@@ -232,6 +232,12 @@ Ask about a specific identity by name or ID for detailed analysis, or try:
 *All analysis uses structured evidence from IdentitySphere detectors.*`;
 }
 
+function renderBold(text) {
+  return text.split(/(\*\*[^*]+\*\*)/).map((part, k) =>
+    part.startsWith('**') ? <strong key={k} className="text-white font-semibold">{part.slice(2, -2)}</strong> : part
+  );
+}
+
 export default function Copilot() {
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'I\'m your IdentitySphere AI Security Copilot. I provide exact risk calculations, blast radius analysis, and compliance impact assessments. Ask about any identity by name or ID.' },
@@ -281,31 +287,30 @@ export default function Copilot() {
         <p className="text-sm text-slate-500 mt-1">Evidence-based identity risk analysis with exact calculations</p>
       </div>
 
-      <div className="grid lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3">
-          <GlassCard hover={false} className="p-0 flex flex-col" style={{ height: 560 }}>
-            <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      <div className="grid lg:grid-cols-4 gap-6 min-w-0">
+        <div className="lg:col-span-3 min-w-0">
+          <GlassCard hover={false} className="p-0 overflow-hidden" style={{ height: 560, display: 'flex', flexDirection: 'column' }}>
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-5 space-y-4 min-w-0">
               {messages.map((m, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-red-500/20' : 'bg-white/5'}`}>
+                <div key={i} className={`flex gap-2 sm:gap-3 min-w-0 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-red-500/20' : 'bg-white/5'}`}>
                     {m.role === 'user' ? <User size={14} className="text-red-400" /> : <Bot size={14} className="text-red-400" />}
                   </div>
-                  <div className={`max-w-[80%] min-w-0 rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bg-red-500/10 text-red-100 border border-red-500/20' : 'bg-white/[0.03] text-slate-300 border border-white/5'}`}
-                    style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                  <div className={`rounded-2xl px-3 sm:px-4 py-3 text-sm leading-relaxed min-w-0 ${m.role === 'user' ? 'bg-red-500/10 text-red-100 border border-red-500/20 max-w-[85%]' : 'bg-white/[0.03] text-slate-300 border border-white/5 max-w-full'}`}
+                    style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', overflowX: 'hidden' }}>
                     {m.content.split('\n').map((line, j) => (
                       <p key={j} className={j > 0 ? 'mt-1.5' : ''}>
-                        {line.split(/(\*\*[^*]+\*\*)/).map((part, k) =>
-                          part.startsWith('**') ? <strong key={k} className="text-white font-semibold">{part.slice(2, -2)}</strong> : part
-                        )}
+                        {line.startsWith('- ') ? (
+                          <span className="flex gap-1.5"><span className="text-red-400 shrink-0">•</span><span>{renderBold(line.slice(2))}</span></span>
+                        ) : renderBold(line)}
                       </p>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               ))}
               {typing && (
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center"><Bot size={14} className="text-red-400" /></div>
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white/5 flex items-center justify-center shrink-0"><Bot size={14} className="text-red-400" /></div>
                   <div className="bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3">
                     <div className="flex gap-1"><span className="w-2 h-2 bg-red-400 rounded-full animate-bounce" /><span className="w-2 h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} /><span className="w-2 h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} /></div>
                   </div>
@@ -313,11 +318,11 @@ export default function Copilot() {
               )}
               <div ref={endRef} />
             </div>
-            <div className="p-4 border-t border-white/5">
+            <div className="p-3 sm:p-4 border-t border-white/5 shrink-0">
               <form onSubmit={e => { e.preventDefault(); send(); }} className="flex gap-2">
                 <input value={input} onChange={e => setInput(e.target.value)} placeholder="Ask about identity risks, what-if simulations, or remediation..."
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500/50 transition-all" />
-                <button type="submit" className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-500 text-white hover:opacity-90 transition-opacity">
+                  className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500/50 transition-all" />
+                <button type="submit" className="px-3 sm:px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-500 text-white hover:opacity-90 transition-opacity shrink-0">
                   <Send size={16} />
                 </button>
               </form>

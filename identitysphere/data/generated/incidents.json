@@ -1,14 +1,12 @@
 [
   {
     "id": "INC-001",
-    "title": "Stale Account cluster (7 identities, 12 signals)",
+    "title": "Mfa Disabled cluster (5 identities, 5 signals)",
     "severity": "critical",
     "status": "open",
-    "identity": "Neha Kulkarni, Manish Joshi, Harish Pillai",
+    "identity": "Neha Kulkarni, Gaurav Reddy, Rakesh Bose",
     "identities": [
       "Neha Kulkarni",
-      "Manish Joshi",
-      "Harish Pillai",
       "Gaurav Reddy",
       "Rakesh Bose",
       "Vikram Desai",
@@ -16,64 +14,54 @@
     ],
     "identity_ids": [
       "ID-0030",
-      "ID-0068",
-      "ID-0074",
       "ID-0078",
       "ID-0079",
       "ID-0084",
       "ID-0085"
     ],
-    "created": "2026-06-21T12:25:18.527061",
-    "type": "stale_account",
+    "created": "2026-06-21T15:04:20.711949",
+    "type": "mfa_disabled",
     "risk_types": [
-      "stale_account",
       "mfa_disabled"
     ],
     "platforms": [
-      "github",
-      "active_directory",
-      "salesforce",
-      "azure_ad",
       "aws_iam",
+      "servicenow",
       "okta",
-      "servicenow"
+      "azure_ad",
+      "github"
     ],
-    "avg_score": 85.61,
+    "avg_score": 82.92,
     "max_score": 94.08,
-    "signal_count": 12,
-    "narrative": "Cluster of 12 related signal(s) across 7 identity/identities. Primary pattern: stale account.",
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 5 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
-      "Review and disable github account acct-git-ID-0030-fba7ab",
-      "Confirm with Neha Kulkarni if access is still needed",
-      "Review and disable active_directory account acct-act-ID-0030-c9a87a",
-      "Review and disable salesforce account acct-sal-ID-0030-955ef6",
-      "Review and disable azure_ad account acct-azu-ID-0030-5fa3d3",
       "Enable MFA on aws_iam for nkulkarni",
-      "Enable MFA on okta for manish.joshi",
-      "Enable MFA on active_directory for manish.joshi"
+      "Enable MFA on servicenow for gaurav.reddy",
+      "Enable MFA on okta for rakesh.bose",
+      "Enable MFA on azure_ad for vikram.desai",
+      "Enable MFA on github for pallavip96"
     ]
   },
   {
     "id": "INC-002",
-    "title": "Sod Violation cluster (5 identities, 7 signals)",
+    "title": "Sod Violation cluster (4 identities, 4 signals)",
     "severity": "critical",
     "status": "open",
-    "identity": "Neha Kulkarni, Vasudha Gowda, Manish Joshi",
+    "identity": "Neha Kulkarni, Vasudha Gowda, Vikram Desai",
     "identities": [
       "Neha Kulkarni",
       "Vasudha Gowda",
-      "Manish Joshi",
       "Vikram Desai",
       "Pallavi Pillai"
     ],
     "identity_ids": [
       "ID-0030",
       "ID-0067",
-      "ID-0068",
       "ID-0084",
       "ID-0085"
     ],
-    "created": "2026-06-21T12:25:18.527061",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
@@ -84,48 +72,39 @@
       "okta",
       "aws_iam"
     ],
-    "avg_score": 85.29,
+    "avg_score": 82.81,
     "max_score": 94.08,
-    "signal_count": 7,
-    "narrative": "Cluster of 7 related signal(s) across 5 identity/identities. Primary pattern: sod violation.",
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 4 identity/identities. Primary pattern: sod violation.",
     "remediation_steps": [
       "Separate CRM Admin + Domain Admin responsibilities across different identities",
       "Implement compensating controls if separation is not possible",
-      "Separate SSO Admin + Cloud Admin responsibilities across different identities",
-      "Separate Cloud Admin + Domain Admin responsibilities across different identities"
+      "Separate SSO Admin + Cloud Admin responsibilities across different identities"
     ]
   },
   {
     "id": "INC-003",
-    "title": "Privilege Escalation cluster (10 identities, 56 signals)",
+    "title": "Privilege Escalation cluster (6 identities, 37 signals)",
     "severity": "critical",
     "status": "open",
-    "identity": "Vasudha Gowda, Manish Joshi, Rajesh Singh",
+    "identity": "Vasudha Gowda, Harini Murthy, Gaurav Reddy",
     "identities": [
       "Vasudha Gowda",
-      "Manish Joshi",
-      "Rajesh Singh",
       "Harini Murthy",
-      "Harish Pillai",
       "Gaurav Reddy",
       "Rakesh Bose",
-      "Varun Mehta",
       "Vikram Desai",
       "Pallavi Pillai"
     ],
     "identity_ids": [
       "ID-0067",
-      "ID-0068",
-      "ID-0072",
       "ID-0073",
-      "ID-0074",
       "ID-0078",
       "ID-0079",
-      "ID-0082",
       "ID-0084",
       "ID-0085"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "privilege_escalation",
     "risk_types": [
       "privilege_escalation"
@@ -135,13 +114,12 @@
       "servicenow",
       "github",
       "salesforce",
-      "okta",
       "active_directory"
     ],
-    "avg_score": 83.2,
+    "avg_score": 84.08,
     "max_score": 94.08,
-    "signal_count": 56,
-    "narrative": "Cluster of 56 related signal(s) across 10 identity/identities. Primary pattern: privilege escalation.",
+    "signal_count": 37,
+    "narrative": "Cluster of 37 related signal(s) across 6 identity/identities. Primary pattern: privilege escalation.",
     "remediation_steps": [
       "Investigate group_added on aws_iam",
       "Verify authorization for role: PowerUserAccess",
@@ -165,7 +143,7 @@
     "identity_ids": [
       "ID-0085"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -198,7 +176,7 @@
     "identity_ids": [
       "ID-0066"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -221,25 +199,19 @@
   },
   {
     "id": "INC-006",
-    "title": "Privilege Escalation cluster (5 identities, 31 signals)",
+    "title": "Privilege Escalation cluster (Ramesh Gupta, Usha Kulkarni)",
     "severity": "critical",
     "status": "open",
-    "identity": "Ramesh Gupta, Janaki Bose, Ganesh Rao",
+    "identity": "Ramesh Gupta, Usha Kulkarni",
     "identities": [
       "Ramesh Gupta",
-      "Janaki Bose",
-      "Ganesh Rao",
-      "Usha Kulkarni",
-      "Shreya Agarwal"
+      "Usha Kulkarni"
     ],
     "identity_ids": [
       "ID-0066",
-      "ID-0070",
-      "ID-0075",
-      "ID-0080",
-      "ID-0081"
+      "ID-0080"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "privilege_escalation",
     "risk_types": [
       "privilege_escalation"
@@ -248,15 +220,14 @@
       "github",
       "servicenow",
       "okta",
-      "aws_iam",
       "active_directory",
       "azure_ad",
       "salesforce"
     ],
-    "avg_score": 83.57,
+    "avg_score": 86.36,
     "max_score": 91.27,
-    "signal_count": 31,
-    "narrative": "Cluster of 31 related signal(s) across 5 identity/identities. Primary pattern: privilege escalation.",
+    "signal_count": 14,
+    "narrative": "Cluster of 14 related signal(s) across 2 identity/identities. Primary pattern: privilege escalation.",
     "remediation_steps": [
       "Investigate role_assigned on github",
       "Verify authorization for role: Owner",
@@ -270,27 +241,23 @@
   },
   {
     "id": "INC-007",
-    "title": "Cross Platform Admin cluster (6 identities, 6 signals)",
+    "title": "Cross Platform Admin cluster (4 identities, 4 signals)",
     "severity": "critical",
     "status": "open",
-    "identity": "Neha Kulkarni, Harish Pillai, Gaurav Reddy",
+    "identity": "Neha Kulkarni, Gaurav Reddy, Rakesh Bose",
     "identities": [
       "Neha Kulkarni",
-      "Harish Pillai",
       "Gaurav Reddy",
       "Rakesh Bose",
-      "Varun Mehta",
       "Vikram Desai"
     ],
     "identity_ids": [
       "ID-0030",
-      "ID-0074",
       "ID-0078",
       "ID-0079",
-      "ID-0082",
       "ID-0084"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -298,87 +265,105 @@
     "platforms": [
       "active_directory",
       "salesforce",
-      "okta",
-      "servicenow"
+      "servicenow",
+      "okta"
     ],
-    "avg_score": 81.95,
+    "avg_score": 80.13,
     "max_score": 86.88,
-    "signal_count": 6,
-    "narrative": "Cluster of 6 related signal(s) across 6 identity/identities. Primary pattern: cross platform admin.",
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 4 identity/identities. Primary pattern: cross platform admin.",
     "remediation_steps": [
       "Review admin necessity on active_directory for Neha Kulkarni",
       "Review admin necessity on salesforce for Neha Kulkarni",
       "Consider implementing just-in-time (JIT) admin access",
-      "Review admin necessity on okta for Harish Pillai",
-      "Review admin necessity on salesforce for Harish Pillai",
       "Review admin necessity on active_directory for Gaurav Reddy",
       "Review admin necessity on servicenow for Gaurav Reddy",
-      "Review admin necessity on active_directory for Rakesh Bose"
+      "Review admin necessity on active_directory for Rakesh Bose",
+      "Review admin necessity on okta for Rakesh Bose",
+      "Review admin necessity on active_directory for Vikram Desai"
     ]
   },
   {
     "id": "INC-008",
-    "title": "Offboarding Gap: Neha Kulkarni",
+    "title": "Privilege Escalation cluster (4 identities, 23 signals)",
     "severity": "critical",
     "status": "open",
-    "identity": "Neha Kulkarni",
+    "identity": "Janaki Bose, Akash Singh, Ganesh Rao",
     "identities": [
-      "Neha Kulkarni"
-    ],
-    "identity_ids": [
-      "ID-0030"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "offboarding_gap",
-    "risk_types": [
-      "offboarding_gap"
-    ],
-    "platforms": [
-      "github",
-      "active_directory",
-      "azure_ad"
-    ],
-    "avg_score": 86.87,
-    "max_score": 86.87,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
-    "remediation_steps": [
-      "Immediately disable account on github",
-      "Immediately disable account on active_directory",
-      "Immediately disable account on azure_ad",
-      "Audit for any unauthorized access since termination date"
-    ]
-  },
-  {
-    "id": "INC-009",
-    "title": "Cross Platform Admin cluster (Ganesh Rao, Shreya Agarwal)",
-    "severity": "critical",
-    "status": "open",
-    "identity": "Ganesh Rao, Shreya Agarwal",
-    "identities": [
+      "Janaki Bose",
+      "Akash Singh",
       "Ganesh Rao",
       "Shreya Agarwal"
     ],
     "identity_ids": [
+      "ID-0070",
+      "ID-0071",
       "ID-0075",
       "ID-0081"
     ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "cross_platform_admin",
+    "created": "2026-06-21T15:04:20.711949",
+    "type": "privilege_escalation",
     "risk_types": [
+      "privilege_escalation"
+    ],
+    "platforms": [
+      "okta",
+      "aws_iam",
+      "servicenow",
+      "salesforce",
+      "active_directory",
+      "azure_ad"
+    ],
+    "avg_score": 80.6,
+    "max_score": 85.46,
+    "signal_count": 23,
+    "narrative": "Cluster of 23 related signal(s) across 4 identity/identities. Primary pattern: privilege escalation.",
+    "remediation_steps": [
+      "Investigate permission_changed on okta",
+      "Verify authorization for role: Super Admin",
+      "Revert change if unauthorized",
+      "Investigate permission_changed on aws_iam",
+      "Verify authorization for role: IAMFullAccess",
+      "Investigate role_assigned on okta",
+      "Verify authorization for role: Org Admin",
+      "Investigate group_added on servicenow"
+    ]
+  },
+  {
+    "id": "INC-009",
+    "title": "Orphaned Account cluster (Akash Singh, Ganesh Rao, Shreya Agarwal)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Akash Singh, Ganesh Rao, Shreya Agarwal",
+    "identities": [
+      "Akash Singh",
+      "Ganesh Rao",
+      "Shreya Agarwal"
+    ],
+    "identity_ids": [
+      "ID-0071",
+      "ID-0075",
+      "ID-0081"
+    ],
+    "created": "2026-06-21T15:04:20.711949",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
       "cross_platform_admin"
     ],
     "platforms": [
-      "aws_iam",
+      "salesforce",
       "servicenow",
-      "azure_ad",
-      "salesforce"
+      "aws_iam",
+      "azure_ad"
     ],
-    "avg_score": 80.85,
+    "avg_score": 80.14,
     "max_score": 85.46,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
+      "Disable salesforce account acct-sal-ID-0071-a9fc63 immediately",
+      "Disable servicenow account acct-ser-ID-0071-4b2c1b immediately",
       "Review admin necessity on aws_iam for Ganesh Rao",
       "Review admin necessity on servicenow for Ganesh Rao",
       "Consider implementing just-in-time (JIT) admin access",
@@ -388,40 +373,67 @@
   },
   {
     "id": "INC-010",
-    "title": "Mfa Disabled cluster (Usha Kulkarni, Shreya Agarwal)",
+    "title": "Mfa Disabled: Shreya Agarwal",
     "severity": "critical",
     "status": "open",
-    "identity": "Usha Kulkarni, Shreya Agarwal",
+    "identity": "Shreya Agarwal",
     "identities": [
-      "Usha Kulkarni",
       "Shreya Agarwal"
     ],
     "identity_ids": [
-      "ID-0080",
       "ID-0081"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "mfa_disabled",
     "risk_types": [
       "mfa_disabled"
     ],
     "platforms": [
-      "salesforce",
-      "okta",
       "aws_iam"
     ],
-    "avg_score": 81.7,
+    "avg_score": 85.46,
     "max_score": 85.46,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 2 identity/identities. Primary pattern: mfa disabled.",
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
-      "Enable MFA on salesforce for usha.kulkarni",
-      "Enable MFA on okta for usha.kulkarni",
       "Enable MFA on aws_iam for sagarwal"
     ]
   },
   {
     "id": "INC-011",
+    "title": "Mfa Disabled cluster (Manish Joshi, Harish Pillai)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Manish Joshi, Harish Pillai",
+    "identities": [
+      "Manish Joshi",
+      "Harish Pillai"
+    ],
+    "identity_ids": [
+      "ID-0068",
+      "ID-0074"
+    ],
+    "created": "2026-06-21T15:04:20.711949",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "okta",
+      "active_directory"
+    ],
+    "avg_score": 84.3,
+    "max_score": 84.5,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 2 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on okta for manish.joshi",
+      "Enable MFA on active_directory for manish.joshi",
+      "Enable MFA on active_directory for harish.pillai"
+    ]
+  },
+  {
+    "id": "INC-012",
     "title": "Cross Platform Admin cluster (Manish Joshi, Harish Pillai)",
     "severity": "critical",
     "status": "open",
@@ -434,7 +446,7 @@
       "ID-0068",
       "ID-0074"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin",
@@ -457,78 +469,166 @@
       "Review admin necessity on okta for Manish Joshi",
       "Review admin necessity on salesforce for Manish Joshi",
       "Consider implementing just-in-time (JIT) admin access",
-      "Disable github account acct-git-ID-0074-0a959b immediately",
-      "Disable okta account acct-okt-ID-0074-1ae761 immediately",
-      "Disable salesforce account acct-sal-ID-0074-de6a65 immediately"
-    ]
-  },
-  {
-    "id": "INC-012",
-    "title": "Orphaned Account: Akash Singh",
-    "severity": "critical",
-    "status": "open",
-    "identity": "Akash Singh",
-    "identities": [
-      "Akash Singh"
-    ],
-    "identity_ids": [
-      "ID-0071"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "orphaned_account",
-    "risk_types": [
-      "orphaned_account"
-    ],
-    "platforms": [
-      "salesforce",
-      "servicenow"
-    ],
-    "avg_score": 78.71,
-    "max_score": 78.71,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
-    "remediation_steps": [
-      "Disable salesforce account acct-sal-ID-0071-2d0539 immediately",
-      "Disable servicenow account acct-ser-ID-0071-bd553c immediately"
+      "Disable github account acct-git-ID-0074-345498 immediately",
+      "Disable okta account acct-okt-ID-0074-8036f9 immediately",
+      "Disable salesforce account acct-sal-ID-0074-d3c346 immediately"
     ]
   },
   {
     "id": "INC-013",
-    "title": "Privilege Escalation: Akash Singh",
+    "title": "Sod Violation: Manish Joshi",
     "severity": "critical",
     "status": "open",
-    "identity": "Akash Singh",
+    "identity": "Manish Joshi",
     "identities": [
-      "Akash Singh"
+      "Manish Joshi"
     ],
     "identity_ids": [
-      "ID-0071"
+      "ID-0068"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "aws_iam",
+      "active_directory",
+      "okta",
+      "salesforce"
+    ],
+    "avg_score": 84.5,
+    "max_score": 84.5,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate Cloud Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible",
+      "Separate SSO Admin + Cloud Admin responsibilities across different identities",
+      "Separate CRM Admin + Domain Admin responsibilities across different identities"
+    ]
+  },
+  {
+    "id": "INC-014",
+    "title": "Privilege Escalation cluster (5 identities, 23 signals)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Manish Joshi, Rajesh Singh, Harish Pillai",
+    "identities": [
+      "Manish Joshi",
+      "Rajesh Singh",
+      "Harish Pillai",
+      "Varun Mehta",
+      "Aarav Pandey"
+    ],
+    "identity_ids": [
+      "ID-0068",
+      "ID-0072",
+      "ID-0074",
+      "ID-0082",
+      "ID-0083"
+    ],
+    "created": "2026-06-21T15:04:20.711949",
     "type": "privilege_escalation",
     "risk_types": [
       "privilege_escalation"
     ],
     "platforms": [
+      "salesforce",
+      "okta",
+      "active_directory",
+      "aws_iam",
       "servicenow",
-      "salesforce"
+      "github"
     ],
-    "avg_score": 78.71,
-    "max_score": 78.71,
-    "signal_count": 6,
-    "narrative": "Cluster of 6 related signal(s) across 1 identity/identities. Primary pattern: privilege escalation.",
+    "avg_score": 80.47,
+    "max_score": 84.5,
+    "signal_count": 23,
+    "narrative": "Cluster of 23 related signal(s) across 5 identity/identities. Primary pattern: privilege escalation.",
     "remediation_steps": [
-      "Investigate permission_changed on servicenow",
-      "Verify authorization for role: security_admin",
-      "Revert change if unauthorized",
-      "Investigate group_added on salesforce",
+      "Investigate role_assigned on salesforce",
       "Verify authorization for role: System Administrator",
-      "Investigate permission_changed on salesforce",
-      "Verify authorization for role: Modify All Data"
+      "Revert change if unauthorized",
+      "Investigate role_assigned on okta",
+      "Verify authorization for role: App Admin",
+      "Investigate group_added on salesforce",
+      "Verify authorization for role: Modify All Data",
+      "Investigate group_added on active_directory"
     ]
   },
   {
-    "id": "INC-014",
+    "id": "INC-015",
+    "title": "Cross Platform Admin cluster (Harish Pillai, Varun Mehta, Aarav Pandey)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Harish Pillai, Varun Mehta, Aarav Pandey",
+    "identities": [
+      "Harish Pillai",
+      "Varun Mehta",
+      "Aarav Pandey"
+    ],
+    "identity_ids": [
+      "ID-0074",
+      "ID-0082",
+      "ID-0083"
+    ],
+    "created": "2026-06-21T15:04:20.711949",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "okta",
+      "salesforce",
+      "servicenow",
+      "aws_iam"
+    ],
+    "avg_score": 78.13,
+    "max_score": 83.9,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on okta for Harish Pillai",
+      "Review admin necessity on salesforce for Harish Pillai",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on okta for Varun Mehta",
+      "Review admin necessity on servicenow for Varun Mehta",
+      "Review admin necessity on aws_iam for Aarav Pandey",
+      "Review admin necessity on servicenow for Aarav Pandey"
+    ]
+  },
+  {
+    "id": "INC-016",
+    "title": "Mfa Disabled: Usha Kulkarni",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Usha Kulkarni",
+    "identities": [
+      "Usha Kulkarni"
+    ],
+    "identity_ids": [
+      "ID-0080"
+    ],
+    "created": "2026-06-21T15:04:20.711949",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "salesforce",
+      "okta"
+    ],
+    "avg_score": 79.81,
+    "max_score": 79.81,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on salesforce for usha.kulkarni",
+      "Enable MFA on okta for usha.kulkarni"
+    ]
+  },
+  {
+    "id": "INC-017",
     "title": "Privilege Escalation cluster (Rohit Joshi, Lakshmi Shetty)",
     "severity": "critical",
     "status": "open",
@@ -541,7 +641,7 @@
       "ID-0069",
       "ID-0077"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "privilege_escalation",
     "risk_types": [
       "privilege_escalation"
@@ -568,7 +668,7 @@
     ]
   },
   {
-    "id": "INC-015",
+    "id": "INC-018",
     "title": "Cross Platform Admin: Vasudha Gowda",
     "severity": "critical",
     "status": "open",
@@ -579,7 +679,7 @@
     "identity_ids": [
       "ID-0067"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -601,74 +701,7 @@
     ]
   },
   {
-    "id": "INC-016",
-    "title": "Cross Platform Admin: Aarav Pandey",
-    "severity": "critical",
-    "status": "open",
-    "identity": "Aarav Pandey",
-    "identities": [
-      "Aarav Pandey"
-    ],
-    "identity_ids": [
-      "ID-0083"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "cross_platform_admin",
-    "risk_types": [
-      "cross_platform_admin"
-    ],
-    "platforms": [
-      "aws_iam",
-      "servicenow"
-    ],
-    "avg_score": 75.51,
-    "max_score": 75.51,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
-    "remediation_steps": [
-      "Review admin necessity on aws_iam for Aarav Pandey",
-      "Review admin necessity on servicenow for Aarav Pandey",
-      "Consider implementing just-in-time (JIT) admin access"
-    ]
-  },
-  {
-    "id": "INC-017",
-    "title": "Privilege Escalation: Aarav Pandey",
-    "severity": "critical",
-    "status": "open",
-    "identity": "Aarav Pandey",
-    "identities": [
-      "Aarav Pandey"
-    ],
-    "identity_ids": [
-      "ID-0083"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "privilege_escalation",
-    "risk_types": [
-      "privilege_escalation"
-    ],
-    "platforms": [
-      "aws_iam",
-      "servicenow",
-      "github"
-    ],
-    "avg_score": 75.51,
-    "max_score": 75.51,
-    "signal_count": 4,
-    "narrative": "Cluster of 4 related signal(s) across 1 identity/identities. Primary pattern: privilege escalation.",
-    "remediation_steps": [
-      "Investigate group_added on aws_iam",
-      "Verify authorization for role: AdministratorAccess",
-      "Revert change if unauthorized",
-      "Investigate role_assigned on servicenow",
-      "Verify authorization for role: itil_admin",
-      "Investigate permission_changed on github",
-      "Verify authorization for role: Admin"
-    ]
-  },
-  {
-    "id": "INC-018",
+    "id": "INC-019",
     "title": "Orphaned Account: Rohit Joshi",
     "severity": "critical",
     "status": "open",
@@ -679,7 +712,7 @@
     "identity_ids": [
       "ID-0069"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -694,13 +727,13 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable okta account acct-okt-ID-0069-ef02fc immediately",
-      "Disable aws_iam account acct-aws-ID-0069-4e5a73 immediately",
-      "Disable servicenow account acct-ser-ID-0069-07810e immediately"
+      "Disable okta account acct-okt-ID-0069-01f8b4 immediately",
+      "Disable aws_iam account acct-aws-ID-0069-5816b3 immediately",
+      "Disable servicenow account acct-ser-ID-0069-e9159a immediately"
     ]
   },
   {
-    "id": "INC-019",
+    "id": "INC-020",
     "title": "Cross Platform Admin: Rohit Joshi",
     "severity": "critical",
     "status": "open",
@@ -711,7 +744,7 @@
     "identity_ids": [
       "ID-0069"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -731,96 +764,34 @@
     ]
   },
   {
-    "id": "INC-020",
-    "title": "Stale Account cluster (10 identities, 30 signals)",
-    "severity": "high",
-    "status": "open",
-    "identity": "Ishaan Naik, Varun Pillai, Manish Kamath",
-    "identities": [
-      "Ishaan Naik",
-      "Varun Pillai",
-      "Manish Kamath",
-      "Mohan Pillai",
-      "Suraj Joshi",
-      "Pooja Naik",
-      "Pallavi Naik",
-      "Vinay Hegde",
-      "Harini Bhat",
-      "Lakshmi Singh"
-    ],
-    "identity_ids": [
-      "ID-0003",
-      "ID-0004",
-      "ID-0011",
-      "ID-0015",
-      "ID-0019",
-      "ID-0025",
-      "ID-0032",
-      "ID-0096",
-      "ID-0153",
-      "ID-0171"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "stale_account",
-    "risk_types": [
-      "stale_account",
-      "mfa_disabled"
-    ],
-    "platforms": [
-      "active_directory",
-      "salesforce",
-      "github",
-      "okta",
-      "azure_ad",
-      "aws_iam",
-      "servicenow"
-    ],
-    "avg_score": 60.38,
-    "max_score": 69.77,
-    "signal_count": 30,
-    "narrative": "Cluster of 30 related signal(s) across 10 identity/identities. Primary pattern: stale account.",
-    "remediation_steps": [
-      "Review and disable active_directory account acct-act-ID-0003-e2f8cc",
-      "Confirm with Ishaan Naik if access is still needed",
-      "Review and disable salesforce account acct-sal-ID-0003-d4c58a",
-      "Review and disable github account acct-git-ID-0004-51fbd3",
-      "Confirm with Varun Pillai if access is still needed",
-      "Review and disable active_directory account acct-act-ID-0004-e4d00e",
-      "Review and disable okta account acct-okt-ID-0004-953386",
-      "Review and disable azure_ad account acct-azu-ID-0004-4d39e1"
-    ]
-  },
-  {
     "id": "INC-021",
-    "title": "Offboarding Gap cluster (Varun Pillai, Suraj Joshi)",
-    "severity": "high",
+    "title": "Offboarding Gap: Neha Kulkarni",
+    "severity": "critical",
     "status": "open",
-    "identity": "Varun Pillai, Suraj Joshi",
+    "identity": "Neha Kulkarni",
     "identities": [
-      "Varun Pillai",
-      "Suraj Joshi"
+      "Neha Kulkarni"
     ],
     "identity_ids": [
-      "ID-0004",
-      "ID-0019"
+      "ID-0030"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "offboarding_gap",
     "risk_types": [
       "offboarding_gap"
     ],
     "platforms": [
+      "github",
       "active_directory",
-      "okta",
       "azure_ad"
     ],
-    "avg_score": 69.33,
-    "max_score": 69.77,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: offboarding gap.",
+    "avg_score": 74.57,
+    "max_score": 74.57,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
     "remediation_steps": [
+      "Immediately disable account on github",
       "Immediately disable account on active_directory",
-      "Immediately disable account on okta",
       "Immediately disable account on azure_ad",
       "Audit for any unauthorized access since termination date"
     ]
@@ -837,7 +808,7 @@
     "identity_ids": [
       "ID-0076"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "privilege_escalation",
     "risk_types": [
       "privilege_escalation"
@@ -861,227 +832,60 @@
   },
   {
     "id": "INC-023",
-    "title": "Stale Account cluster (Amit Mehta, Akash Jain, Deepak Yadav)",
+    "title": "Orphaned Account cluster (7 identities, 8 signals)",
     "severity": "high",
     "status": "open",
-    "identity": "Amit Mehta, Akash Jain, Deepak Yadav",
+    "identity": "Pallavi Naik, Vasudha Reddy, Neha Kumar",
     "identities": [
-      "Amit Mehta",
-      "Akash Jain",
-      "Deepak Yadav"
-    ],
-    "identity_ids": [
-      "ID-0018",
-      "ID-0020",
-      "ID-0027"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "stale_account",
-    "risk_types": [
-      "stale_account",
-      "mfa_disabled"
-    ],
-    "platforms": [
-      "okta",
-      "active_directory",
-      "azure_ad",
-      "aws_iam",
-      "github",
-      "servicenow"
-    ],
-    "avg_score": 60.95,
-    "max_score": 65.63,
-    "signal_count": 13,
-    "narrative": "Cluster of 13 related signal(s) across 3 identity/identities. Primary pattern: stale account.",
-    "remediation_steps": [
-      "Review and disable okta account acct-okt-ID-0018-0c5e1b",
-      "Confirm with Amit Mehta if access is still needed",
-      "Review and disable active_directory account acct-act-ID-0018-3a5ce3",
-      "Review and disable azure_ad account acct-azu-ID-0018-fefedd",
-      "Review and disable aws_iam account acct-aws-ID-0018-13f3b2",
-      "Enable MFA on okta for amit.mehta",
-      "Enable MFA on active_directory for amit.mehta",
-      "Review and disable github account acct-git-ID-0020-810d34"
-    ]
-  },
-  {
-    "id": "INC-024",
-    "title": "Offboarding Gap cluster (Amit Mehta, Deepak Yadav)",
-    "severity": "high",
-    "status": "open",
-    "identity": "Amit Mehta, Deepak Yadav",
-    "identities": [
-      "Amit Mehta",
-      "Deepak Yadav"
-    ],
-    "identity_ids": [
-      "ID-0018",
-      "ID-0027"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "offboarding_gap",
-    "risk_types": [
-      "offboarding_gap"
-    ],
-    "platforms": [
-      "okta",
-      "active_directory",
-      "servicenow",
-      "github"
-    ],
-    "avg_score": 62.92,
-    "max_score": 65.63,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: offboarding gap.",
-    "remediation_steps": [
-      "Immediately disable account on okta",
-      "Immediately disable account on active_directory",
-      "Audit for any unauthorized access since termination date",
-      "Immediately disable account on servicenow",
-      "Immediately disable account on github"
-    ]
-  },
-  {
-    "id": "INC-025",
-    "title": "Stale Account cluster (5 identities, 17 signals)",
-    "severity": "high",
-    "status": "open",
-    "identity": "Naveen Gowda, Naveen Iyer, Akash Verma",
-    "identities": [
-      "Naveen Gowda",
-      "Naveen Iyer",
-      "Akash Verma",
-      "svc-scan-ops",
-      "svc-batch-dev"
-    ],
-    "identity_ids": [
-      "ID-0000",
-      "ID-0031",
-      "ID-0049",
-      "SVC-0003",
-      "SVC-0023"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "stale_account",
-    "risk_types": [
-      "stale_account",
-      "mfa_disabled"
-    ],
-    "platforms": [
-      "active_directory",
-      "servicenow",
-      "github",
-      "azure_ad",
-      "okta",
-      "salesforce"
-    ],
-    "avg_score": 55.93,
-    "max_score": 63.43,
-    "signal_count": 17,
-    "narrative": "Cluster of 17 related signal(s) across 5 identity/identities. Primary pattern: stale account.",
-    "remediation_steps": [
-      "Review and disable active_directory account acct-act-ID-0000-519e26",
-      "Confirm with Naveen Gowda if access is still needed",
-      "Review and disable servicenow account acct-ser-ID-0000-ef4d95",
-      "Review and disable github account acct-git-ID-0000-537f7c",
-      "Review and disable azure_ad account acct-azu-ID-0000-106c35",
-      "Review and disable okta account acct-okt-ID-0031-d23e0c",
-      "Confirm with Naveen Iyer if access is still needed",
-      "Review and disable github account acct-git-ID-0031-a283d6"
-    ]
-  },
-  {
-    "id": "INC-026",
-    "title": "Offboarding Gap: Naveen Gowda",
-    "severity": "high",
-    "status": "open",
-    "identity": "Naveen Gowda",
-    "identities": [
-      "Naveen Gowda"
-    ],
-    "identity_ids": [
-      "ID-0000"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "offboarding_gap",
-    "risk_types": [
-      "offboarding_gap"
-    ],
-    "platforms": [
-      "active_directory",
-      "github"
-    ],
-    "avg_score": 63.43,
-    "max_score": 63.43,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
-    "remediation_steps": [
-      "Immediately disable account on active_directory",
-      "Immediately disable account on github",
-      "Audit for any unauthorized access since termination date"
-    ]
-  },
-  {
-    "id": "INC-027",
-    "title": "Offboarding Gap cluster (9 identities, 12 signals)",
-    "severity": "high",
-    "status": "open",
-    "identity": "Mohan Pillai, Pooja Naik, Pallavi Naik",
-    "identities": [
-      "Mohan Pillai",
-      "Pooja Naik",
       "Pallavi Naik",
       "Vasudha Reddy",
       "Neha Kumar",
       "Pooja Nair",
       "Vinay Hegde",
       "Harini Bhat",
-      "Lakshmi Singh"
+      "Aditya Bose"
     ],
     "identity_ids": [
-      "ID-0015",
-      "ID-0025",
       "ID-0032",
       "ID-0033",
       "ID-0041",
       "ID-0062",
       "ID-0096",
       "ID-0153",
-      "ID-0171"
+      "ID-0186"
     ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "offboarding_gap",
+    "created": "2026-06-21T15:04:20.711949",
+    "type": "orphaned_account",
     "risk_types": [
-      "offboarding_gap",
       "orphaned_account",
+      "offboarding_gap",
       "cross_platform_admin"
     ],
     "platforms": [
-      "azure_ad",
-      "salesforce",
-      "github",
-      "servicenow",
       "okta",
+      "servicenow",
+      "github",
       "active_directory",
+      "salesforce",
       "aws_iam"
     ],
-    "avg_score": 55.34,
+    "avg_score": 50.94,
     "max_score": 63.15,
-    "signal_count": 12,
-    "narrative": "Cluster of 12 related signal(s) across 9 identity/identities. Primary pattern: offboarding gap.",
+    "signal_count": 8,
+    "narrative": "Cluster of 8 related signal(s) across 7 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Immediately disable account on azure_ad",
-      "Immediately disable account on salesforce",
-      "Audit for any unauthorized access since termination date",
+      "Disable okta account acct-okt-ID-0032-8af1ea immediately",
+      "Disable servicenow account acct-ser-ID-0032-27a1e3 immediately",
       "Immediately disable account on github",
-      "Immediately disable account on servicenow",
-      "Disable okta account acct-okt-ID-0032-af41a1 immediately",
-      "Disable servicenow account acct-ser-ID-0032-ac12c9 immediately",
-      "Immediately disable account on okta"
+      "Immediately disable account on okta",
+      "Audit for any unauthorized access since termination date",
+      "Review admin necessity on active_directory for Vasudha Reddy",
+      "Review admin necessity on github for Vasudha Reddy",
+      "Consider implementing just-in-time (JIT) admin access"
     ]
   },
   {
-    "id": "INC-028",
+    "id": "INC-024",
     "title": "Orphaned Account: Vasudha Reddy",
     "severity": "high",
     "status": "open",
@@ -1092,7 +896,7 @@
     "identity_ids": [
       "ID-0033"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -1105,120 +909,157 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable aws_iam account acct-aws-ID-0033-211912 immediately"
+      "Disable aws_iam account acct-aws-ID-0033-450614 immediately"
     ]
   },
   {
-    "id": "INC-029",
-    "title": "Offboarding Gap: Manish Kamath",
+    "id": "INC-025",
+    "title": "Offboarding Gap: Vasudha Reddy",
     "severity": "high",
     "status": "open",
-    "identity": "Manish Kamath",
+    "identity": "Vasudha Reddy",
     "identities": [
-      "Manish Kamath"
+      "Vasudha Reddy"
     ],
     "identity_ids": [
-      "ID-0011"
+      "ID-0033"
     ],
-    "created": "2026-06-21T12:25:18.528038",
+    "created": "2026-06-21T15:04:20.711949",
     "type": "offboarding_gap",
     "risk_types": [
       "offboarding_gap"
     ],
     "platforms": [
-      "aws_iam"
+      "aws_iam",
+      "active_directory"
     ],
-    "avg_score": 60.68,
-    "max_score": 60.68,
+    "avg_score": 63.15,
+    "max_score": 63.15,
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
     "remediation_steps": [
       "Immediately disable account on aws_iam",
+      "Immediately disable account on active_directory",
       "Audit for any unauthorized access since termination date"
     ]
   },
   {
-    "id": "INC-030",
-    "title": "Stale Account: Mohan Patil",
+    "id": "INC-026",
+    "title": "Orphaned Account cluster (Meera Hegde, Divya Chakraborty, Lakshmi Singh)",
     "severity": "high",
     "status": "open",
-    "identity": "Mohan Patil",
+    "identity": "Meera Hegde, Divya Chakraborty, Lakshmi Singh",
     "identities": [
-      "Mohan Patil"
-    ],
-    "identity_ids": [
-      "ID-0005"
-    ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "stale_account",
-    "risk_types": [
-      "stale_account"
-    ],
-    "platforms": [
-      "aws_iam",
-      "okta",
-      "salesforce",
-      "github"
-    ],
-    "avg_score": 57.44,
-    "max_score": 57.44,
-    "signal_count": 4,
-    "narrative": "Cluster of 4 related signal(s) across 1 identity/identities. Primary pattern: stale account.",
-    "remediation_steps": [
-      "Review and disable aws_iam account acct-aws-ID-0005-a5c35a",
-      "Confirm with Mohan Patil if access is still needed",
-      "Review and disable okta account acct-okt-ID-0005-dd7282",
-      "Review and disable salesforce account acct-sal-ID-0005-883f67",
-      "Review and disable github account acct-git-ID-0005-9f4059"
-    ]
-  },
-  {
-    "id": "INC-031",
-    "title": "Offboarding Gap cluster (Mohan Patil, Meera Hegde, Divya Chakraborty)",
-    "severity": "high",
-    "status": "open",
-    "identity": "Mohan Patil, Meera Hegde, Divya Chakraborty",
-    "identities": [
-      "Mohan Patil",
       "Meera Hegde",
-      "Divya Chakraborty"
+      "Divya Chakraborty",
+      "Lakshmi Singh"
     ],
     "identity_ids": [
-      "ID-0005",
       "ID-0013",
-      "ID-0090"
+      "ID-0090",
+      "ID-0171"
     ],
-    "created": "2026-06-21T12:25:18.528038",
-    "type": "offboarding_gap",
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "orphaned_account",
     "risk_types": [
-      "offboarding_gap",
       "orphaned_account",
       "cross_platform_admin"
     ],
     "platforms": [
-      "okta",
       "salesforce",
       "github",
-      "azure_ad"
+      "azure_ad",
+      "servicenow",
+      "aws_iam"
     ],
-    "avg_score": 52.73,
-    "max_score": 57.44,
-    "signal_count": 5,
-    "narrative": "Cluster of 5 related signal(s) across 3 identity/identities. Primary pattern: offboarding gap.",
+    "avg_score": 53.78,
+    "max_score": 58.25,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 3 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Immediately disable account on okta",
-      "Immediately disable account on salesforce",
-      "Audit for any unauthorized access since termination date",
-      "Disable salesforce account acct-sal-ID-0013-b88c1f immediately",
-      "Disable github account acct-git-ID-0013-0032f1 immediately",
+      "Disable salesforce account acct-sal-ID-0013-20a372 immediately",
+      "Disable github account acct-git-ID-0013-2e4539 immediately",
       "Review admin necessity on github for Meera Hegde",
       "Review admin necessity on salesforce for Meera Hegde",
-      "Consider implementing just-in-time (JIT) admin access"
+      "Consider implementing just-in-time (JIT) admin access",
+      "Disable salesforce account acct-sal-ID-0090-6f5842 immediately",
+      "Disable azure_ad account acct-azu-ID-0090-a97305 immediately",
+      "Review admin necessity on azure_ad for Divya Chakraborty"
     ]
   },
   {
-    "id": "INC-032",
-    "title": "Sod Violation: Vinay Hegde",
+    "id": "INC-027",
+    "title": "Mfa Disabled: Lakshmi Singh",
+    "severity": "high",
+    "status": "open",
+    "identity": "Lakshmi Singh",
+    "identities": [
+      "Lakshmi Singh"
+    ],
+    "identity_ids": [
+      "ID-0171"
+    ],
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "servicenow",
+      "aws_iam"
+    ],
+    "avg_score": 58.25,
+    "max_score": 58.25,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on servicenow for lakshmi.singh",
+      "Enable MFA on aws_iam for lsingh"
+    ]
+  },
+  {
+    "id": "INC-028",
+    "title": "Sod Violation cluster (4 identities, 4 signals)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Sarita Mishra, Vinay Hegde, Ananya Sharma",
+    "identities": [
+      "Sarita Mishra",
+      "Vinay Hegde",
+      "Ananya Sharma",
+      "Aditya Bose"
+    ],
+    "identity_ids": [
+      "ID-0091",
+      "ID-0096",
+      "ID-0097",
+      "ID-0186"
+    ],
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "salesforce",
+      "active_directory",
+      "aws_iam",
+      "okta"
+    ],
+    "avg_score": 49.56,
+    "max_score": 56.13,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 4 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible",
+      "Separate Cloud Admin + Domain Admin responsibilities across different identities",
+      "Separate SSO Admin + Cloud Admin responsibilities across different identities"
+    ]
+  },
+  {
+    "id": "INC-029",
+    "title": "Mfa Disabled: Vinay Hegde",
     "severity": "high",
     "status": "open",
     "identity": "Vinay Hegde",
@@ -1228,26 +1069,28 @@
     "identity_ids": [
       "ID-0096"
     ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "sod_violation",
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "mfa_disabled",
     "risk_types": [
-      "sod_violation"
+      "mfa_disabled"
     ],
     "platforms": [
-      "aws_iam",
-      "active_directory"
+      "active_directory",
+      "azure_ad",
+      "aws_iam"
     ],
     "avg_score": 56.13,
     "max_score": 56.13,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
-      "Separate Cloud Admin + Domain Admin responsibilities across different identities",
-      "Implement compensating controls if separation is not possible"
+      "Enable MFA on active_directory for vinay.hegde",
+      "Enable MFA on azure_ad for vinay.hegde",
+      "Enable MFA on aws_iam for vhegde"
     ]
   },
   {
-    "id": "INC-033",
+    "id": "INC-030",
     "title": "Token Abuse: Vinay Hegde",
     "severity": "high",
     "status": "open",
@@ -1258,16 +1101,16 @@
     "identity_ids": [
       "ID-0096"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
     ],
     "platforms": [
-      "azure_ad",
+      "active_directory",
       "aws_iam",
       "github",
-      "active_directory"
+      "azure_ad"
     ],
     "avg_score": 56.13,
     "max_score": 56.13,
@@ -1280,45 +1123,56 @@
     ]
   },
   {
-    "id": "INC-034",
-    "title": "Orphaned Account: Rohit Nair",
+    "id": "INC-031",
+    "title": "Orphaned Account cluster (4 identities, 5 signals)",
     "severity": "high",
     "status": "open",
-    "identity": "Rohit Nair",
+    "identity": "Rohit Nair, Sarita Mishra, Ananya Sharma",
     "identities": [
-      "Rohit Nair"
+      "Rohit Nair",
+      "Sarita Mishra",
+      "Ananya Sharma",
+      "Aditya Bose"
     ],
     "identity_ids": [
-      "ID-0007"
+      "ID-0007",
+      "ID-0091",
+      "ID-0097",
+      "ID-0186"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account",
-      "offboarding_gap"
+      "offboarding_gap",
+      "cross_platform_admin"
     ],
     "platforms": [
       "aws_iam",
       "servicenow",
       "azure_ad",
-      "github"
+      "github",
+      "active_directory",
+      "salesforce",
+      "okta"
     ],
-    "avg_score": 53.86,
+    "avg_score": 49.97,
     "max_score": 53.86,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 4 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable aws_iam account acct-aws-ID-0007-c176d9 immediately",
-      "Disable servicenow account acct-ser-ID-0007-e32f41 immediately",
-      "Disable azure_ad account acct-azu-ID-0012-83b204 immediately",
+      "Disable aws_iam account acct-aws-ID-0007-d93986 immediately",
+      "Disable servicenow account acct-ser-ID-0007-7b3e0e immediately",
+      "Disable azure_ad account acct-azu-ID-0012-a99619 immediately",
       "Immediately disable account on aws_iam",
       "Immediately disable account on servicenow",
       "Immediately disable account on github",
-      "Audit for any unauthorized access since termination date"
+      "Audit for any unauthorized access since termination date",
+      "Review admin necessity on active_directory for Sarita Mishra"
     ]
   },
   {
-    "id": "INC-035",
+    "id": "INC-032",
     "title": "Offboarding Gap: Meera Hegde",
     "severity": "high",
     "status": "open",
@@ -1329,7 +1183,7 @@
     "identity_ids": [
       "ID-0013"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "offboarding_gap",
     "risk_types": [
       "offboarding_gap"
@@ -1347,48 +1201,69 @@
     ]
   },
   {
-    "id": "INC-036",
-    "title": "Orphaned Account cluster (Neha Kumar, Pooja Nair)",
+    "id": "INC-033",
+    "title": "Orphaned Account: Pooja Nair",
     "severity": "high",
     "status": "open",
-    "identity": "Neha Kumar, Pooja Nair",
+    "identity": "Pooja Nair",
     "identities": [
-      "Neha Kumar",
       "Pooja Nair"
     ],
     "identity_ids": [
-      "ID-0041",
       "ID-0062"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
     ],
     "platforms": [
-      "aws_iam",
       "active_directory",
       "okta",
-      "salesforce",
+      "aws_iam",
       "servicenow"
     ],
-    "avg_score": 52.31,
+    "avg_score": 53.47,
     "max_score": 53.47,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: orphaned account.",
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable aws_iam account acct-aws-ID-0041-9157fc immediately",
-      "Disable active_directory account acct-act-ID-0041-4f6687 immediately",
-      "Disable okta account acct-okt-ID-0041-408db5 immediately",
-      "Disable salesforce account acct-sal-ID-0041-27279e immediately",
-      "Disable active_directory account acct-act-ID-0062-70ef0d immediately",
-      "Disable okta account acct-okt-ID-0062-e9f9a3 immediately",
-      "Disable aws_iam account acct-aws-ID-0062-ba9c1c immediately",
-      "Disable servicenow account acct-ser-ID-0062-b5e80f immediately"
+      "Disable active_directory account acct-act-ID-0062-a1bbc0 immediately",
+      "Disable okta account acct-okt-ID-0062-42a6ec immediately",
+      "Disable aws_iam account acct-aws-ID-0062-9a415c immediately",
+      "Disable servicenow account acct-ser-ID-0062-98b992 immediately"
     ]
   },
   {
-    "id": "INC-037",
+    "id": "INC-034",
+    "title": "Mfa Disabled: Akash Verma",
+    "severity": "high",
+    "status": "open",
+    "identity": "Akash Verma",
+    "identities": [
+      "Akash Verma"
+    ],
+    "identity_ids": [
+      "ID-0049"
+    ],
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "active_directory"
+    ],
+    "avg_score": 51.59,
+    "max_score": 51.59,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on active_directory for akash.verma"
+    ]
+  },
+  {
+    "id": "INC-035",
     "title": "Cross Platform Admin: Akash Verma",
     "severity": "high",
     "status": "open",
@@ -1399,7 +1274,7 @@
     "identity_ids": [
       "ID-0049"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -1421,90 +1296,7 @@
     ]
   },
   {
-    "id": "INC-038",
-    "title": "Cross Platform Admin cluster (Sarita Mishra, Ananya Sharma, Aditya Bose)",
-    "severity": "high",
-    "status": "open",
-    "identity": "Sarita Mishra, Ananya Sharma, Aditya Bose",
-    "identities": [
-      "Sarita Mishra",
-      "Ananya Sharma",
-      "Aditya Bose"
-    ],
-    "identity_ids": [
-      "ID-0091",
-      "ID-0097",
-      "ID-0186"
-    ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "cross_platform_admin",
-    "risk_types": [
-      "cross_platform_admin",
-      "orphaned_account"
-    ],
-    "platforms": [
-      "active_directory",
-      "salesforce",
-      "servicenow",
-      "aws_iam",
-      "okta",
-      "azure_ad"
-    ],
-    "avg_score": 47.37,
-    "max_score": 51.16,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: cross platform admin.",
-    "remediation_steps": [
-      "Review admin necessity on active_directory for Sarita Mishra",
-      "Review admin necessity on salesforce for Sarita Mishra",
-      "Review admin necessity on servicenow for Sarita Mishra",
-      "Consider implementing just-in-time (JIT) admin access",
-      "Review admin necessity on active_directory for Ananya Sharma",
-      "Review admin necessity on aws_iam for Ananya Sharma",
-      "Review admin necessity on servicenow for Ananya Sharma",
-      "Disable okta account acct-okt-ID-0186-c61540 immediately"
-    ]
-  },
-  {
-    "id": "INC-039",
-    "title": "Sod Violation cluster (Sarita Mishra, Ananya Sharma, Aditya Bose)",
-    "severity": "high",
-    "status": "open",
-    "identity": "Sarita Mishra, Ananya Sharma, Aditya Bose",
-    "identities": [
-      "Sarita Mishra",
-      "Ananya Sharma",
-      "Aditya Bose"
-    ],
-    "identity_ids": [
-      "ID-0091",
-      "ID-0097",
-      "ID-0186"
-    ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "sod_violation",
-    "risk_types": [
-      "sod_violation"
-    ],
-    "platforms": [
-      "salesforce",
-      "active_directory",
-      "aws_iam",
-      "okta"
-    ],
-    "avg_score": 47.37,
-    "max_score": 51.16,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: sod violation.",
-    "remediation_steps": [
-      "Separate CRM Admin + Domain Admin responsibilities across different identities",
-      "Implement compensating controls if separation is not possible",
-      "Separate Cloud Admin + Domain Admin responsibilities across different identities",
-      "Separate SSO Admin + Cloud Admin responsibilities across different identities"
-    ]
-  },
-  {
-    "id": "INC-040",
+    "id": "INC-036",
     "title": "Token Abuse: Ananya Sharma",
     "severity": "high",
     "status": "open",
@@ -1515,15 +1307,15 @@
     "identity_ids": [
       "ID-0097"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
     ],
     "platforms": [
       "aws_iam",
-      "servicenow",
-      "github"
+      "github",
+      "servicenow"
     ],
     "avg_score": 51.16,
     "max_score": 51.16,
@@ -1536,65 +1328,41 @@
     ]
   },
   {
-    "id": "INC-041",
-    "title": "Offboarding Gap: Naveen Iyer",
+    "id": "INC-037",
+    "title": "Orphaned Account: Neha Kumar",
     "severity": "high",
     "status": "open",
-    "identity": "Naveen Iyer",
+    "identity": "Neha Kumar",
     "identities": [
-      "Naveen Iyer"
+      "Neha Kumar"
     ],
     "identity_ids": [
-      "ID-0031"
+      "ID-0041"
     ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "offboarding_gap",
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "orphaned_account",
     "risk_types": [
-      "offboarding_gap"
+      "orphaned_account"
     ],
     "platforms": [
-      "github"
+      "aws_iam",
+      "active_directory",
+      "okta",
+      "salesforce"
     ],
-    "avg_score": 50.78,
-    "max_score": 50.78,
+    "avg_score": 51.14,
+    "max_score": 51.14,
     "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Immediately disable account on github",
-      "Audit for any unauthorized access since termination date"
+      "Disable aws_iam account acct-aws-ID-0041-03d689 immediately",
+      "Disable active_directory account acct-act-ID-0041-60f773 immediately",
+      "Disable okta account acct-okt-ID-0041-922a56 immediately",
+      "Disable salesforce account acct-sal-ID-0041-a4c04e immediately"
     ]
   },
   {
-    "id": "INC-042",
-    "title": "Offboarding Gap: Ishaan Naik",
-    "severity": "high",
-    "status": "open",
-    "identity": "Ishaan Naik",
-    "identities": [
-      "Ishaan Naik"
-    ],
-    "identity_ids": [
-      "ID-0003"
-    ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "offboarding_gap",
-    "risk_types": [
-      "offboarding_gap"
-    ],
-    "platforms": [
-      "active_directory"
-    ],
-    "avg_score": 50.47,
-    "max_score": 50.47,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
-    "remediation_steps": [
-      "Immediately disable account on active_directory",
-      "Audit for any unauthorized access since termination date"
-    ]
-  },
-  {
-    "id": "INC-043",
+    "id": "INC-038",
     "title": "Token Abuse: Divya Chakraborty",
     "severity": "high",
     "status": "open",
@@ -1605,14 +1373,14 @@
     "identity_ids": [
       "ID-0090"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
     ],
     "platforms": [
-      "azure_ad",
-      "salesforce"
+      "salesforce",
+      "azure_ad"
     ],
     "avg_score": 49.56,
     "max_score": 49.56,
@@ -1625,7 +1393,7 @@
     ]
   },
   {
-    "id": "INC-044",
+    "id": "INC-039",
     "title": "Orphaned Account: Deepak Gowda",
     "severity": "high",
     "status": "open",
@@ -1636,7 +1404,7 @@
     "identity_ids": [
       "ID-0042"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account",
@@ -1652,9 +1420,9 @@
     "signal_count": 2,
     "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable okta account acct-okt-ID-0042-ba4eef immediately",
-      "Disable github account acct-git-ID-0042-72e7e1 immediately",
-      "Disable active_directory account acct-act-ID-0042-7ff78d immediately",
+      "Disable okta account acct-okt-ID-0042-0b5bd8 immediately",
+      "Disable github account acct-git-ID-0042-9ffb4b immediately",
+      "Disable active_directory account acct-act-ID-0042-6b4b65 immediately",
       "Review admin necessity on active_directory for Deepak Gowda",
       "Review admin necessity on github for Deepak Gowda",
       "Review admin necessity on okta for Deepak Gowda",
@@ -1662,132 +1430,50 @@
     ]
   },
   {
-    "id": "INC-045",
-    "title": "Offboarding Gap: Akash Jain",
+    "id": "INC-040",
+    "title": "Mfa Disabled cluster (4 identities, 6 signals)",
     "severity": "high",
     "status": "open",
-    "identity": "Akash Jain",
+    "identity": "Pallavi Naik, Sarita Mishra, Harini Bhat",
     "identities": [
-      "Akash Jain"
-    ],
-    "identity_ids": [
-      "ID-0020"
-    ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "offboarding_gap",
-    "risk_types": [
-      "offboarding_gap"
-    ],
-    "platforms": [
-      "github"
-    ],
-    "avg_score": 48.75,
-    "max_score": 48.75,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
-    "remediation_steps": [
-      "Immediately disable account on github",
-      "Audit for any unauthorized access since termination date"
-    ]
-  },
-  {
-    "id": "INC-046",
-    "title": "Stale Account: Tanvi Nair",
-    "severity": "high",
-    "status": "open",
-    "identity": "Tanvi Nair",
-    "identities": [
-      "Tanvi Nair"
-    ],
-    "identity_ids": [
-      "ID-0010"
-    ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "stale_account",
-    "risk_types": [
-      "stale_account"
-    ],
-    "platforms": [
-      "servicenow",
-      "github"
-    ],
-    "avg_score": 47.43,
-    "max_score": 47.43,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: stale account.",
-    "remediation_steps": [
-      "Review and disable servicenow account acct-ser-ID-0010-fe02b2",
-      "Confirm with Tanvi Nair if access is still needed",
-      "Review and disable github account acct-git-ID-0010-70b668"
-    ]
-  },
-  {
-    "id": "INC-047",
-    "title": "Offboarding Gap: Tanvi Nair",
-    "severity": "high",
-    "status": "open",
-    "identity": "Tanvi Nair",
-    "identities": [
-      "Tanvi Nair"
-    ],
-    "identity_ids": [
-      "ID-0010"
-    ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "offboarding_gap",
-    "risk_types": [
-      "offboarding_gap"
-    ],
-    "platforms": [
-      "servicenow",
-      "github"
-    ],
-    "avg_score": 47.43,
-    "max_score": 47.43,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
-    "remediation_steps": [
-      "Immediately disable account on servicenow",
-      "Immediately disable account on github",
-      "Audit for any unauthorized access since termination date"
-    ]
-  },
-  {
-    "id": "INC-048",
-    "title": "Mfa Disabled cluster (Sarita Mishra, Aditya Bose)",
-    "severity": "high",
-    "status": "open",
-    "identity": "Sarita Mishra, Aditya Bose",
-    "identities": [
+      "Pallavi Naik",
       "Sarita Mishra",
+      "Harini Bhat",
       "Aditya Bose"
     ],
     "identity_ids": [
+      "ID-0032",
       "ID-0091",
+      "ID-0153",
       "ID-0186"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "mfa_disabled",
     "risk_types": [
       "mfa_disabled"
     ],
     "platforms": [
+      "okta",
       "servicenow",
+      "salesforce",
       "aws_iam",
       "azure_ad"
     ],
-    "avg_score": 45.45,
-    "max_score": 45.56,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 2 identity/identities. Primary pattern: mfa disabled.",
+    "avg_score": 45.51,
+    "max_score": 46.61,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 4 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
+      "Enable MFA on okta for pallavi.naik",
       "Enable MFA on servicenow for sarita.mishra",
+      "Enable MFA on okta for harini.bhat",
+      "Enable MFA on salesforce for harini.bhat",
       "Enable MFA on aws_iam for abose",
       "Enable MFA on azure_ad for aditya.bose"
     ]
   },
   {
-    "id": "INC-049",
+    "id": "INC-041",
     "title": "Token Abuse: Sarita Mishra",
     "severity": "high",
     "status": "open",
@@ -1798,7 +1484,7 @@
     "identity_ids": [
       "ID-0091"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
@@ -1818,122 +1504,22 @@
     ]
   },
   {
-    "id": "INC-050",
-    "title": "Cross Platform Admin: Aditya Bose",
-    "severity": "high",
-    "status": "open",
-    "identity": "Aditya Bose",
-    "identities": [
-      "Aditya Bose"
-    ],
-    "identity_ids": [
-      "ID-0186"
-    ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "cross_platform_admin",
-    "risk_types": [
-      "cross_platform_admin"
-    ],
-    "platforms": [
-      "aws_iam",
-      "okta"
-    ],
-    "avg_score": 45.39,
-    "max_score": 45.39,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
-    "remediation_steps": [
-      "Review admin necessity on aws_iam for Aditya Bose",
-      "Review admin necessity on okta for Aditya Bose",
-      "Consider implementing just-in-time (JIT) admin access"
-    ]
-  },
-  {
-    "id": "INC-051",
-    "title": "Offboarding Gap cluster (11 identities, 12 signals)",
+    "id": "INC-042",
+    "title": "Offboarding Gap cluster (Usha Mishra, Manish Kamath, Kavya Murthy)",
     "severity": "medium",
     "status": "review",
-    "identity": "Tanvi Joshi, Keerthi Yadav, Varun Rao",
-    "identities": [
-      "Tanvi Joshi",
-      "Keerthi Yadav",
-      "Varun Rao",
-      "Kavya Murthy",
-      "Harish Kulkarni",
-      "Ganesh Iyer",
-      "Nikhil Gowda",
-      "Rakesh Menon",
-      "Vivek Patil",
-      "Kavya Rao",
-      "Suraj Verma"
-    ],
-    "identity_ids": [
-      "ID-0002",
-      "ID-0009",
-      "ID-0029",
-      "ID-0034",
-      "ID-0036",
-      "ID-0037",
-      "ID-0040",
-      "ID-0047",
-      "ID-0193",
-      "ID-0262",
-      "ID-0264"
-    ],
-    "created": "2026-06-21T12:25:18.529016",
-    "type": "offboarding_gap",
-    "risk_types": [
-      "offboarding_gap",
-      "orphaned_account",
-      "cross_platform_admin"
-    ],
-    "platforms": [
-      "azure_ad",
-      "salesforce",
-      "servicenow",
-      "active_directory",
-      "okta",
-      "aws_iam",
-      "github"
-    ],
-    "avg_score": 35.22,
-    "max_score": 44.53,
-    "signal_count": 12,
-    "narrative": "Cluster of 12 related signal(s) across 11 identity/identities. Primary pattern: offboarding gap.",
-    "remediation_steps": [
-      "Immediately disable account on azure_ad",
-      "Immediately disable account on salesforce",
-      "Immediately disable account on servicenow",
-      "Audit for any unauthorized access since termination date",
-      "Disable azure_ad account acct-azu-ID-0009-c5dd55 immediately",
-      "Disable salesforce account acct-sal-ID-0009-493247 immediately",
-      "Disable active_directory account acct-act-ID-0009-6ae593 immediately",
-      "Disable okta account acct-okt-ID-0029-7f29ea immediately"
-    ]
-  },
-  {
-    "id": "INC-052",
-    "title": "Offboarding Gap cluster (6 identities, 9 signals)",
-    "severity": "medium",
-    "status": "review",
-    "identity": "Usha Mishra, Keerthi Yadav, Ramesh Gowda",
+    "identity": "Usha Mishra, Manish Kamath, Kavya Murthy",
     "identities": [
       "Usha Mishra",
-      "Keerthi Yadav",
-      "Ramesh Gowda",
-      "Anjali Kamath",
-      "Kavya Murthy",
-      "Divya Gupta"
+      "Manish Kamath",
+      "Kavya Murthy"
     ],
     "identity_ids": [
       "ID-0008",
-      "ID-0009",
-      "ID-0014",
-      "ID-0017",
-      "ID-0034",
-      "ID-0035"
+      "ID-0011",
+      "ID-0034"
     ],
-    "created": "2026-06-21T12:25:18.529016",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "offboarding_gap",
     "risk_types": [
       "offboarding_gap",
@@ -1941,85 +1527,83 @@
     ],
     "platforms": [
       "okta",
-      "azure_ad",
+      "aws_iam",
+      "github"
+    ],
+    "avg_score": 42.69,
+    "max_score": 44.53,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on okta",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on aws_iam",
+      "Disable github account acct-git-ID-0034-305d37 immediately"
+    ]
+  },
+  {
+    "id": "INC-043",
+    "title": "Offboarding Gap: Kavya Murthy",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Kavya Murthy",
+    "identities": [
+      "Kavya Murthy"
+    ],
+    "identity_ids": [
+      "ID-0034"
+    ],
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
       "servicenow",
       "aws_iam",
       "github"
     ],
-    "avg_score": 39.58,
+    "avg_score": 44.53,
     "max_score": 44.53,
-    "signal_count": 9,
-    "narrative": "Cluster of 9 related signal(s) across 6 identity/identities. Primary pattern: offboarding gap.",
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
     "remediation_steps": [
-      "Immediately disable account on okta",
-      "Audit for any unauthorized access since termination date",
-      "Immediately disable account on azure_ad",
-      "Disable servicenow account acct-ser-ID-0014-b5165a immediately",
-      "Disable aws_iam account acct-aws-ID-0017-fa0162 immediately",
-      "Disable github account acct-git-ID-0034-74743f immediately",
-      "Disable azure_ad account acct-azu-ID-0035-0fe1e4 immediately"
+      "Immediately disable account on servicenow",
+      "Immediately disable account on aws_iam",
+      "Immediately disable account on github",
+      "Audit for any unauthorized access since termination date"
     ]
   },
   {
-    "id": "INC-053",
-    "title": "Mfa Disabled cluster (9 identities, 15 signals)",
+    "id": "INC-044",
+    "title": "Mfa Disabled: Keerthi Menon",
     "severity": "medium",
     "status": "review",
-    "identity": "Usha Mishra, Anjali Kamath, Sarita Patil",
+    "identity": "Keerthi Menon",
     "identities": [
-      "Usha Mishra",
-      "Anjali Kamath",
-      "Sarita Patil",
-      "Manish Reddy",
-      "Rakesh Menon",
-      "Keerthi Menon",
-      "Nikhil Joshi",
-      "Gaurav Kamath",
-      "Suraj Verma"
+      "Keerthi Menon"
     ],
     "identity_ids": [
-      "ID-0008",
-      "ID-0017",
-      "ID-0023",
-      "ID-0028",
-      "ID-0047",
-      "ID-0057",
-      "ID-0060",
-      "ID-0252",
-      "ID-0264"
+      "ID-0057"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "mfa_disabled",
     "risk_types": [
-      "mfa_disabled",
-      "stale_account"
+      "mfa_disabled"
     ],
     "platforms": [
-      "salesforce",
-      "aws_iam",
-      "azure_ad",
-      "github",
-      "servicenow",
-      "active_directory",
-      "okta"
+      "servicenow"
     ],
-    "avg_score": 36.94,
+    "avg_score": 44.11,
     "max_score": 44.11,
-    "signal_count": 15,
-    "narrative": "Cluster of 15 related signal(s) across 9 identity/identities. Primary pattern: mfa disabled.",
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
-      "Enable MFA on salesforce for usha.mishra",
-      "Enable MFA on aws_iam for akamath",
-      "Review and disable azure_ad account acct-azu-ID-0023-55f148",
-      "Confirm with Sarita Patil if access is still needed",
-      "Review and disable github account acct-git-ID-0023-5b3d00",
-      "Review and disable aws_iam account acct-aws-ID-0023-e1e66d",
-      "Review and disable servicenow account acct-ser-ID-0023-335339",
-      "Enable MFA on azure_ad for sarita.patil"
+      "Enable MFA on servicenow for keerthi.menon"
     ]
   },
   {
-    "id": "INC-054",
+    "id": "INC-045",
     "title": "Cross Platform Admin: Keerthi Menon",
     "severity": "medium",
     "status": "review",
@@ -2030,7 +1614,7 @@
     "identity_ids": [
       "ID-0057"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -2054,61 +1638,76 @@
     ]
   },
   {
-    "id": "INC-055",
-    "title": "Offboarding Gap cluster (7 identities, 9 signals)",
+    "id": "INC-046",
+    "title": "Orphaned Account cluster (14 identities, 16 signals)",
     "severity": "medium",
     "status": "review",
-    "identity": "Devika Patel, Sanjay Kumar, Pradeep Singh",
+    "identity": "Usha Mishra, Mohan Pillai, Devika Patel",
     "identities": [
+      "Usha Mishra",
+      "Mohan Pillai",
       "Devika Patel",
       "Sanjay Kumar",
-      "Pradeep Singh",
+      "Pooja Naik",
+      "Rohit Naik",
+      "Nikhil Joshi",
+      "Vivek Shetty",
       "Mohan Reddy",
-      "Swathi Kumar",
-      "Pooja Reddy",
+      "Rohit Reddy",
+      "Divya Verma",
+      "Sandeep Mehta",
+      "Gaurav Kamath",
       "Rahul Kamath"
     ],
     "identity_ids": [
+      "ID-0008",
+      "ID-0015",
       "ID-0016",
       "ID-0022",
-      "ID-0024",
+      "ID-0025",
+      "ID-0048",
+      "ID-0060",
+      "ID-0063",
       "ID-0095",
-      "ID-0184",
-      "ID-0278",
+      "ID-0155",
+      "ID-0175",
+      "ID-0248",
+      "ID-0252",
       "ID-0293"
     ],
-    "created": "2026-06-21T12:25:18.530006",
-    "type": "offboarding_gap",
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "orphaned_account",
     "risk_types": [
-      "offboarding_gap",
       "orphaned_account",
+      "offboarding_gap",
       "cross_platform_admin"
     ],
     "platforms": [
-      "active_directory",
+      "salesforce",
       "okta",
       "azure_ad",
-      "aws_iam",
-      "salesforce",
-      "servicenow"
+      "active_directory",
+      "github",
+      "servicenow",
+      "aws_iam"
     ],
-    "avg_score": 37.09,
+    "avg_score": 35.69,
     "max_score": 43.9,
-    "signal_count": 9,
-    "narrative": "Cluster of 9 related signal(s) across 7 identity/identities. Primary pattern: offboarding gap.",
+    "signal_count": 16,
+    "narrative": "Cluster of 16 related signal(s) across 14 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
+      "Disable salesforce account acct-sal-ID-0008-2095b9 immediately",
+      "Disable okta account acct-okt-ID-0008-7a101c immediately",
+      "Immediately disable account on azure_ad",
+      "Immediately disable account on salesforce",
+      "Audit for any unauthorized access since termination date",
       "Immediately disable account on active_directory",
       "Immediately disable account on okta",
-      "Audit for any unauthorized access since termination date",
-      "Immediately disable account on azure_ad",
-      "Disable aws_iam account acct-aws-ID-0024-8ccae8 immediately",
-      "Disable salesforce account acct-sal-ID-0024-e1bff9 immediately",
-      "Immediately disable account on aws_iam",
-      "Immediately disable account on salesforce"
+      "Immediately disable account on github"
     ]
   },
   {
-    "id": "INC-056",
+    "id": "INC-047",
     "title": "Orphaned Account: Sanjay Kumar",
     "severity": "medium",
     "status": "review",
@@ -2119,7 +1718,7 @@
     "identity_ids": [
       "ID-0022"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -2135,187 +1734,250 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable azure_ad account acct-azu-ID-0022-e46b8c immediately",
-      "Disable okta account acct-okt-ID-0022-a304d1 immediately",
-      "Disable github account acct-git-ID-0022-234154 immediately",
-      "Disable servicenow account acct-ser-ID-0022-8493bc immediately"
+      "Disable azure_ad account acct-azu-ID-0022-d88d7a immediately",
+      "Disable okta account acct-okt-ID-0022-c67cd1 immediately",
+      "Disable github account acct-git-ID-0022-51bc87 immediately",
+      "Disable servicenow account acct-ser-ID-0022-342430 immediately"
     ]
   },
   {
-    "id": "INC-057",
-    "title": "Stale Account cluster (8 identities, 10 signals)",
+    "id": "INC-048",
+    "title": "Mfa Disabled cluster (10 identities, 19 signals)",
     "severity": "medium",
     "status": "review",
-    "identity": "Lakshmi Desai, Devika Patel, Pradeep Singh",
+    "identity": "Amit Mehta, Deepak Yadav, svc-batch-ops",
     "identities": [
-      "Lakshmi Desai",
-      "Devika Patel",
-      "Pradeep Singh",
-      "Mohan Reddy",
-      "Yogesh Pillai",
-      "Nikhil Bose",
-      "Pooja Reddy",
-      "Rahul Kamath"
+      "Amit Mehta",
+      "Deepak Yadav",
+      "svc-batch-ops",
+      "svc-scan-ops",
+      "svc-report-infra",
+      "svc-backup-data",
+      "svc-batch-dev",
+      "svc-monitor-prod",
+      "svc-scan-prod",
+      "svc-sync-prod"
     ],
     "identity_ids": [
-      "ID-0001",
-      "ID-0016",
-      "ID-0024",
-      "ID-0095",
-      "ID-0176",
-      "ID-0188",
-      "ID-0278",
-      "ID-0293"
+      "ID-0018",
+      "ID-0027",
+      "SVC-0001",
+      "SVC-0003",
+      "SVC-0007",
+      "SVC-0010",
+      "SVC-0023",
+      "SVC-0031",
+      "SVC-0035",
+      "SVC-0038"
     ],
-    "created": "2026-06-21T12:25:18.530006",
-    "type": "stale_account",
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "mfa_disabled",
     "risk_types": [
-      "stale_account",
       "mfa_disabled"
     ],
     "platforms": [
-      "aws_iam",
-      "azure_ad",
       "okta",
+      "active_directory",
+      "servicenow",
+      "github",
       "salesforce",
-      "active_directory"
+      "azure_ad"
     ],
-    "avg_score": 36.05,
-    "max_score": 43.87,
-    "signal_count": 10,
-    "narrative": "Cluster of 10 related signal(s) across 8 identity/identities. Primary pattern: stale account.",
+    "avg_score": 35.05,
+    "max_score": 43.13,
+    "signal_count": 19,
+    "narrative": "Cluster of 19 related signal(s) across 10 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
-      "Review and disable aws_iam account acct-aws-ID-0001-7042cb",
-      "Confirm with Lakshmi Desai if access is still needed",
-      "Review and disable azure_ad account acct-azu-ID-0001-34c980",
-      "Enable MFA on okta for devika.patel",
-      "Enable MFA on aws_iam for psingh",
-      "Enable MFA on salesforce for mohan.reddy",
-      "Enable MFA on okta for yogesh.pillai",
-      "Enable MFA on salesforce for yogesh.pillai"
+      "Enable MFA on okta for amit.mehta",
+      "Enable MFA on active_directory for amit.mehta",
+      "Enable MFA on servicenow for deepak.yadav",
+      "Enable MFA on github for deepaky66",
+      "Enable MFA on salesforce for svc-batch-ops",
+      "Enable MFA on okta for svc-scan-ops",
+      "Enable MFA on servicenow for svc-scan-ops",
+      "Enable MFA on github for svc-scan-ops"
     ]
   },
   {
-    "id": "INC-058",
-    "title": "Offboarding Gap cluster (Lakshmi Desai, Divya Agarwal, Nikhil Bose)",
+    "id": "INC-049",
+    "title": "Offboarding Gap cluster (6 identities, 7 signals)",
     "severity": "medium",
     "status": "review",
-    "identity": "Lakshmi Desai, Divya Agarwal, Nikhil Bose",
+    "identity": "Amit Mehta, Jaya Gowda, Deepak Yadav",
     "identities": [
-      "Lakshmi Desai",
-      "Divya Agarwal",
-      "Nikhil Bose"
+      "Amit Mehta",
+      "Jaya Gowda",
+      "Deepak Yadav",
+      "Harini Sharma",
+      "Nandini Bhat",
+      "Tanvi Menon"
     ],
     "identity_ids": [
-      "ID-0001",
-      "ID-0006",
-      "ID-0188"
+      "ID-0018",
+      "ID-0026",
+      "ID-0027",
+      "ID-0046",
+      "ID-0050",
+      "ID-0246"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "offboarding_gap",
     "risk_types": [
       "offboarding_gap",
-      "orphaned_account"
+      "orphaned_account",
+      "cross_platform_admin"
     ],
     "platforms": [
-      "azure_ad",
+      "okta",
+      "active_directory",
+      "servicenow",
       "github",
-      "active_directory"
+      "salesforce"
     ],
-    "avg_score": 39.72,
-    "max_score": 43.87,
-    "signal_count": 4,
-    "narrative": "Cluster of 4 related signal(s) across 3 identity/identities. Primary pattern: offboarding gap.",
+    "avg_score": 38.01,
+    "max_score": 43.13,
+    "signal_count": 7,
+    "narrative": "Cluster of 7 related signal(s) across 6 identity/identities. Primary pattern: offboarding gap.",
     "remediation_steps": [
-      "Immediately disable account on azure_ad",
+      "Immediately disable account on okta",
+      "Immediately disable account on active_directory",
       "Audit for any unauthorized access since termination date",
-      "Disable github account acct-git-ID-0006-5f3551 immediately",
+      "Disable servicenow account acct-ser-ID-0026-c60896 immediately",
+      "Disable github account acct-git-ID-0026-ffe4cf immediately",
+      "Immediately disable account on servicenow",
       "Immediately disable account on github",
-      "Disable active_directory account acct-act-ID-0188-800037 immediately"
+      "Review admin necessity on active_directory for Harini Sharma"
     ]
   },
   {
-    "id": "INC-059",
-    "title": "Orphaned Account cluster (14 identities, 16 signals)",
+    "id": "INC-050",
+    "title": "Mfa Disabled cluster (11 identities, 13 signals)",
     "severity": "medium",
     "status": "review",
-    "identity": "Tanvi Joshi, Usha Mishra, Meera Bose",
+    "identity": "Usha Mishra, Devika Patel, Anjali Kamath",
+    "identities": [
+      "Usha Mishra",
+      "Devika Patel",
+      "Anjali Kamath",
+      "Pooja Naik",
+      "Rakesh Menon",
+      "Nikhil Joshi",
+      "Mohan Reddy",
+      "Yogesh Pillai",
+      "Gaurav Kamath",
+      "Suraj Verma",
+      "Rahul Kamath"
+    ],
+    "identity_ids": [
+      "ID-0008",
+      "ID-0016",
+      "ID-0017",
+      "ID-0025",
+      "ID-0047",
+      "ID-0060",
+      "ID-0095",
+      "ID-0176",
+      "ID-0252",
+      "ID-0264",
+      "ID-0293"
+    ],
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "salesforce",
+      "okta",
+      "aws_iam",
+      "servicenow"
+    ],
+    "avg_score": 34.02,
+    "max_score": 43.12,
+    "signal_count": 13,
+    "narrative": "Cluster of 13 related signal(s) across 11 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on salesforce for usha.mishra",
+      "Enable MFA on okta for devika.patel",
+      "Enable MFA on aws_iam for akamath",
+      "Enable MFA on okta for pooja.naik",
+      "Enable MFA on salesforce for rakesh.menon",
+      "Enable MFA on servicenow for nikhil.joshi",
+      "Enable MFA on salesforce for mohan.reddy",
+      "Enable MFA on okta for yogesh.pillai"
+    ]
+  },
+  {
+    "id": "INC-051",
+    "title": "Orphaned Account cluster (7 identities, 7 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Tanvi Joshi, Mohan Patil, Meera Bose",
     "identities": [
       "Tanvi Joshi",
-      "Usha Mishra",
+      "Mohan Patil",
       "Meera Bose",
-      "Rohit Naik",
       "Amit Mishra",
       "Vivek Singh",
-      "Nikhil Joshi",
-      "Vivek Shetty",
       "Lakshmi Reddy",
-      "Rohit Reddy",
-      "Divya Verma",
-      "Sandeep Mehta",
-      "Gaurav Kamath",
       "Ananya Chakraborty"
     ],
     "identity_ids": [
       "ID-0002",
-      "ID-0008",
+      "ID-0005",
       "ID-0043",
-      "ID-0048",
       "ID-0053",
       "ID-0056",
-      "ID-0060",
-      "ID-0063",
       "ID-0089",
-      "ID-0155",
-      "ID-0175",
-      "ID-0248",
-      "ID-0252",
       "ID-0266"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account",
+      "offboarding_gap",
       "cross_platform_admin"
     ],
     "platforms": [
       "azure_ad",
       "salesforce",
       "okta",
-      "active_directory",
-      "aws_iam",
-      "servicenow"
+      "aws_iam"
     ],
-    "avg_score": 33.26,
-    "max_score": 43.12,
-    "signal_count": 16,
-    "narrative": "Cluster of 16 related signal(s) across 14 identity/identities. Primary pattern: orphaned account.",
+    "avg_score": 32.48,
+    "max_score": 42.47,
+    "signal_count": 7,
+    "narrative": "Cluster of 7 related signal(s) across 7 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable azure_ad account acct-azu-ID-0002-9980f1 immediately",
-      "Disable salesforce account acct-sal-ID-0002-93cd90 immediately",
-      "Disable salesforce account acct-sal-ID-0008-e72a10 immediately",
-      "Disable okta account acct-okt-ID-0008-8e43b1 immediately",
+      "Disable azure_ad account acct-azu-ID-0002-d100b0 immediately",
+      "Disable salesforce account acct-sal-ID-0002-9decec immediately",
+      "Immediately disable account on okta",
+      "Immediately disable account on salesforce",
+      "Audit for any unauthorized access since termination date",
       "Review admin necessity on azure_ad for Meera Bose",
       "Review admin necessity on okta for Meera Bose",
-      "Consider implementing just-in-time (JIT) admin access",
-      "Disable active_directory account acct-act-ID-0048-d2aa2a immediately"
+      "Consider implementing just-in-time (JIT) admin access"
     ]
   },
   {
-    "id": "INC-060",
-    "title": "Sod Violation cluster (Lakshmi Reddy, Kavya Rao)",
+    "id": "INC-052",
+    "title": "Sod Violation cluster (4 identities, 5 signals)",
     "severity": "medium",
     "status": "review",
-    "identity": "Lakshmi Reddy, Kavya Rao",
+    "identity": "Vivek Singh, Lakshmi Reddy, Kavya Rao",
     "identities": [
+      "Vivek Singh",
       "Lakshmi Reddy",
-      "Kavya Rao"
+      "Kavya Rao",
+      "Ananya Chakraborty"
     ],
     "identity_ids": [
+      "ID-0056",
       "ID-0089",
-      "ID-0262"
+      "ID-0262",
+      "ID-0266"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
@@ -2326,10 +1988,10 @@
       "active_directory",
       "salesforce"
     ],
-    "avg_score": 41.35,
+    "avg_score": 36.05,
     "max_score": 42.47,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 2 identity/identities. Primary pattern: sod violation.",
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 4 identity/identities. Primary pattern: sod violation.",
     "remediation_steps": [
       "Separate SSO Admin + Cloud Admin responsibilities across different identities",
       "Implement compensating controls if separation is not possible",
@@ -2338,7 +2000,7 @@
     ]
   },
   {
-    "id": "INC-061",
+    "id": "INC-053",
     "title": "Token Abuse: Lakshmi Reddy",
     "severity": "medium",
     "status": "review",
@@ -2349,15 +2011,15 @@
     "identity_ids": [
       "ID-0089"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.712924",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
     ],
     "platforms": [
-      "azure_ad",
+      "okta",
       "aws_iam",
-      "okta"
+      "azure_ad"
     ],
     "avg_score": 42.47,
     "max_score": 42.47,
@@ -2370,8 +2032,120 @@
     ]
   },
   {
-    "id": "INC-062",
-    "title": "Mfa Disabled cluster (18 identities, 41 signals)",
+    "id": "INC-054",
+    "title": "Offboarding Gap cluster (12 identities, 13 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Varun Pillai, Keerthi Yadav, Devika Patel",
+    "identities": [
+      "Varun Pillai",
+      "Keerthi Yadav",
+      "Devika Patel",
+      "Varun Rao",
+      "Harish Kulkarni",
+      "Ganesh Iyer",
+      "Nikhil Gowda",
+      "Rakesh Menon",
+      "Suresh Joshi",
+      "Yogesh Pillai",
+      "Suraj Verma",
+      "Rahul Kamath"
+    ],
+    "identity_ids": [
+      "ID-0004",
+      "ID-0009",
+      "ID-0016",
+      "ID-0029",
+      "ID-0036",
+      "ID-0037",
+      "ID-0040",
+      "ID-0047",
+      "ID-0158",
+      "ID-0176",
+      "ID-0264",
+      "ID-0293"
+    ],
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap",
+      "orphaned_account",
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "okta",
+      "azure_ad",
+      "salesforce",
+      "aws_iam",
+      "servicenow",
+      "github"
+    ],
+    "avg_score": 34.95,
+    "max_score": 42.46,
+    "signal_count": 13,
+    "narrative": "Cluster of 13 related signal(s) across 12 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on active_directory",
+      "Immediately disable account on okta",
+      "Immediately disable account on azure_ad",
+      "Audit for any unauthorized access since termination date",
+      "Disable azure_ad account acct-azu-ID-0009-b2af0b immediately",
+      "Disable salesforce account acct-sal-ID-0009-a1c16e immediately",
+      "Disable active_directory account acct-act-ID-0009-d3cdfe immediately",
+      "Disable active_directory account acct-act-ID-0016-c6bcce immediately"
+    ]
+  },
+  {
+    "id": "INC-055",
+    "title": "Offboarding Gap cluster (4 identities, 5 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Naveen Gowda, Pradeep Pandey, Priya Bose",
+    "identities": [
+      "Naveen Gowda",
+      "Pradeep Pandey",
+      "Priya Bose",
+      "Meera Pandey"
+    ],
+    "identity_ids": [
+      "ID-0000",
+      "ID-0058",
+      "ID-0088",
+      "ID-0226"
+    ],
+    "created": "2026-06-21T15:04:20.712924",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap",
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "active_directory",
+      "github",
+      "okta",
+      "azure_ad",
+      "servicenow"
+    ],
+    "avg_score": 34.56,
+    "max_score": 41.47,
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 4 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on active_directory",
+      "Immediately disable account on github",
+      "Audit for any unauthorized access since termination date",
+      "Review admin necessity on active_directory for Pradeep Pandey",
+      "Review admin necessity on okta for Pradeep Pandey",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Priya Bose",
+      "Review admin necessity on azure_ad for Priya Bose"
+    ]
+  },
+  {
+    "id": "INC-056",
+    "title": "Mfa Disabled cluster (5 identities, 6 signals)",
     "severity": "medium",
     "status": "review",
     "identity": "Priya Bose, Rajesh Joshi, Meera Pandey",
@@ -2380,168 +2154,42 @@
       "Rajesh Joshi",
       "Meera Pandey",
       "Naveen Kumar",
-      "Varun Sharma",
-      "svc-batch-ops",
-      "svc-cicd-data",
-      "svc-report-infra",
-      "svc-backup-data",
-      "svc-etl-staging",
-      "svc-deploy-dev",
-      "svc-alert-infra",
-      "svc-sync-infra",
-      "svc-alert-ops",
-      "svc-etl-dev",
-      "svc-monitor-prod",
-      "svc-scan-prod",
-      "svc-sync-prod"
+      "Varun Sharma"
     ],
     "identity_ids": [
       "ID-0088",
       "ID-0092",
       "ID-0226",
       "ID-0269",
-      "ID-0273",
-      "SVC-0001",
-      "SVC-0004",
-      "SVC-0007",
-      "SVC-0010",
-      "SVC-0012",
-      "SVC-0014",
-      "SVC-0016",
-      "SVC-0021",
-      "SVC-0024",
-      "SVC-0026",
-      "SVC-0031",
-      "SVC-0035",
-      "SVC-0038"
+      "ID-0273"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "mfa_disabled",
     "risk_types": [
-      "mfa_disabled",
-      "stale_account"
+      "mfa_disabled"
     ],
     "platforms": [
       "active_directory",
       "okta",
       "servicenow",
       "aws_iam",
-      "salesforce",
-      "azure_ad",
-      "github"
+      "salesforce"
     ],
-    "avg_score": 34.52,
-    "max_score": 42.35,
-    "signal_count": 41,
-    "narrative": "Cluster of 41 related signal(s) across 18 identity/identities. Primary pattern: mfa disabled.",
+    "avg_score": 35.38,
+    "max_score": 41.47,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 5 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
       "Enable MFA on active_directory for priya.bose",
       "Enable MFA on okta for rajesh.joshi",
       "Enable MFA on servicenow for meera.pandey",
       "Enable MFA on active_directory for naveen.kumar",
       "Enable MFA on aws_iam for nkumar",
-      "Enable MFA on salesforce for varun.sharma",
-      "Review and disable salesforce account acct-sal-SVC-0001-b1ad90",
-      "Confirm with svc-batch-ops if access is still needed"
+      "Enable MFA on salesforce for varun.sharma"
     ]
   },
   {
-    "id": "INC-063",
-    "title": "Orphaned Account cluster (Devika Patel, Suresh Joshi, Rahul Kamath)",
-    "severity": "medium",
-    "status": "review",
-    "identity": "Devika Patel, Suresh Joshi, Rahul Kamath",
-    "identities": [
-      "Devika Patel",
-      "Suresh Joshi",
-      "Rahul Kamath"
-    ],
-    "identity_ids": [
-      "ID-0016",
-      "ID-0158",
-      "ID-0293"
-    ],
-    "created": "2026-06-21T12:25:18.530006",
-    "type": "orphaned_account",
-    "risk_types": [
-      "orphaned_account",
-      "cross_platform_admin"
-    ],
-    "platforms": [
-      "active_directory",
-      "okta",
-      "aws_iam",
-      "salesforce",
-      "servicenow"
-    ],
-    "avg_score": 38.3,
-    "max_score": 41.61,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: orphaned account.",
-    "remediation_steps": [
-      "Disable active_directory account acct-act-ID-0016-787837 immediately",
-      "Disable okta account acct-okt-ID-0016-c14ea8 immediately",
-      "Disable aws_iam account acct-aws-ID-0016-d7a860 immediately",
-      "Review admin necessity on active_directory for Suresh Joshi",
-      "Review admin necessity on aws_iam for Suresh Joshi",
-      "Review admin necessity on okta for Suresh Joshi",
-      "Consider implementing just-in-time (JIT) admin access",
-      "Disable salesforce account acct-sal-ID-0293-996a4e immediately"
-    ]
-  },
-  {
-    "id": "INC-064",
-    "title": "Cross Platform Admin cluster (6 identities, 7 signals)",
-    "severity": "medium",
-    "status": "review",
-    "identity": "Harini Sharma, Nandini Bhat, Pradeep Pandey",
-    "identities": [
-      "Harini Sharma",
-      "Nandini Bhat",
-      "Pradeep Pandey",
-      "Priya Bose",
-      "Meera Pandey",
-      "Tanvi Menon"
-    ],
-    "identity_ids": [
-      "ID-0046",
-      "ID-0050",
-      "ID-0058",
-      "ID-0088",
-      "ID-0226",
-      "ID-0246"
-    ],
-    "created": "2026-06-21T12:25:18.530006",
-    "type": "cross_platform_admin",
-    "risk_types": [
-      "cross_platform_admin",
-      "orphaned_account"
-    ],
-    "platforms": [
-      "active_directory",
-      "salesforce",
-      "github",
-      "okta",
-      "azure_ad",
-      "servicenow"
-    ],
-    "avg_score": 34.66,
-    "max_score": 41.47,
-    "signal_count": 7,
-    "narrative": "Cluster of 7 related signal(s) across 6 identity/identities. Primary pattern: cross platform admin.",
-    "remediation_steps": [
-      "Review admin necessity on active_directory for Harini Sharma",
-      "Review admin necessity on salesforce for Harini Sharma",
-      "Consider implementing just-in-time (JIT) admin access",
-      "Review admin necessity on github for Nandini Bhat",
-      "Review admin necessity on salesforce for Nandini Bhat",
-      "Review admin necessity on active_directory for Pradeep Pandey",
-      "Review admin necessity on okta for Pradeep Pandey",
-      "Review admin necessity on active_directory for Priya Bose"
-    ]
-  },
-  {
-    "id": "INC-065",
+    "id": "INC-057",
     "title": "Token Abuse cluster (Priya Bose, Rajesh Joshi)",
     "severity": "medium",
     "status": "review",
@@ -2554,7 +2202,7 @@
       "ID-0088",
       "ID-0092"
     ],
-    "created": "2026-06-21T12:25:18.530006",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
@@ -2576,7 +2224,123 @@
     ]
   },
   {
-    "id": "INC-066",
+    "id": "INC-058",
+    "title": "Offboarding Gap cluster (4 identities, 6 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Tanvi Nair, Pradeep Singh, Swathi Kumar",
+    "identities": [
+      "Tanvi Nair",
+      "Pradeep Singh",
+      "Swathi Kumar",
+      "Pooja Reddy"
+    ],
+    "identity_ids": [
+      "ID-0010",
+      "ID-0024",
+      "ID-0184",
+      "ID-0278"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap",
+      "orphaned_account",
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "servicenow",
+      "github",
+      "aws_iam",
+      "salesforce",
+      "okta",
+      "active_directory"
+    ],
+    "avg_score": 35.26,
+    "max_score": 40.89,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 4 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on servicenow",
+      "Immediately disable account on github",
+      "Audit for any unauthorized access since termination date",
+      "Disable aws_iam account acct-aws-ID-0024-167a20 immediately",
+      "Disable salesforce account acct-sal-ID-0024-9f0ff1 immediately",
+      "Immediately disable account on aws_iam",
+      "Immediately disable account on salesforce",
+      "Disable okta account acct-okt-ID-0184-b1f977 immediately"
+    ]
+  },
+  {
+    "id": "INC-059",
+    "title": "Mfa Disabled cluster (Pradeep Singh, Nikhil Bose, Pooja Reddy)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Pradeep Singh, Nikhil Bose, Pooja Reddy",
+    "identities": [
+      "Pradeep Singh",
+      "Nikhil Bose",
+      "Pooja Reddy"
+    ],
+    "identity_ids": [
+      "ID-0024",
+      "ID-0188",
+      "ID-0278"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "aws_iam",
+      "active_directory"
+    ],
+    "avg_score": 36.56,
+    "max_score": 40.89,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on aws_iam for psingh",
+      "Enable MFA on active_directory for nikhil.bose",
+      "Enable MFA on active_directory for pooja.reddy"
+    ]
+  },
+  {
+    "id": "INC-060",
+    "title": "Cross Platform Admin: Kavya Rao",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Kavya Rao",
+    "identities": [
+      "Kavya Rao"
+    ],
+    "identity_ids": [
+      "ID-0262"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "aws_iam",
+      "salesforce"
+    ],
+    "avg_score": 40.79,
+    "max_score": 40.79,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Kavya Rao",
+      "Review admin necessity on aws_iam for Kavya Rao",
+      "Review admin necessity on salesforce for Kavya Rao",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-061",
     "title": "Cross Platform Admin cluster (Rajesh Joshi, Varun Sharma)",
     "severity": "medium",
     "status": "review",
@@ -2589,7 +2353,7 @@
       "ID-0092",
       "ID-0273"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -2616,22 +2380,97 @@
     ]
   },
   {
-    "id": "INC-067",
-    "title": "Sod Violation cluster (Suresh Joshi, Ananya Srinivasan, Pooja Reddy)",
+    "id": "INC-062",
+    "title": "Offboarding Gap cluster (Ishaan Naik, Keerthi Yadav, Anjali Kamath)",
     "severity": "medium",
     "status": "review",
-    "identity": "Suresh Joshi, Ananya Srinivasan, Pooja Reddy",
+    "identity": "Ishaan Naik, Keerthi Yadav, Anjali Kamath",
     "identities": [
-      "Suresh Joshi",
-      "Ananya Srinivasan",
-      "Pooja Reddy"
+      "Ishaan Naik",
+      "Keerthi Yadav",
+      "Anjali Kamath"
     ],
     "identity_ids": [
-      "ID-0158",
-      "ID-0210",
-      "ID-0278"
+      "ID-0003",
+      "ID-0009",
+      "ID-0017"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "active_directory",
+      "azure_ad",
+      "aws_iam",
+      "okta"
+    ],
+    "avg_score": 37.45,
+    "max_score": 40.3,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 3 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on active_directory",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on azure_ad",
+      "Disable aws_iam account acct-aws-ID-0017-c09187 immediately",
+      "Immediately disable account on okta"
+    ]
+  },
+  {
+    "id": "INC-063",
+    "title": "Offboarding Gap cluster (Tanvi Joshi, Suraj Joshi)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Tanvi Joshi, Suraj Joshi",
+    "identities": [
+      "Tanvi Joshi",
+      "Suraj Joshi"
+    ],
+    "identity_ids": [
+      "ID-0002",
+      "ID-0019"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "azure_ad",
+      "salesforce",
+      "servicenow",
+      "active_directory",
+      "okta"
+    ],
+    "avg_score": 38.59,
+    "max_score": 39.65,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on azure_ad",
+      "Immediately disable account on salesforce",
+      "Immediately disable account on servicenow",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on active_directory",
+      "Immediately disable account on okta"
+    ]
+  },
+  {
+    "id": "INC-064",
+    "title": "Sod Violation: Suresh Joshi",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Suresh Joshi",
+    "identities": [
+      "Suresh Joshi"
+    ],
+    "identity_ids": [
+      "ID-0158"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
@@ -2641,10 +2480,10 @@
       "active_directory",
       "okta"
     ],
-    "avg_score": 34.6,
+    "avg_score": 39.31,
     "max_score": 39.31,
-    "signal_count": 4,
-    "narrative": "Cluster of 4 related signal(s) across 3 identity/identities. Primary pattern: sod violation.",
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
     "remediation_steps": [
       "Separate Cloud Admin + Domain Admin responsibilities across different identities",
       "Implement compensating controls if separation is not possible",
@@ -2652,20 +2491,18 @@
     ]
   },
   {
-    "id": "INC-068",
-    "title": "Sod Violation cluster (Harini Sharma, Varun Sharma)",
+    "id": "INC-065",
+    "title": "Sod Violation: Varun Sharma",
     "severity": "medium",
     "status": "review",
-    "identity": "Harini Sharma, Varun Sharma",
+    "identity": "Varun Sharma",
     "identities": [
-      "Harini Sharma",
       "Varun Sharma"
     ],
     "identity_ids": [
-      "ID-0046",
       "ID-0273"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
@@ -2674,28 +2511,69 @@
       "salesforce",
       "active_directory"
     ],
-    "avg_score": 36.27,
+    "avg_score": 38.94,
     "max_score": 38.94,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: sod violation.",
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
     "remediation_steps": [
       "Separate CRM Admin + Domain Admin responsibilities across different identities",
       "Implement compensating controls if separation is not possible"
     ]
   },
   {
-    "id": "INC-069",
-    "title": "Orphaned Account: Jaya Gowda",
+    "id": "INC-066",
+    "title": "Offboarding Gap cluster (Lakshmi Desai, Divya Agarwal, Nikhil Bose)",
     "severity": "medium",
     "status": "review",
-    "identity": "Jaya Gowda",
+    "identity": "Lakshmi Desai, Divya Agarwal, Nikhil Bose",
     "identities": [
-      "Jaya Gowda"
+      "Lakshmi Desai",
+      "Divya Agarwal",
+      "Nikhil Bose"
     ],
     "identity_ids": [
-      "ID-0026"
+      "ID-0001",
+      "ID-0006",
+      "ID-0188"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "azure_ad",
+      "github",
+      "active_directory"
+    ],
+    "avg_score": 36.91,
+    "max_score": 38.79,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 3 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on azure_ad",
+      "Audit for any unauthorized access since termination date",
+      "Disable github account acct-git-ID-0006-c77eca immediately",
+      "Immediately disable account on github",
+      "Disable active_directory account acct-act-ID-0188-bd7bc6 immediately"
+    ]
+  },
+  {
+    "id": "INC-067",
+    "title": "Orphaned Account cluster (Ramesh Gowda, Divya Gupta)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Ramesh Gowda, Divya Gupta",
+    "identities": [
+      "Ramesh Gowda",
+      "Divya Gupta"
+    ],
+    "identity_ids": [
+      "ID-0014",
+      "ID-0035"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account",
@@ -2703,22 +2581,50 @@
     ],
     "platforms": [
       "servicenow",
+      "azure_ad"
+    ],
+    "avg_score": 37.62,
+    "max_score": 38.7,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 2 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable servicenow account acct-ser-ID-0014-17f3d3 immediately",
+      "Immediately disable account on azure_ad",
+      "Audit for any unauthorized access since termination date",
+      "Disable azure_ad account acct-azu-ID-0035-048c0c immediately"
+    ]
+  },
+  {
+    "id": "INC-068",
+    "title": "Offboarding Gap: Naveen Iyer",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Naveen Iyer",
+    "identities": [
+      "Naveen Iyer"
+    ],
+    "identity_ids": [
+      "ID-0031"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
       "github"
     ],
-    "avg_score": 38.76,
-    "max_score": 38.76,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "avg_score": 37.28,
+    "max_score": 37.28,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
     "remediation_steps": [
-      "Disable servicenow account acct-ser-ID-0026-883a62 immediately",
-      "Disable github account acct-git-ID-0026-c73df3 immediately",
-      "Immediately disable account on servicenow",
       "Immediately disable account on github",
       "Audit for any unauthorized access since termination date"
     ]
   },
   {
-    "id": "INC-070",
+    "id": "INC-069",
     "title": "Token Abuse: Mohan Reddy",
     "severity": "medium",
     "status": "review",
@@ -2729,15 +2635,15 @@
     "identity_ids": [
       "ID-0095"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
     ],
     "platforms": [
       "okta",
-      "servicenow",
-      "salesforce"
+      "salesforce",
+      "servicenow"
     ],
     "avg_score": 36.73,
     "max_score": 36.73,
@@ -2747,6 +2653,36 @@
       "Rotate all tokens/API keys older than 90 days",
       "Investigate anomalous API volume and source IPs",
       "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-070",
+    "title": "Sod Violation: Harini Sharma",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Harini Sharma",
+    "identities": [
+      "Harini Sharma"
+    ],
+    "identity_ids": [
+      "ID-0046"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "salesforce",
+      "active_directory"
+    ],
+    "avg_score": 33.6,
+    "max_score": 33.6,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
     ]
   },
   {
@@ -2761,7 +2697,7 @@
     "identity_ids": [
       "ID-0246"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -2776,43 +2712,76 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable azure_ad account acct-azu-ID-0246-3c16a1 immediately",
-      "Disable okta account acct-okt-ID-0246-2239b4 immediately",
-      "Disable active_directory account acct-act-ID-0246-4ab4e1 immediately"
+      "Disable azure_ad account acct-azu-ID-0246-ce77cc immediately",
+      "Disable okta account acct-okt-ID-0246-0ba7da immediately",
+      "Disable active_directory account acct-act-ID-0246-aef20a immediately"
     ]
   },
   {
     "id": "INC-072",
-    "title": "Sod Violation: Vivek Singh",
+    "title": "Sod Violation cluster (Ananya Srinivasan, Pooja Reddy)",
     "severity": "medium",
     "status": "review",
-    "identity": "Vivek Singh",
+    "identity": "Ananya Srinivasan, Pooja Reddy",
     "identities": [
-      "Vivek Singh"
+      "Ananya Srinivasan",
+      "Pooja Reddy"
     ],
     "identity_ids": [
-      "ID-0056"
+      "ID-0210",
+      "ID-0278"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
     ],
     "platforms": [
       "okta",
-      "aws_iam"
+      "aws_iam",
+      "active_directory"
     ],
-    "avg_score": 30.75,
-    "max_score": 30.75,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "avg_score": 29.89,
+    "max_score": 31.35,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: sod violation.",
     "remediation_steps": [
       "Separate SSO Admin + Cloud Admin responsibilities across different identities",
-      "Implement compensating controls if separation is not possible"
+      "Implement compensating controls if separation is not possible",
+      "Separate Cloud Admin + Domain Admin responsibilities across different identities"
     ]
   },
   {
     "id": "INC-073",
+    "title": "Offboarding Gap: Akash Jain",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Akash Jain",
+    "identities": [
+      "Akash Jain"
+    ],
+    "identity_ids": [
+      "ID-0020"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "github"
+    ],
+    "avg_score": 30.0,
+    "max_score": 30.0,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on github",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-074",
     "title": "Orphaned Account: Manish Reddy",
     "severity": "medium",
     "status": "review",
@@ -2823,7 +2792,7 @@
     "identity_ids": [
       "ID-0028"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -2839,97 +2808,126 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable okta account acct-okt-ID-0028-fd1050 immediately",
-      "Disable active_directory account acct-act-ID-0028-e920cd immediately",
-      "Disable salesforce account acct-sal-ID-0028-163d2d immediately",
-      "Disable azure_ad account acct-azu-ID-0028-1b84c6 immediately"
-    ]
-  },
-  {
-    "id": "INC-074",
-    "title": "Cross Platform Admin cluster (Yogesh Pillai, Ananya Srinivasan)",
-    "severity": "medium",
-    "status": "review",
-    "identity": "Yogesh Pillai, Ananya Srinivasan",
-    "identities": [
-      "Yogesh Pillai",
-      "Ananya Srinivasan"
-    ],
-    "identity_ids": [
-      "ID-0176",
-      "ID-0210"
-    ],
-    "created": "2026-06-21T12:25:18.530980",
-    "type": "cross_platform_admin",
-    "risk_types": [
-      "cross_platform_admin"
-    ],
-    "platforms": [
-      "okta",
-      "salesforce",
-      "servicenow",
-      "aws_iam",
-      "azure_ad"
-    ],
-    "avg_score": 26.91,
-    "max_score": 28.42,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
-    "remediation_steps": [
-      "Review admin necessity on okta for Yogesh Pillai",
-      "Review admin necessity on salesforce for Yogesh Pillai",
-      "Review admin necessity on servicenow for Yogesh Pillai",
-      "Consider implementing just-in-time (JIT) admin access",
-      "Review admin necessity on aws_iam for Ananya Srinivasan",
-      "Review admin necessity on azure_ad for Ananya Srinivasan",
-      "Review admin necessity on okta for Ananya Srinivasan"
+      "Disable okta account acct-okt-ID-0028-927dd7 immediately",
+      "Disable active_directory account acct-act-ID-0028-fa3061 immediately",
+      "Disable salesforce account acct-sal-ID-0028-f4c351 immediately",
+      "Disable azure_ad account acct-azu-ID-0028-ed5859 immediately"
     ]
   },
   {
     "id": "INC-075",
-    "title": "Mfa Disabled: Sarita Murthy",
+    "title": "Mfa Disabled cluster (Manish Reddy, Sarita Murthy)",
     "severity": "medium",
     "status": "review",
-    "identity": "Sarita Murthy",
+    "identity": "Manish Reddy, Sarita Murthy",
     "identities": [
+      "Manish Reddy",
       "Sarita Murthy"
     ],
     "identity_ids": [
+      "ID-0028",
       "ID-0218"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "mfa_disabled",
     "risk_types": [
       "mfa_disabled"
     ],
     "platforms": [
+      "active_directory",
+      "salesforce",
       "servicenow",
       "okta"
     ],
-    "avg_score": 26.72,
-    "max_score": 26.72,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
+    "avg_score": 27.84,
+    "max_score": 28.97,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 2 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
+      "Enable MFA on active_directory for manish.reddy",
+      "Enable MFA on salesforce for manish.reddy",
       "Enable MFA on servicenow for sarita.murthy",
       "Enable MFA on okta for sarita.murthy"
     ]
   },
   {
     "id": "INC-076",
-    "title": "Sod Violation cluster (Sandeep Mehta, Ananya Chakraborty)",
+    "title": "Cross Platform Admin: Ananya Srinivasan",
     "severity": "medium",
     "status": "review",
-    "identity": "Sandeep Mehta, Ananya Chakraborty",
+    "identity": "Ananya Srinivasan",
     "identities": [
-      "Sandeep Mehta",
-      "Ananya Chakraborty"
+      "Ananya Srinivasan"
     ],
     "identity_ids": [
-      "ID-0248",
-      "ID-0266"
+      "ID-0210"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "aws_iam",
+      "azure_ad",
+      "okta"
+    ],
+    "avg_score": 28.42,
+    "max_score": 28.42,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on aws_iam for Ananya Srinivasan",
+      "Review admin necessity on azure_ad for Ananya Srinivasan",
+      "Review admin necessity on okta for Ananya Srinivasan",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-077",
+    "title": "Orphaned Account: Vivek Patil",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Vivek Patil",
+    "identities": [
+      "Vivek Patil"
+    ],
+    "identity_ids": [
+      "ID-0193"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "azure_ad",
+      "servicenow",
+      "salesforce"
+    ],
+    "avg_score": 25.53,
+    "max_score": 25.53,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable azure_ad account acct-azu-ID-0193-118925 immediately",
+      "Disable servicenow account acct-ser-ID-0193-d5b919 immediately",
+      "Disable salesforce account acct-sal-ID-0193-ebe4c9 immediately"
+    ]
+  },
+  {
+    "id": "INC-078",
+    "title": "Sod Violation: Sandeep Mehta",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Sandeep Mehta",
+    "identities": [
+      "Sandeep Mehta"
+    ],
+    "identity_ids": [
+      "ID-0248"
+    ],
+    "created": "2026-06-21T15:04:20.713902",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
@@ -2938,87 +2936,92 @@
       "okta",
       "aws_iam"
     ],
-    "avg_score": 25.29,
-    "max_score": 25.44,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: sod violation.",
+    "avg_score": 25.13,
+    "max_score": 25.13,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
     "remediation_steps": [
       "Separate SSO Admin + Cloud Admin responsibilities across different identities",
       "Implement compensating controls if separation is not possible"
     ]
   },
   {
-    "id": "INC-077",
-    "title": "Cross Platform Admin cluster (8 identities, 8 signals)",
+    "id": "INC-079",
+    "title": "Cross Platform Admin cluster (9 identities, 9 signals)",
     "severity": "low",
     "status": "review",
-    "identity": "Harish Verma, Ravi Joshi, Devika Mehta",
+    "identity": "Ravi Joshi, Devika Mehta, Sanjay Reddy",
     "identities": [
-      "Harish Verma",
       "Ravi Joshi",
       "Devika Mehta",
       "Sanjay Reddy",
-      "Manoj Jain",
+      "Ananya Menon",
       "Ashwin Patel",
-      "Deepak Agarwal",
-      "Suraj Mishra"
+      "Nikhil Shetty",
+      "Suraj Mishra",
+      "Sandeep Hegde",
+      "Shreya Naik"
     ],
     "identity_ids": [
-      "ID-0055",
       "ID-0164",
       "ID-0167",
       "ID-0174",
-      "ID-0201",
+      "ID-0202",
       "ID-0211",
-      "ID-0236",
-      "ID-0257"
+      "ID-0216",
+      "ID-0257",
+      "ID-0258",
+      "ID-0286"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin",
       "orphaned_account"
     ],
     "platforms": [
-      "okta",
-      "salesforce",
       "active_directory",
+      "salesforce",
       "servicenow",
       "aws_iam",
-      "github"
+      "okta",
+      "github",
+      "azure_ad"
     ],
-    "avg_score": 19.96,
+    "avg_score": 20.46,
     "max_score": 24.55,
-    "signal_count": 8,
-    "narrative": "Cluster of 8 related signal(s) across 8 identity/identities. Primary pattern: cross platform admin.",
+    "signal_count": 9,
+    "narrative": "Cluster of 9 related signal(s) across 9 identity/identities. Primary pattern: cross platform admin.",
     "remediation_steps": [
-      "Review admin necessity on okta for Harish Verma",
-      "Review admin necessity on salesforce for Harish Verma",
-      "Consider implementing just-in-time (JIT) admin access",
       "Review admin necessity on active_directory for Ravi Joshi",
       "Review admin necessity on salesforce for Ravi Joshi",
-      "Disable servicenow account acct-ser-ID-0167-5c3f04 immediately",
-      "Disable aws_iam account acct-aws-ID-0167-27744c immediately",
-      "Review admin necessity on okta for Sanjay Reddy"
+      "Consider implementing just-in-time (JIT) admin access",
+      "Disable servicenow account acct-ser-ID-0167-bc1bc5 immediately",
+      "Disable aws_iam account acct-aws-ID-0167-0c4a8c immediately",
+      "Review admin necessity on okta for Sanjay Reddy",
+      "Review admin necessity on salesforce for Sanjay Reddy",
+      "Review admin necessity on active_directory for Ananya Menon"
     ]
   },
   {
-    "id": "INC-078",
-    "title": "Sod Violation cluster (Ravi Joshi, Naveen Desai, Ashwin Patel)",
+    "id": "INC-080",
+    "title": "Sod Violation cluster (4 identities, 4 signals)",
     "severity": "low",
     "status": "review",
-    "identity": "Ravi Joshi, Naveen Desai, Ashwin Patel",
+    "identity": "Ravi Joshi, Ananya Menon, Naveen Desai",
     "identities": [
       "Ravi Joshi",
+      "Ananya Menon",
       "Naveen Desai",
       "Ashwin Patel"
     ],
     "identity_ids": [
       "ID-0164",
+      "ID-0202",
       "ID-0209",
       "ID-0211"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
@@ -3029,10 +3032,10 @@
       "okta",
       "aws_iam"
     ],
-    "avg_score": 24.21,
+    "avg_score": 24.0,
     "max_score": 24.55,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: sod violation.",
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 4 identity/identities. Primary pattern: sod violation.",
     "remediation_steps": [
       "Separate CRM Admin + Domain Admin responsibilities across different identities",
       "Implement compensating controls if separation is not possible",
@@ -3040,56 +3043,51 @@
     ]
   },
   {
-    "id": "INC-079",
-    "title": "Cross Platform Admin cluster (5 identities, 5 signals)",
+    "id": "INC-081",
+    "title": "Cross Platform Admin cluster (Venkat Shetty, Pallavi Murthy, Naveen Desai)",
     "severity": "low",
     "status": "review",
-    "identity": "Ananya Kamath, Venkat Shetty, Shreya Gupta",
+    "identity": "Venkat Shetty, Pallavi Murthy, Naveen Desai",
     "identities": [
-      "Ananya Kamath",
       "Venkat Shetty",
-      "Shreya Gupta",
       "Pallavi Murthy",
       "Naveen Desai"
     ],
     "identity_ids": [
-      "ID-0106",
       "ID-0130",
-      "ID-0162",
       "ID-0208",
       "ID-0209"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
     ],
     "platforms": [
-      "aws_iam",
-      "github",
-      "servicenow",
       "active_directory",
       "azure_ad",
       "salesforce",
-      "okta"
+      "okta",
+      "aws_iam",
+      "servicenow"
     ],
-    "avg_score": 14.71,
+    "avg_score": 16.27,
     "max_score": 24.53,
-    "signal_count": 5,
-    "narrative": "Cluster of 5 related signal(s) across 5 identity/identities. Primary pattern: cross platform admin.",
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: cross platform admin.",
     "remediation_steps": [
-      "Review admin necessity on aws_iam for Ananya Kamath",
-      "Review admin necessity on github for Ananya Kamath",
-      "Review admin necessity on servicenow for Ananya Kamath",
-      "Consider implementing just-in-time (JIT) admin access",
       "Review admin necessity on active_directory for Venkat Shetty",
       "Review admin necessity on azure_ad for Venkat Shetty",
       "Review admin necessity on salesforce for Venkat Shetty",
-      "Review admin necessity on aws_iam for Shreya Gupta"
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Pallavi Murthy",
+      "Review admin necessity on azure_ad for Pallavi Murthy",
+      "Review admin necessity on okta for Pallavi Murthy",
+      "Review admin necessity on aws_iam for Naveen Desai"
     ]
   },
   {
-    "id": "INC-080",
+    "id": "INC-082",
     "title": "Token Abuse: Aditya Shetty",
     "severity": "low",
     "status": "review",
@@ -3100,15 +3098,15 @@
     "identity_ids": [
       "ID-0094"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.713902",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
     ],
     "platforms": [
-      "azure_ad",
       "okta",
-      "github"
+      "github",
+      "azure_ad"
     ],
     "avg_score": 24.38,
     "max_score": 24.38,
@@ -3121,32 +3119,44 @@
     ]
   },
   {
-    "id": "INC-081",
-    "title": "Mfa Disabled cluster (31 identities, 48 signals)",
+    "id": "INC-083",
+    "title": "Mfa Disabled cluster (43 identities, 48 signals)",
     "severity": "low",
     "status": "review",
-    "identity": "Ravi Murthy, Janaki Joshi, Aditya Nair",
+    "identity": "Ravi Murthy, Usha Reddy, Tejas Pandey",
     "identities": [
       "Ravi Murthy",
-      "Janaki Joshi",
-      "Aditya Nair",
-      "Sanjay Sharma",
-      "Vinay Srinivasan",
+      "Usha Reddy",
+      "Tejas Pandey",
+      "Pallavi Patil",
+      "Ramesh Singh",
+      "Harish Mehta",
+      "Pradeep Chakraborty",
       "Sneha Kulkarni",
       "Vinay Murthy",
+      "Suresh Menon",
+      "Meera Chakraborty",
       "Pallavi Bhat",
       "Divya Naik",
+      "Ananya Gupta",
       "svc-report-staging",
       "svc-sync-ops",
+      "svc-cicd-data",
       "svc-batch-staging",
       "svc-deploy-staging",
       "svc-sync-dev",
       "svc-cicd-prod",
+      "svc-etl-staging",
       "svc-etl-ops",
+      "svc-deploy-dev",
       "svc-alert-prod",
+      "svc-alert-infra",
       "svc-etl-infra",
       "svc-deploy-infra",
+      "svc-sync-infra",
+      "svc-alert-ops",
       "svc-backup-staging",
+      "svc-etl-dev",
       "svc-report-data",
       "svc-monitor-ops",
       "svc-backup-infra",
@@ -3161,25 +3171,37 @@
     ],
     "identity_ids": [
       "ID-0038",
-      "ID-0119",
-      "ID-0125",
-      "ID-0140",
-      "ID-0145",
+      "ID-0107",
+      "ID-0108",
+      "ID-0113",
+      "ID-0118",
+      "ID-0150",
+      "ID-0156",
       "ID-0165",
       "ID-0170",
+      "ID-0204",
+      "ID-0265",
       "ID-0277",
       "ID-0282",
+      "ID-0296",
       "SVC-0000",
       "SVC-0002",
+      "SVC-0004",
       "SVC-0005",
       "SVC-0006",
       "SVC-0009",
       "SVC-0011",
+      "SVC-0012",
       "SVC-0013",
+      "SVC-0014",
       "SVC-0015",
+      "SVC-0016",
       "SVC-0017",
       "SVC-0018",
+      "SVC-0021",
+      "SVC-0024",
       "SVC-0025",
+      "SVC-0026",
       "SVC-0027",
       "SVC-0028",
       "SVC-0029",
@@ -3192,128 +3214,112 @@
       "SVC-0046",
       "SVC-0047"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "mfa_disabled",
     "risk_types": [
-      "mfa_disabled",
-      "stale_account"
+      "mfa_disabled"
     ],
     "platforms": [
       "azure_ad",
-      "servicenow",
-      "active_directory",
-      "github",
       "salesforce",
-      "okta",
-      "aws_iam"
+      "github",
+      "aws_iam",
+      "active_directory",
+      "servicenow",
+      "okta"
     ],
-    "avg_score": 16.5,
-    "max_score": 24.31,
+    "avg_score": 13.42,
+    "max_score": 24.35,
     "signal_count": 48,
-    "narrative": "Cluster of 48 related signal(s) across 31 identity/identities. Primary pattern: mfa disabled.",
+    "narrative": "Cluster of 48 related signal(s) across 43 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
       "Enable MFA on azure_ad for ravi.murthy",
-      "Enable MFA on servicenow for janaki.joshi",
-      "Enable MFA on active_directory for aditya.nair",
-      "Enable MFA on azure_ad for sanjay.sharma",
-      "Enable MFA on github for vinays86",
-      "Enable MFA on github for snehak24",
-      "Enable MFA on servicenow for vinay.murthy",
-      "Enable MFA on active_directory for pallavi.bhat"
+      "Enable MFA on azure_ad for usha.reddy",
+      "Enable MFA on salesforce for tejas.pandey",
+      "Enable MFA on azure_ad for pallavi.patil",
+      "Enable MFA on github for pallavip82",
+      "Enable MFA on aws_iam for rsingh",
+      "Enable MFA on active_directory for harish.mehta",
+      "Enable MFA on azure_ad for pradeep.chakraborty"
     ]
   },
   {
-    "id": "INC-082",
-    "title": "Stale Account cluster (25 identities, 29 signals)",
+    "id": "INC-084",
+    "title": "Mfa Disabled cluster (18 identities, 19 signals)",
     "severity": "low",
     "status": "review",
-    "identity": "Akash Gowda, Nandini Jain, Kavya Naik",
+    "identity": "Vinay Nair, Kavya Naik, Lakshmi Mishra",
     "identities": [
-      "Akash Gowda",
-      "Nandini Jain",
+      "Vinay Nair",
       "Kavya Naik",
       "Lakshmi Mishra",
-      "Shanti Hegde",
       "Rajesh Kumar",
       "Pallavi Verma",
-      "Ananya Kamath",
-      "Ishaan Murthy",
-      "Meera Murthy",
+      "Deepak Desai",
       "Harini Reddy",
       "Rakesh Desai",
       "Akash Naik",
       "Shreya Gupta",
-      "Sarita Bose",
       "Vinay Desai",
       "Nisha Kulkarni",
-      "Ishaan Reddy",
-      "Keerthi Sharma",
-      "Divya Iyer",
-      "Yogesh Nair",
-      "Sarita Jain",
+      "Tejas Pillai",
+      "Meera Naik",
+      "Nikhil Shetty",
       "Lakshmi Iyer",
-      "Naveen Jain",
+      "Shreya Naik",
       "Priya Hegde"
     ],
     "identity_ids": [
-      "ID-0021",
-      "ID-0044",
+      "ID-0039",
       "ID-0087",
       "ID-0099",
-      "ID-0102",
       "ID-0103",
       "ID-0105",
-      "ID-0106",
-      "ID-0116",
-      "ID-0120",
+      "ID-0111",
       "ID-0133",
       "ID-0142",
       "ID-0144",
       "ID-0162",
-      "ID-0181",
       "ID-0191",
       "ID-0192",
-      "ID-0196",
-      "ID-0198",
-      "ID-0213",
-      "ID-0224",
-      "ID-0232",
+      "ID-0197",
+      "ID-0206",
+      "ID-0216",
       "ID-0244",
-      "ID-0247",
+      "ID-0286",
       "ID-0299"
     ],
-    "created": "2026-06-21T12:25:18.530980",
-    "type": "stale_account",
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "mfa_disabled",
     "risk_types": [
-      "stale_account",
       "mfa_disabled"
     ],
     "platforms": [
-      "salesforce",
-      "active_directory",
-      "servicenow",
-      "github",
       "aws_iam",
+      "github",
+      "servicenow",
       "okta",
-      "azure_ad"
+      "azure_ad",
+      "active_directory",
+      "salesforce"
     ],
-    "avg_score": 9.71,
+    "avg_score": 9.5,
     "max_score": 23.94,
-    "signal_count": 29,
-    "narrative": "Cluster of 29 related signal(s) across 25 identity/identities. Primary pattern: stale account.",
+    "signal_count": 19,
+    "narrative": "Cluster of 19 related signal(s) across 18 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
-      "Review and disable salesforce account acct-sal-ID-0021-0ba9ca",
-      "Confirm with Akash Gowda if access is still needed",
-      "Review and disable active_directory account acct-act-ID-0021-9977d8",
-      "Enable MFA on servicenow for nandini.jain",
+      "Enable MFA on aws_iam for vnair",
       "Enable MFA on github for kavyan98",
       "Enable MFA on servicenow for lakshmi.mishra",
-      "Enable MFA on salesforce for shanti.hegde",
-      "Enable MFA on servicenow for shanti.hegde"
+      "Enable MFA on aws_iam for rkumar",
+      "Enable MFA on okta for pallavi.verma",
+      "Enable MFA on azure_ad for deepak.desai",
+      "Enable MFA on github for harinir67",
+      "Enable MFA on servicenow for rakesh.desai"
     ]
   },
   {
-    "id": "INC-083",
+    "id": "INC-085",
     "title": "Token Abuse: Kavya Naik",
     "severity": "low",
     "status": "review",
@@ -3324,7 +3330,7 @@
     "identity_ids": [
       "ID-0087"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
@@ -3344,15 +3350,57 @@
     ]
   },
   {
-    "id": "INC-084",
-    "title": "Cross Platform Admin cluster (6 identities, 7 signals)",
+    "id": "INC-086",
+    "title": "Cross Platform Admin cluster (Harish Verma, Manoj Jain, Deepak Agarwal)",
     "severity": "low",
     "status": "review",
-    "identity": "Sneha Patil, Janaki Joshi, Rohit Kamath",
+    "identity": "Harish Verma, Manoj Jain, Deepak Agarwal",
+    "identities": [
+      "Harish Verma",
+      "Manoj Jain",
+      "Deepak Agarwal"
+    ],
+    "identity_ids": [
+      "ID-0055",
+      "ID-0201",
+      "ID-0236"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "okta",
+      "salesforce",
+      "active_directory",
+      "aws_iam",
+      "github"
+    ],
+    "avg_score": 18.88,
+    "max_score": 23.81,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on okta for Harish Verma",
+      "Review admin necessity on salesforce for Harish Verma",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Manoj Jain",
+      "Review admin necessity on okta for Manoj Jain",
+      "Disable aws_iam account acct-aws-ID-0236-6355eb immediately",
+      "Disable github account acct-git-ID-0236-998ed5 immediately"
+    ]
+  },
+  {
+    "id": "INC-087",
+    "title": "Cross Platform Admin cluster (5 identities, 5 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Sneha Patil, Janaki Joshi, Aditya Nair",
     "identities": [
       "Sneha Patil",
       "Janaki Joshi",
-      "Rohit Kamath",
       "Aditya Nair",
       "Sanjay Sharma",
       "Rakesh Chakraborty"
@@ -3360,167 +3408,96 @@
     "identity_ids": [
       "ID-0065",
       "ID-0119",
-      "ID-0124",
       "ID-0125",
       "ID-0140",
       "ID-0222"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "cross_platform_admin",
     "risk_types": [
-      "cross_platform_admin",
-      "orphaned_account"
+      "cross_platform_admin"
     ],
     "platforms": [
       "active_directory",
       "github",
       "salesforce",
       "servicenow",
-      "okta",
       "azure_ad",
       "aws_iam"
     ],
-    "avg_score": 8.21,
+    "avg_score": 9.95,
     "max_score": 23.74,
-    "signal_count": 7,
-    "narrative": "Cluster of 7 related signal(s) across 6 identity/identities. Primary pattern: cross platform admin.",
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 5 identity/identities. Primary pattern: cross platform admin.",
     "remediation_steps": [
       "Review admin necessity on active_directory for Sneha Patil",
       "Review admin necessity on github for Sneha Patil",
       "Consider implementing just-in-time (JIT) admin access",
       "Review admin necessity on salesforce for Janaki Joshi",
       "Review admin necessity on servicenow for Janaki Joshi",
-      "Disable okta account acct-okt-ID-0124-7d4bad immediately",
-      "Disable azure_ad account acct-azu-ID-0124-a68ca1 immediately",
-      "Review admin necessity on azure_ad for Rohit Kamath"
+      "Review admin necessity on active_directory for Aditya Nair",
+      "Review admin necessity on github for Aditya Nair",
+      "Review admin necessity on azure_ad for Sanjay Sharma"
     ]
   },
   {
-    "id": "INC-085",
-    "title": "Cross Platform Admin cluster (7 identities, 7 signals)",
+    "id": "INC-088",
+    "title": "Cross Platform Admin cluster (8 identities, 10 signals)",
     "severity": "low",
     "status": "review",
-    "identity": "Vasudha Chakraborty, Ananya Menon, Nikhil Shetty",
+    "identity": "Ramesh Singh, Rohit Kamath, Aarav Mehta",
     "identities": [
-      "Vasudha Chakraborty",
-      "Ananya Menon",
-      "Nikhil Shetty",
-      "Neha Agarwal",
-      "Sandeep Hegde",
-      "Shreya Naik",
-      "Anjali Kulkarni"
-    ],
-    "identity_ids": [
-      "ID-0161",
-      "ID-0202",
-      "ID-0216",
-      "ID-0254",
-      "ID-0258",
-      "ID-0286",
-      "ID-0292"
-    ],
-    "created": "2026-06-21T12:25:18.530980",
-    "type": "cross_platform_admin",
-    "risk_types": [
-      "cross_platform_admin"
-    ],
-    "platforms": [
-      "active_directory",
-      "okta",
-      "salesforce",
-      "github",
-      "servicenow",
-      "azure_ad"
-    ],
-    "avg_score": 20.37,
-    "max_score": 23.38,
-    "signal_count": 7,
-    "narrative": "Cluster of 7 related signal(s) across 7 identity/identities. Primary pattern: cross platform admin.",
-    "remediation_steps": [
-      "Review admin necessity on active_directory for Vasudha Chakraborty",
-      "Review admin necessity on okta for Vasudha Chakraborty",
-      "Consider implementing just-in-time (JIT) admin access",
-      "Review admin necessity on active_directory for Ananya Menon",
-      "Review admin necessity on salesforce for Ananya Menon",
-      "Review admin necessity on active_directory for Nikhil Shetty",
-      "Review admin necessity on github for Nikhil Shetty",
-      "Review admin necessity on okta for Neha Agarwal"
-    ]
-  },
-  {
-    "id": "INC-086",
-    "title": "Sod Violation: Ananya Menon",
-    "severity": "low",
-    "status": "review",
-    "identity": "Ananya Menon",
-    "identities": [
-      "Ananya Menon"
-    ],
-    "identity_ids": [
-      "ID-0202"
-    ],
-    "created": "2026-06-21T12:25:18.530980",
-    "type": "sod_violation",
-    "risk_types": [
-      "sod_violation"
-    ],
-    "platforms": [
-      "salesforce",
-      "active_directory"
-    ],
-    "avg_score": 23.38,
-    "max_score": 23.38,
-    "signal_count": 1,
-    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
-    "remediation_steps": [
-      "Separate CRM Admin + Domain Admin responsibilities across different identities",
-      "Implement compensating controls if separation is not possible"
-    ]
-  },
-  {
-    "id": "INC-087",
-    "title": "Cross Platform Admin cluster (Meera Gowda, Suraj Iyer, Vasudha Mishra)",
-    "severity": "low",
-    "status": "review",
-    "identity": "Meera Gowda, Suraj Iyer, Vasudha Mishra",
-    "identities": [
+      "Ramesh Singh",
+      "Rohit Kamath",
+      "Aarav Mehta",
+      "Vasudha Kamath",
+      "Shreya Bose",
       "Meera Gowda",
       "Suraj Iyer",
       "Vasudha Mishra"
     ],
     "identity_ids": [
+      "ID-0118",
+      "ID-0124",
+      "ID-0129",
+      "ID-0135",
+      "ID-0141",
       "ID-0212",
       "ID-0267",
       "ID-0275"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "cross_platform_admin",
     "risk_types": [
-      "cross_platform_admin"
+      "cross_platform_admin",
+      "orphaned_account"
     ],
     "platforms": [
-      "active_directory",
+      "aws_iam",
+      "salesforce",
+      "okta",
       "azure_ad",
-      "github",
       "servicenow",
-      "salesforce"
+      "github",
+      "active_directory"
     ],
-    "avg_score": 18.98,
+    "avg_score": 7.85,
     "max_score": 23.12,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: cross platform admin.",
+    "signal_count": 10,
+    "narrative": "Cluster of 10 related signal(s) across 8 identity/identities. Primary pattern: cross platform admin.",
     "remediation_steps": [
-      "Review admin necessity on active_directory for Meera Gowda",
-      "Review admin necessity on azure_ad for Meera Gowda",
+      "Review admin necessity on aws_iam for Ramesh Singh",
+      "Review admin necessity on salesforce for Ramesh Singh",
       "Consider implementing just-in-time (JIT) admin access",
-      "Review admin necessity on github for Suraj Iyer",
-      "Review admin necessity on servicenow for Suraj Iyer",
-      "Review admin necessity on active_directory for Vasudha Mishra",
-      "Review admin necessity on salesforce for Vasudha Mishra"
+      "Disable okta account acct-okt-ID-0124-02b510 immediately",
+      "Disable azure_ad account acct-azu-ID-0124-6f862c immediately",
+      "Review admin necessity on azure_ad for Rohit Kamath",
+      "Review admin necessity on okta for Rohit Kamath",
+      "Disable servicenow account acct-ser-ID-0129-7cb97c immediately"
     ]
   },
   {
-    "id": "INC-088",
+    "id": "INC-089",
     "title": "Sod Violation: Vasudha Mishra",
     "severity": "low",
     "status": "review",
@@ -3531,7 +3508,7 @@
     "identity_ids": [
       "ID-0275"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
@@ -3550,148 +3527,167 @@
     ]
   },
   {
-    "id": "INC-089",
-    "title": "Mfa Disabled cluster (21 identities, 24 signals)",
-    "severity": "low",
-    "status": "review",
-    "identity": "Usha Reddy, Tejas Pandey, Pallavi Patil",
-    "identities": [
-      "Usha Reddy",
-      "Tejas Pandey",
-      "Pallavi Patil",
-      "Ramesh Singh",
-      "Harish Mehta",
-      "Pradeep Chakraborty",
-      "Suresh Menon",
-      "Meera Chakraborty",
-      "Ananya Gupta",
-      "Rajesh Iyer",
-      "Yogesh Gupta",
-      "Vinay Bose",
-      "Varun Gowda",
-      "Nandini Pillai",
-      "Anjali Iyer",
-      "Swathi Agarwal",
-      "Varun Mishra",
-      "Naveen Joshi",
-      "Vasudha Mishra",
-      "Mohan Kulkarni",
-      "Nikhil Verma"
-    ],
-    "identity_ids": [
-      "ID-0107",
-      "ID-0108",
-      "ID-0113",
-      "ID-0118",
-      "ID-0150",
-      "ID-0156",
-      "ID-0204",
-      "ID-0265",
-      "ID-0296",
-      "EXT-0000",
-      "EXT-0001",
-      "EXT-0004",
-      "EXT-0005",
-      "EXT-0006",
-      "EXT-0007",
-      "EXT-0009",
-      "EXT-0011",
-      "EXT-0012",
-      "EXT-0016",
-      "EXT-0017",
-      "EXT-0018"
-    ],
-    "created": "2026-06-21T12:25:18.530980",
-    "type": "mfa_disabled",
-    "risk_types": [
-      "mfa_disabled",
-      "stale_account"
-    ],
-    "platforms": [
-      "azure_ad",
-      "salesforce",
-      "github",
-      "aws_iam",
-      "active_directory",
-      "servicenow",
-      "okta"
-    ],
-    "avg_score": 11.39,
-    "max_score": 21.83,
-    "signal_count": 24,
-    "narrative": "Cluster of 24 related signal(s) across 21 identity/identities. Primary pattern: mfa disabled.",
-    "remediation_steps": [
-      "Enable MFA on azure_ad for usha.reddy",
-      "Enable MFA on salesforce for tejas.pandey",
-      "Enable MFA on azure_ad for pallavi.patil",
-      "Enable MFA on github for pallavip82",
-      "Enable MFA on aws_iam for rsingh",
-      "Enable MFA on active_directory for harish.mehta",
-      "Enable MFA on azure_ad for pradeep.chakraborty",
-      "Enable MFA on aws_iam for pchakraborty"
-    ]
-  },
-  {
     "id": "INC-090",
-    "title": "Mfa Disabled cluster (10 identities, 10 signals)",
+    "title": "Mfa Disabled cluster (13 identities, 15 signals)",
     "severity": "low",
     "status": "review",
-    "identity": "Vinay Nair, Usha Joshi, Deepak Desai",
+    "identity": "Sarita Patil, Nandini Jain, Shanti Hegde",
     "identities": [
-      "Vinay Nair",
-      "Usha Joshi",
-      "Deepak Desai",
-      "Vasudha Chakraborty",
-      "Tejas Pillai",
-      "Meera Naik",
-      "Nikhil Shetty",
-      "Gaurav Bose",
-      "Shreya Naik",
-      "Anjali Kulkarni"
+      "Sarita Patil",
+      "Nandini Jain",
+      "Shanti Hegde",
+      "Ananya Kamath",
+      "Ishaan Murthy",
+      "Meera Murthy",
+      "Sarita Bose",
+      "Ishaan Reddy",
+      "Keerthi Sharma",
+      "Divya Iyer",
+      "Yogesh Nair",
+      "Sarita Jain",
+      "Naveen Jain"
     ],
     "identity_ids": [
-      "ID-0039",
-      "ID-0100",
-      "ID-0111",
-      "ID-0161",
-      "ID-0197",
-      "ID-0206",
-      "ID-0216",
-      "ID-0256",
-      "ID-0286",
-      "ID-0292"
+      "ID-0023",
+      "ID-0044",
+      "ID-0102",
+      "ID-0106",
+      "ID-0116",
+      "ID-0120",
+      "ID-0181",
+      "ID-0196",
+      "ID-0198",
+      "ID-0213",
+      "ID-0224",
+      "ID-0232",
+      "ID-0247"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "mfa_disabled",
     "risk_types": [
       "mfa_disabled"
     ],
     "platforms": [
-      "aws_iam",
       "azure_ad",
-      "okta",
-      "github",
       "servicenow",
       "salesforce",
-      "active_directory"
+      "aws_iam",
+      "okta",
+      "active_directory",
+      "github"
     ],
-    "avg_score": 11.76,
-    "max_score": 21.59,
-    "signal_count": 10,
-    "narrative": "Cluster of 10 related signal(s) across 10 identity/identities. Primary pattern: mfa disabled.",
+    "avg_score": 9.78,
+    "max_score": 22.15,
+    "signal_count": 15,
+    "narrative": "Cluster of 15 related signal(s) across 13 identity/identities. Primary pattern: mfa disabled.",
     "remediation_steps": [
-      "Enable MFA on aws_iam for vnair",
-      "Enable MFA on azure_ad for usha.joshi",
-      "Enable MFA on azure_ad for deepak.desai",
-      "Enable MFA on okta for vasudha.chakraborty",
-      "Enable MFA on okta for tejas.pillai",
-      "Enable MFA on aws_iam for mnaik",
-      "Enable MFA on github for nikhils58",
-      "Enable MFA on servicenow for gaurav.bose"
+      "Enable MFA on azure_ad for sarita.patil",
+      "Enable MFA on servicenow for nandini.jain",
+      "Enable MFA on salesforce for shanti.hegde",
+      "Enable MFA on servicenow for shanti.hegde",
+      "Enable MFA on aws_iam for akamath",
+      "Enable MFA on salesforce for ishaan.murthy",
+      "Enable MFA on aws_iam for imurthy",
+      "Enable MFA on okta for meera.murthy"
     ]
   },
   {
     "id": "INC-091",
+    "title": "Mfa Disabled cluster (9 identities, 9 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Usha Joshi, Vasudha Chakraborty, Gaurav Bose",
+    "identities": [
+      "Usha Joshi",
+      "Vasudha Chakraborty",
+      "Gaurav Bose",
+      "Anjali Kulkarni",
+      "Rajesh Iyer",
+      "Yogesh Gupta",
+      "Nandini Pillai",
+      "Swathi Agarwal",
+      "Nikhil Verma"
+    ],
+    "identity_ids": [
+      "ID-0100",
+      "ID-0161",
+      "ID-0256",
+      "ID-0292",
+      "EXT-0000",
+      "EXT-0001",
+      "EXT-0006",
+      "EXT-0009",
+      "EXT-0018"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "azure_ad",
+      "okta",
+      "servicenow",
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 13.29,
+    "max_score": 21.39,
+    "signal_count": 9,
+    "narrative": "Cluster of 9 related signal(s) across 9 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on azure_ad for usha.joshi",
+      "Enable MFA on okta for vasudha.chakraborty",
+      "Enable MFA on servicenow for gaurav.bose",
+      "Enable MFA on active_directory for anjali.kulkarni",
+      "Enable MFA on okta for rajesh.iyer",
+      "Enable MFA on salesforce for yogesh.gupt",
+      "Enable MFA on okta for nandini.pill",
+      "Enable MFA on salesforce for swathi.agar"
+    ]
+  },
+  {
+    "id": "INC-092",
+    "title": "Cross Platform Admin cluster (Vasudha Chakraborty, Neha Agarwal, Anjali Kulkarni)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Vasudha Chakraborty, Neha Agarwal, Anjali Kulkarni",
+    "identities": [
+      "Vasudha Chakraborty",
+      "Neha Agarwal",
+      "Anjali Kulkarni"
+    ],
+    "identity_ids": [
+      "ID-0161",
+      "ID-0254",
+      "ID-0292"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "okta",
+      "servicenow"
+    ],
+    "avg_score": 20.48,
+    "max_score": 21.39,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Vasudha Chakraborty",
+      "Review admin necessity on okta for Vasudha Chakraborty",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on okta for Neha Agarwal",
+      "Review admin necessity on servicenow for Neha Agarwal",
+      "Review admin necessity on active_directory for Anjali Kulkarni",
+      "Review admin necessity on okta for Anjali Kulkarni"
+    ]
+  },
+  {
+    "id": "INC-093",
     "title": "Cross Platform Admin: Sarita Jain",
     "severity": "low",
     "status": "review",
@@ -3702,7 +3698,7 @@
     "identity_ids": [
       "ID-0232"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -3724,7 +3720,40 @@
     ]
   },
   {
-    "id": "INC-092",
+    "id": "INC-094",
+    "title": "Cross Platform Admin: Shreya Gupta",
+    "severity": "low",
+    "status": "review",
+    "identity": "Shreya Gupta",
+    "identities": [
+      "Shreya Gupta"
+    ],
+    "identity_ids": [
+      "ID-0162"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "aws_iam",
+      "salesforce",
+      "servicenow"
+    ],
+    "avg_score": 20.23,
+    "max_score": 20.23,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on aws_iam for Shreya Gupta",
+      "Review admin necessity on salesforce for Shreya Gupta",
+      "Review admin necessity on servicenow for Shreya Gupta",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-095",
     "title": "Orphaned Account: Nandini Iyer",
     "severity": "low",
     "status": "review",
@@ -3735,7 +3764,7 @@
     "identity_ids": [
       "ID-0215"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -3748,11 +3777,11 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable azure_ad account acct-azu-ID-0215-e74e78 immediately"
+      "Disable azure_ad account acct-azu-ID-0215-98905b immediately"
     ]
   },
   {
-    "id": "INC-093",
+    "id": "INC-096",
     "title": "Token Abuse cluster (Nisha Iyer, Amit Kamath)",
     "severity": "low",
     "status": "review",
@@ -3765,14 +3794,14 @@
       "ID-0086",
       "ID-0093"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "token_abuse",
     "risk_types": [
       "token_abuse"
     ],
     "platforms": [
-      "servicenow",
       "github",
+      "servicenow",
       "azure_ad",
       "active_directory"
     ],
@@ -3787,43 +3816,35 @@
     ]
   },
   {
-    "id": "INC-094",
-    "title": "Orphaned Account cluster (Shreya Mishra, Sarita Singh, Arjun Joshi)",
+    "id": "INC-097",
+    "title": "Orphaned Account: Sarita Singh",
     "severity": "low",
     "status": "review",
-    "identity": "Shreya Mishra, Sarita Singh, Arjun Joshi",
+    "identity": "Sarita Singh",
     "identities": [
-      "Shreya Mishra",
-      "Sarita Singh",
-      "Arjun Joshi"
+      "Sarita Singh"
     ],
     "identity_ids": [
-      "ID-0151",
-      "ID-0223",
-      "ID-0263"
+      "ID-0223"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
     ],
     "platforms": [
-      "okta",
-      "servicenow",
-      "active_directory"
+      "servicenow"
     ],
-    "avg_score": 17.91,
+    "avg_score": 19.13,
     "max_score": 19.13,
-    "signal_count": 3,
-    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: orphaned account.",
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable okta account acct-okt-ID-0151-871334 immediately",
-      "Disable servicenow account acct-ser-ID-0223-aff618 immediately",
-      "Disable active_directory account acct-act-ID-0263-961fe0 immediately"
+      "Disable servicenow account acct-ser-ID-0223-58d361 immediately"
     ]
   },
   {
-    "id": "INC-095",
+    "id": "INC-098",
     "title": "Orphaned Account: Priya Kamath",
     "severity": "low",
     "status": "review",
@@ -3834,7 +3855,7 @@
     "identity_ids": [
       "ID-0255"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -3849,13 +3870,45 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable aws_iam account acct-aws-ID-0255-63a180 immediately",
-      "Disable okta account acct-okt-ID-0255-5807cc immediately",
-      "Disable salesforce account acct-sal-ID-0255-e29eb2 immediately"
+      "Disable aws_iam account acct-aws-ID-0255-43df00 immediately",
+      "Disable okta account acct-okt-ID-0255-bfff3a immediately",
+      "Disable salesforce account acct-sal-ID-0255-e863ea immediately"
     ]
   },
   {
-    "id": "INC-096",
+    "id": "INC-099",
+    "title": "Orphaned Account cluster (Shreya Mishra, Arjun Joshi)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Shreya Mishra, Arjun Joshi",
+    "identities": [
+      "Shreya Mishra",
+      "Arjun Joshi"
+    ],
+    "identity_ids": [
+      "ID-0151",
+      "ID-0263"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "okta",
+      "active_directory"
+    ],
+    "avg_score": 17.3,
+    "max_score": 17.39,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable okta account acct-okt-ID-0151-622ad0 immediately",
+      "Disable active_directory account acct-act-ID-0263-49c3ea immediately"
+    ]
+  },
+  {
+    "id": "INC-100",
     "title": "Cross Platform Admin cluster (4 identities, 4 signals)",
     "severity": "low",
     "status": "review",
@@ -3872,7 +3925,7 @@
       "ID-0132",
       "ID-0251"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -3901,42 +3954,37 @@
     ]
   },
   {
-    "id": "INC-097",
-    "title": "Sod Violation cluster (Ananya Kamath, Venkat Shetty)",
+    "id": "INC-101",
+    "title": "Sod Violation: Venkat Shetty",
     "severity": "low",
     "status": "review",
-    "identity": "Ananya Kamath, Venkat Shetty",
+    "identity": "Venkat Shetty",
     "identities": [
-      "Ananya Kamath",
       "Venkat Shetty"
     ],
     "identity_ids": [
-      "ID-0106",
       "ID-0130"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
     ],
     "platforms": [
-      "aws_iam",
-      "github",
       "salesforce",
       "active_directory"
     ],
-    "avg_score": 5.28,
+    "avg_score": 6.07,
     "max_score": 6.07,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: sod violation.",
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
     "remediation_steps": [
-      "Separate Code Owner + Infrastructure Admin responsibilities across different identities",
-      "Implement compensating controls if separation is not possible",
-      "Separate CRM Admin + Domain Admin responsibilities across different identities"
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
     ]
   },
   {
-    "id": "INC-098",
+    "id": "INC-102",
     "title": "Sod Violation: Usha Reddy",
     "severity": "low",
     "status": "review",
@@ -3947,7 +3995,7 @@
     "identity_ids": [
       "ID-0107"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "sod_violation",
     "risk_types": [
       "sod_violation"
@@ -3966,7 +4014,110 @@
     ]
   },
   {
-    "id": "INC-099",
+    "id": "INC-103",
+    "title": "Cross Platform Admin: Ananya Kamath",
+    "severity": "low",
+    "status": "review",
+    "identity": "Ananya Kamath",
+    "identities": [
+      "Ananya Kamath"
+    ],
+    "identity_ids": [
+      "ID-0106"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "aws_iam",
+      "github",
+      "servicenow"
+    ],
+    "avg_score": 4.49,
+    "max_score": 4.49,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on aws_iam for Ananya Kamath",
+      "Review admin necessity on github for Ananya Kamath",
+      "Review admin necessity on servicenow for Ananya Kamath",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-104",
+    "title": "Sod Violation: Ananya Kamath",
+    "severity": "low",
+    "status": "review",
+    "identity": "Ananya Kamath",
+    "identities": [
+      "Ananya Kamath"
+    ],
+    "identity_ids": [
+      "ID-0106"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "aws_iam",
+      "github"
+    ],
+    "avg_score": 4.49,
+    "max_score": 4.49,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate Code Owner + Infrastructure Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
+    ]
+  },
+  {
+    "id": "INC-105",
+    "title": "Mfa Disabled cluster (4 identities, 4 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Janaki Joshi, Aditya Nair, Sanjay Sharma",
+    "identities": [
+      "Janaki Joshi",
+      "Aditya Nair",
+      "Sanjay Sharma",
+      "Vinay Srinivasan"
+    ],
+    "identity_ids": [
+      "ID-0119",
+      "ID-0125",
+      "ID-0140",
+      "ID-0145"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "servicenow",
+      "active_directory",
+      "azure_ad",
+      "github"
+    ],
+    "avg_score": 2.79,
+    "max_score": 3.99,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 4 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on servicenow for janaki.joshi",
+      "Enable MFA on active_directory for aditya.nair",
+      "Enable MFA on azure_ad for sanjay.sharma",
+      "Enable MFA on github for vinays86"
+    ]
+  },
+  {
+    "id": "INC-106",
     "title": "Cross Platform Admin: Neha Patel",
     "severity": "low",
     "status": "review",
@@ -3977,7 +4128,7 @@
     "identity_ids": [
       "ID-0112"
     ],
-    "created": "2026-06-21T12:25:18.530980",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin"
@@ -3999,36 +4150,26 @@
     ]
   },
   {
-    "id": "INC-100",
-    "title": "Orphaned Account cluster (10 identities, 10 signals)",
+    "id": "INC-107",
+    "title": "Orphaned Account cluster (5 identities, 5 signals)",
     "severity": "low",
     "status": "review",
-    "identity": "Varun Kamath, Shanti Hegde, Pallavi Verma",
+    "identity": "Varun Kamath, Shanti Hegde, Ishaan Murthy",
     "identities": [
       "Varun Kamath",
       "Shanti Hegde",
-      "Pallavi Verma",
-      "Vivek Mishra",
       "Ishaan Murthy",
       "Meera Murthy",
-      "Rakesh Gowda",
-      "Devika Kulkarni",
-      "Harini Agarwal",
-      "Rakesh Desai"
+      "Harini Agarwal"
     ],
     "identity_ids": [
       "ID-0098",
       "ID-0102",
-      "ID-0105",
-      "ID-0110",
       "ID-0116",
       "ID-0120",
-      "ID-0121",
-      "ID-0134",
-      "ID-0138",
-      "ID-0142"
+      "ID-0138"
     ],
-    "created": "2026-06-21T12:25:18.532083",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account",
@@ -4038,110 +4179,77 @@
       "azure_ad",
       "salesforce",
       "servicenow",
-      "active_directory",
-      "okta",
-      "github"
+      "github",
+      "okta"
     ],
-    "avg_score": 2.77,
+    "avg_score": 2.84,
     "max_score": 3.41,
-    "signal_count": 10,
-    "narrative": "Cluster of 10 related signal(s) across 10 identity/identities. Primary pattern: orphaned account.",
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 5 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable azure_ad account acct-azu-ID-0098-8d70ec immediately",
-      "Disable salesforce account acct-sal-ID-0098-e357b5 immediately",
+      "Disable azure_ad account acct-azu-ID-0098-7e9272 immediately",
+      "Disable salesforce account acct-sal-ID-0098-77f81c immediately",
       "Review admin necessity on salesforce for Shanti Hegde",
       "Review admin necessity on servicenow for Shanti Hegde",
       "Consider implementing just-in-time (JIT) admin access",
-      "Review admin necessity on active_directory for Pallavi Verma",
-      "Review admin necessity on okta for Pallavi Verma",
-      "Review admin necessity on active_directory for Vivek Mishra"
+      "Review admin necessity on github for Ishaan Murthy",
+      "Review admin necessity on salesforce for Ishaan Murthy",
+      "Review admin necessity on github for Meera Murthy"
     ]
   },
   {
-    "id": "INC-101",
-    "title": "Cross Platform Admin cluster (4 identities, 5 signals)",
+    "id": "INC-108",
+    "title": "Cross Platform Admin cluster (6 identities, 6 signals)",
     "severity": "low",
     "status": "review",
-    "identity": "Ramesh Singh, Aarav Mehta, Vasudha Kamath",
+    "identity": "Pallavi Verma, Vivek Mishra, Deepak Desai",
     "identities": [
-      "Ramesh Singh",
-      "Aarav Mehta",
-      "Vasudha Kamath",
-      "Shreya Bose"
+      "Pallavi Verma",
+      "Vivek Mishra",
+      "Deepak Desai",
+      "Rakesh Gowda",
+      "Devika Kulkarni",
+      "Rakesh Desai"
     ],
     "identity_ids": [
-      "ID-0118",
-      "ID-0129",
-      "ID-0135",
-      "ID-0141"
+      "ID-0105",
+      "ID-0110",
+      "ID-0111",
+      "ID-0121",
+      "ID-0134",
+      "ID-0142"
     ],
-    "created": "2026-06-21T12:25:18.532083",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "cross_platform_admin",
     "risk_types": [
       "cross_platform_admin",
       "orphaned_account"
     ],
     "platforms": [
-      "aws_iam",
-      "salesforce",
-      "servicenow",
-      "github",
-      "okta"
-    ],
-    "avg_score": 2.78,
-    "max_score": 3.41,
-    "signal_count": 5,
-    "narrative": "Cluster of 5 related signal(s) across 4 identity/identities. Primary pattern: cross platform admin.",
-    "remediation_steps": [
-      "Review admin necessity on aws_iam for Ramesh Singh",
-      "Review admin necessity on salesforce for Ramesh Singh",
-      "Consider implementing just-in-time (JIT) admin access",
-      "Disable servicenow account acct-ser-ID-0129-419019 immediately",
-      "Disable github account acct-git-ID-0129-88fdfd immediately",
-      "Review admin necessity on github for Aarav Mehta",
-      "Review admin necessity on servicenow for Aarav Mehta",
-      "Review admin necessity on github for Vasudha Kamath"
-    ]
-  },
-  {
-    "id": "INC-102",
-    "title": "Cross Platform Admin cluster (Deepak Desai, Sneha Verma)",
-    "severity": "low",
-    "status": "review",
-    "identity": "Deepak Desai, Sneha Verma",
-    "identities": [
-      "Deepak Desai",
-      "Sneha Verma"
-    ],
-    "identity_ids": [
-      "ID-0111",
-      "ID-0117"
-    ],
-    "created": "2026-06-21T12:25:18.532083",
-    "type": "cross_platform_admin",
-    "risk_types": [
-      "cross_platform_admin"
-    ],
-    "platforms": [
-      "github",
+      "active_directory",
       "okta",
-      "aws_iam",
-      "salesforce"
+      "azure_ad",
+      "github",
+      "salesforce",
+      "servicenow"
     ],
-    "avg_score": 2.96,
+    "avg_score": 2.8,
     "max_score": 3.34,
-    "signal_count": 2,
-    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 6 identity/identities. Primary pattern: cross platform admin.",
     "remediation_steps": [
+      "Review admin necessity on active_directory for Pallavi Verma",
+      "Review admin necessity on okta for Pallavi Verma",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Vivek Mishra",
+      "Review admin necessity on azure_ad for Vivek Mishra",
       "Review admin necessity on github for Deepak Desai",
       "Review admin necessity on okta for Deepak Desai",
-      "Consider implementing just-in-time (JIT) admin access",
-      "Review admin necessity on aws_iam for Sneha Verma",
-      "Review admin necessity on salesforce for Sneha Verma"
+      "Review admin necessity on azure_ad for Rakesh Gowda"
     ]
   },
   {
-    "id": "INC-103",
+    "id": "INC-109",
     "title": "Orphaned Account: Tanvi Iyer",
     "severity": "low",
     "status": "review",
@@ -4152,7 +4260,7 @@
     "identity_ids": [
       "ID-0114"
     ],
-    "created": "2026-06-21T12:25:18.532083",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -4168,14 +4276,45 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable github account acct-git-ID-0114-340d95 immediately",
-      "Disable azure_ad account acct-azu-ID-0114-d61848 immediately",
-      "Disable okta account acct-okt-ID-0114-973e7c immediately",
-      "Disable active_directory account acct-act-ID-0114-f2a730 immediately"
+      "Disable github account acct-git-ID-0114-db02f2 immediately",
+      "Disable azure_ad account acct-azu-ID-0114-3a2b20 immediately",
+      "Disable okta account acct-okt-ID-0114-27dcd3 immediately",
+      "Disable active_directory account acct-act-ID-0114-02bb3c immediately"
     ]
   },
   {
-    "id": "INC-104",
+    "id": "INC-110",
+    "title": "Cross Platform Admin: Sneha Verma",
+    "severity": "low",
+    "status": "review",
+    "identity": "Sneha Verma",
+    "identities": [
+      "Sneha Verma"
+    ],
+    "identity_ids": [
+      "ID-0117"
+    ],
+    "created": "2026-06-21T15:04:20.714875",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "aws_iam",
+      "salesforce"
+    ],
+    "avg_score": 2.58,
+    "max_score": 2.58,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on aws_iam for Sneha Verma",
+      "Review admin necessity on salesforce for Sneha Verma",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-111",
     "title": "Orphaned Account: Sanjay Yadav",
     "severity": "low",
     "status": "review",
@@ -4186,7 +4325,7 @@
     "identity_ids": [
       "ID-0126"
     ],
-    "created": "2026-06-21T12:25:18.532083",
+    "created": "2026-06-21T15:04:20.714875",
     "type": "orphaned_account",
     "risk_types": [
       "orphaned_account"
@@ -4201,9 +4340,9 @@
     "signal_count": 1,
     "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
     "remediation_steps": [
-      "Disable github account acct-git-ID-0126-6dea9f immediately",
-      "Disable servicenow account acct-ser-ID-0126-aee05f immediately",
-      "Disable active_directory account acct-act-ID-0126-122e9a immediately"
+      "Disable github account acct-git-ID-0126-da276d immediately",
+      "Disable servicenow account acct-ser-ID-0126-12cbc5 immediately",
+      "Disable active_directory account acct-act-ID-0126-c9a1ed immediately"
     ]
   }
 ]

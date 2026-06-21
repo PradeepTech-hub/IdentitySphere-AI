@@ -196,17 +196,25 @@
     "id": "ID-0091",
     "identity": "Sarita Mishra"
   },
-  "SVC-0023": {
-    "identity_id": "SVC-0023",
-    "display_name": "svc-batch-dev",
-    "severity": "low",
-    "resources": 0,
-    "permissions": 0,
+  "ID-0273": {
+    "identity_id": "ID-0273",
+    "display_name": "Varun Sharma",
+    "severity": "high",
+    "resources": 11,
+    "permissions": 16,
     "adminRoles": 0,
-    "platforms": [],
-    "byPlatform": {},
+    "platforms": [
+      "active_directory",
+      "okta",
+      "salesforce"
+    ],
+    "byPlatform": {
+      "okta": 4,
+      "active_directory": 4,
+      "salesforce": 3
+    },
     "sensitiveAssets": [],
-    "id": "SVC-0023",
-    "identity": "svc-batch-dev"
+    "id": "ID-0273",
+    "identity": "Varun Sharma"
   }
 }

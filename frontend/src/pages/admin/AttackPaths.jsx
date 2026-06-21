@@ -474,45 +474,103 @@ export default function AttackPaths() {
         hasAttackPath ? (
           <>
             {/* ── SIMPLIFIED FLOW VIEW ── */}
-            {viewMode === 'simple' && (
-              <GlassCard hover={false}>
-                <div className="overflow-x-auto pb-2">
-                  <div className="flex items-stretch gap-0 min-w-[600px]">
-                    {(() => {
-                      const id = selectedIdentity;
-                      const platforms = id.platforms || [];
-                      const entryPlatform = platforms[0] || 'okta';
-                      const targetPlatform = platforms[platforms.length - 1] || entryPlatform;
-                      const targetResource = (RESOURCE_MAP[targetPlatform] || ['critical-resource'])[0];
-                      const steps = [
-                        { num: 1, label: 'Compromised Identity', detail: `${id.display_name}\n${PLATFORM_LABELS[entryPlatform] || entryPlatform}`, sub: `Risk: ${id.risk_score ?? 0}`, color: '#ef4444', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.35)', icon: '🎯' },
-                        ...(platforms.length > 1 ? [{ num: 2, label: 'Lateral Movement', detail: `Cross-platform bridge\n${platforms.slice(0, 3).map(p => PLATFORM_LABELS[p] || p).join(' → ')}`, sub: `${platforms.length} platforms`, color: '#f97316', bg: 'rgba(249,115,22,0.08)', border: 'rgba(249,115,22,0.35)', icon: '🔀' }] : []),
-                        ...(id.is_admin ? [{ num: platforms.length > 1 ? 3 : 2, label: 'Privilege Escalation', detail: `${ROLE_MAP[targetPlatform]?.[0] || 'Admin'}\n${PLATFORM_LABELS[targetPlatform] || targetPlatform}`, sub: 'Admin access gained', color: '#eab308', bg: 'rgba(234,179,8,0.08)', border: 'rgba(234,179,8,0.35)', icon: '⚡' }] : []),
-                        { num: (platforms.length > 1 ? 2 : 1) + (id.is_admin ? 2 : 1), label: 'Critical Resource', detail: `${targetResource}\nFULL COMPROMISE`, sub: `${blastRadius?.resources || platforms.length * 3} resources exposed`, color: '#ef4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.5)', icon: '💀' },
-                      ];
-                      return steps.map((step, i) => (
-                        <div key={i} className="flex items-stretch flex-1 min-w-[140px]">
-                          <div className="flex-1 rounded-xl p-4 text-center relative" style={{ background: step.bg, border: `2px solid ${step.border}`, boxShadow: `0 0 20px ${step.color}22` }}>
-                            <div className="text-2xl mb-2">{step.icon}</div>
-                            <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: step.color }}>Step {step.num}</div>
-                            <div className="text-xs font-bold text-white mb-1">{step.label}</div>
-                            <div className="text-[11px] text-slate-400 whitespace-pre-line leading-relaxed">{step.detail}</div>
-                            <div className="text-[10px] mt-2 font-semibold" style={{ color: step.color }}>{step.sub}</div>
+            {viewMode === 'simple' && (() => {
+              const id = selectedIdentity;
+              const platforms = id.platforms || [];
+              const entryPlatform = platforms[0] || 'okta';
+              const escalationPlatform = id.is_admin ? (platforms.find(p => (ROLE_MAP[p] || [])[0]) || platforms[platforms.length - 1] || entryPlatform) : (platforms[1] || entryPlatform);
+              const targetPlatform = platforms[platforms.length - 1] || entryPlatform;
+              const targetResource = (RESOURCE_MAP[targetPlatform] || ['critical-resource'])[0];
+              const rType = riskEvent?.type || 'cross_platform_admin';
+              const mt = MITRE_TECHNIQUES[rType] || MITRE_TECHNIQUES.cross_platform_admin;
+              const sev = id.severity?.toLowerCase() || 'high';
+
+              const escalationRole = id.is_admin ? (ROLE_MAP[escalationPlatform]?.[0] || 'Admin') : (ROLE_MAP[escalationPlatform]?.[1] || 'Elevated User');
+              const escalationAction = id.is_admin ? `${escalationRole} on ${PLATFORM_LABELS[escalationPlatform] || escalationPlatform}` : (riskEvent?.title || `Elevated access on ${PLATFORM_LABELS[escalationPlatform] || escalationPlatform}`);
+
+              const steps = [
+                { num: 1, label: 'Compromised Identity', name: id.display_name, platform: PLATFORM_LABELS[entryPlatform] || entryPlatform, platKey: entryPlatform, mitre: 'T1078', mitreName: 'Valid Accounts', severity: sev, impact: `+${Math.round((id.risk_score || 0) * 0.3)} pts`, color: '#ef4444', bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.35)', icon: '🎯' },
+                { num: 2, label: 'Lateral Movement',
+                  name: platforms.length > 1 ? `${PLATFORM_LABELS[entryPlatform]} → ${PLATFORM_LABELS[platforms[1]] || platforms[1]}` : `Within ${PLATFORM_LABELS[entryPlatform] || entryPlatform}`,
+                  platform: platforms.length > 1 ? `${platforms.length} platforms bridged` : 'Single platform movement',
+                  platKey: platforms[1] || entryPlatform,
+                  mitre: 'T1550', mitreName: 'Alternate Auth Material', severity: 'high',
+                  impact: `+${Math.round((id.risk_score || 0) * 0.25)} pts`,
+                  color: '#f97316', bg: 'rgba(249,115,22,0.06)', border: 'rgba(249,115,22,0.35)', icon: '🔀',
+                },
+                { num: 3, label: 'Privilege Escalation',
+                  name: escalationRole,
+                  platform: escalationAction, platKey: escalationPlatform,
+                  mitre: 'T1098', mitreName: 'Account Manipulation', severity: id.is_admin ? 'critical' : 'high',
+                  impact: `+${Math.round((id.risk_score || 0) * 0.3)} pts`,
+                  color: '#eab308', bg: 'rgba(234,179,8,0.06)', border: 'rgba(234,179,8,0.35)', icon: '⚡',
+                },
+                { num: 4, label: 'Critical Resource',
+                  name: targetResource, platform: 'FULL COMPROMISE', platKey: targetPlatform,
+                  mitre: mt.id, mitreName: mt.name, severity: 'critical',
+                  impact: `${blastRadius?.resources || platforms.length * 3} resources`,
+                  color: '#ef4444', bg: 'rgba(239,68,68,0.10)', border: 'rgba(239,68,68,0.5)', icon: '💀',
+                },
+              ];
+
+              return (
+                <GlassCard hover={false}>
+                  {/* Horizontal flow cards */}
+                  <div className="overflow-x-auto pb-3">
+                    <div className="flex items-stretch gap-0 min-w-[700px]">
+                      {steps.map((step, i) => (
+                        <div key={i} className="flex items-stretch flex-1 min-w-[160px]">
+                          <div className="flex-1 rounded-xl p-5 text-center" style={{ background: step.bg, border: `2px solid ${step.border}`, boxShadow: `0 0 24px ${step.color}18` }}>
+                            <div className="text-3xl mb-2">{step.icon}</div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: step.color }}>Step {step.num}</div>
+                            <div className="text-sm font-bold text-white mb-1">{step.label}</div>
+                            <div className="text-xs text-white/90 font-semibold mb-0.5">{step.name}</div>
+                            <div className="flex items-center justify-center gap-1 mb-2">
+                              <PlatformIcon platform={step.platKey} size="sm" />
+                              <span className="text-[10px] text-slate-400">{step.platform}</span>
+                            </div>
+                            <div className="space-y-1 mt-2 pt-2" style={{ borderTop: `1px solid ${step.border}` }}>
+                              <div className="text-[9px] text-slate-500">
+                                <span className="font-mono font-bold" style={{ color: step.color }}>{step.mitre}</span> {step.mitreName}
+                              </div>
+                              <div className="flex items-center justify-center gap-2">
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold border ${step.severity === 'critical' ? 'bg-red-500/15 text-red-400 border-red-500/30' : step.severity === 'high' ? 'bg-orange-500/15 text-orange-400 border-orange-500/30' : 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'}`}>{step.severity.toUpperCase()}</span>
+                                <span className="text-[10px] font-semibold" style={{ color: step.color }}>{step.impact}</span>
+                              </div>
+                            </div>
                           </div>
                           {i < steps.length - 1 && (
-                            <div className="flex items-center px-1 shrink-0">
-                              <div className="flex flex-col items-center gap-0.5">
-                                <ChevronRight size={20} className="text-slate-500" />
+                            <div className="flex items-center px-1.5 shrink-0">
+                              <div className="flex flex-col items-center">
+                                <div className="w-6 h-px" style={{ background: step.color }} />
+                                <ChevronRight size={22} style={{ color: step.color }} />
+                                <div className="w-6 h-px" style={{ background: steps[i + 1].color }} />
                               </div>
                             </div>
                           )}
                         </div>
-                      ));
-                    })()}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </GlassCard>
-            )}
+
+                  {/* Summary bar */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 mt-3 pt-3" style={{ borderTop: '1px solid rgba(227,25,55,0.15)' }}>
+                    <div className="flex items-center gap-4 text-[10px] text-slate-500">
+                      <span>Identity: <strong className="text-white">{id.display_name}</strong></span>
+                      <span>Score: <strong className="text-red-400">{id.risk_score ?? 0}/100</strong></span>
+                      <span>Platforms: <strong className="text-white">{platforms.length}</strong></span>
+                      <span>Blast Radius: <strong className="text-orange-400">{blastRadius?.resources || platforms.length * 3} resources</strong></span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[10px] text-slate-500">
+                      <span>MITRE:</span>
+                      {[...new Set(steps.map(s => s.mitre))].map(m => (
+                        <span key={m} className="font-mono font-bold text-red-400 px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20">{m}</span>
+                      ))}
+                    </div>
+                  </div>
+                </GlassCard>
+              );
+            })()}
 
             {/* ── TECHNICAL GRAPH VIEW ── */}
             {viewMode === 'technical' && (

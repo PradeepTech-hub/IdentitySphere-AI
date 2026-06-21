@@ -1,8 +1,15 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PlatformDataProvider } from './context/PlatformDataContext';
 import { ScenarioProvider } from './context/ScenarioContext';
 import { SidebarProvider } from './components/layout/Sidebar';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 
 import Landing from './pages/landing/Landing';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -101,6 +108,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <PlatformDataProvider>
           <ScenarioProvider>

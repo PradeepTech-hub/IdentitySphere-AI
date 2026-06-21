@@ -226,6 +226,12 @@ class DetectionEngine:
         return findings
 
     def _detect_stale(self, identity: Identity) -> list[RiskEvent]:
+        """Detect dormant admin accounts: admin + inactive > stale_days (90).
+
+        Per the problem statement, only administrative accounts that are
+        dormant should be flagged — non-admin dormant accounts are lower
+        priority and excluded to reduce noise.
+        """
         findings: list[RiskEvent] = []
         now = datetime.utcnow()
         cutoff = now - timedelta(days=self.stale_days)
@@ -233,35 +239,39 @@ class DetectionEngine:
         for account in identity.accounts:
             if (
                 account.status == IdentityStatus.ACTIVE
+                and account.is_admin
                 and account.last_login
                 and account.last_login < cutoff
             ):
                 days_stale = (now - account.last_login).days
-                severity = RiskSeverity.HIGH if days_stale > 180 else RiskSeverity.MEDIUM
+                severity = RiskSeverity.CRITICAL if days_stale > 180 else RiskSeverity.HIGH
                 findings.append(RiskEvent(
                     risk_id=f"RISK-STL-{uuid.uuid4().hex[:8]}",
                     identity_id=identity.identity_id,
                     risk_type="stale_account",
                     severity=severity,
                     score=0.0,
-                    title=f"Stale account: {account.platform.value} - {days_stale} days inactive",
+                    title=f"Dormant admin: {account.platform.value} - {days_stale} days inactive",
                     description=(
-                        f"Account {account.account_id} on {account.platform.value} has not been "
-                        f"used in {days_stale} days (last login: {account.last_login.isoformat()})"
+                        f"Admin account {account.account_id} on {account.platform.value} has not been "
+                        f"used in {days_stale} days (last login: {account.last_login.isoformat()}). "
+                        f"Dormant admin credentials are high-value targets for credential theft."
                     ),
                     evidence=[{
-                        "type": "stale_login",
+                        "type": "dormant_admin",
                         "platform": account.platform.value,
                         "account_id": account.account_id,
                         "last_login": account.last_login.isoformat(),
                         "days_stale": days_stale,
+                        "is_admin": True,
                     }],
                     affected_platforms=[account.platform],
                     remediation_steps=[
-                        f"Review and disable {account.platform.value} account {account.account_id}",
-                        f"Confirm with {identity.display_name} if access is still needed",
+                        f"Disable admin access on {account.platform.value} immediately",
+                        f"Implement JIT (Just-In-Time) access for {identity.display_name}",
+                        f"Review if admin role is still required after {days_stale} days of inactivity",
                     ],
-                    compliance_refs=["NIST AC-2", "CIS 5"],
+                    compliance_refs=["NIST AC-2", "NIST AC-6", "CIS 5"],
                 ))
         return findings
 
@@ -526,12 +536,13 @@ class DetectionEngine:
             gap_platforms = record.gap_platforms
             days_since = record.days_since_termination
 
-            if days_since <= self.offboarding_critical_days:
+            # Older gap = worse: >30d CRITICAL, 8-30d HIGH, 0-7d MEDIUM
+            if days_since > self.offboarding_high_days:
+                severity = RiskSeverity.CRITICAL
+            elif days_since > self.offboarding_critical_days:
                 severity = RiskSeverity.HIGH
-            elif days_since <= self.offboarding_high_days:
-                severity = RiskSeverity.CRITICAL
             else:
-                severity = RiskSeverity.CRITICAL
+                severity = RiskSeverity.MEDIUM
 
             findings.append(RiskEvent(
                 risk_id=f"RISK-OBG-{uuid.uuid4().hex[:8]}",

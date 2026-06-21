@@ -3,6 +3,7 @@ export const USERS = {
   'auditor@identitysphere.ai': { role: 'auditor', name: 'Kavya R', title: 'Compliance Auditor' },
   'executive@identitysphere.ai': { role: 'executive', name: 'Deepak Hegde', title: 'VP Finance' },
   'employee@identitysphere.ai': { role: 'employee', name: 'Rahul Sharma', title: 'Sr Software Engineer' },
+  'contractor@identitysphere.ai': { role: 'contractor', name: 'Suresh Rajan', title: 'External Contractor' },
 };
 
 export const STATS = {

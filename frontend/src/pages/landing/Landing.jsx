@@ -430,7 +430,7 @@ export default function Landing() {
                 </svg>
                 Get Started
               </button>
-              <button onClick={() => nav('/login')}
+              <button onClick={() => window.open('https://youtu.be/demo-video-link', '_blank')}
                 className="inline-flex items-center gap-2.5 px-9 py-4 rounded-xl font-bold cursor-pointer border-none transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03]"
                 style={{
                   background: 'rgba(255,255,255,0.95)',
@@ -439,9 +439,9 @@ export default function Landing() {
                   fontFamily: "'Inter', sans-serif",
                 }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
+                  <polygon points="5,3 19,12 5,21" />
                 </svg>
-                Request Demo
+                Demo Video
               </button>
             </div>
           </div>

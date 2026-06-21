@@ -1,6 +1,20 @@
 {
   "access_requests": [
     {
+      "id": "REQ-1782060864002",
+      "employeeEmail": "pradeepshetty.m003@gmail.com",
+      "employeeName": "Pradeepshetty M003",
+      "platform": "active_directory",
+      "role": "Server Admin",
+      "durationDays": 7,
+      "justification": "TO Fix the server crash",
+      "status": "approved",
+      "createdAt": "2026-06-21T16:54:24.002925+00:00",
+      "expiresAt": "2026-06-28T16:55:05.662650+00:00",
+      "reviewedBy": "Pradeepshetty M003",
+      "reviewedAt": "2026-06-21T16:55:05.660677+00:00"
+    },
+    {
       "id": "REQ-1781991500107",
       "employeeEmail": "employee@identitysphere.ai",
       "employeeName": "employee",
@@ -17,6 +31,150 @@
   ],
   "review_history": [
     {
+      "id": "HIST-1782060905684",
+      "reviewId": "REQ-1782060864002",
+      "identity": "Pradeepshetty M003",
+      "platform": "active_directory",
+      "role": "Server Admin",
+      "action": "approved",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:55:05.684Z",
+      "riskBefore": null,
+      "riskAfter": null
+    },
+    {
+      "id": "HIST-1782060077801",
+      "reviewId": "ID-0030-github",
+      "identity": "Neha Kulkarni",
+      "platform": "github",
+      "role": "User",
+      "action": "revoked",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:17.801Z",
+      "riskBefore": 55.9,
+      "riskAfter": 35.9
+    },
+    {
+      "id": "HIST-1782060077802",
+      "reviewId": "ID-0030-salesforce",
+      "identity": "Neha Kulkarni",
+      "platform": "salesforce",
+      "role": "Standard User",
+      "action": "revoked",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:17.802Z",
+      "riskBefore": 55.9,
+      "riskAfter": 35.9
+    },
+    {
+      "id": "HIST-1782060077800",
+      "reviewId": "ID-0030-azure_ad",
+      "identity": "Neha Kulkarni",
+      "platform": "azure_ad",
+      "role": "User",
+      "action": "revoked",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:17.800Z",
+      "riskBefore": 55.9,
+      "riskAfter": 35.9
+    },
+    {
+      "id": "HIST-1782060077798",
+      "reviewId": "ID-0030-active_directory",
+      "identity": "Neha Kulkarni",
+      "platform": "active_directory",
+      "role": "Domain User",
+      "action": "revoked",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:17.798Z",
+      "riskBefore": 55.9,
+      "riskAfter": 35.9
+    },
+    {
+      "id": "HIST-1782060066313",
+      "reviewId": "ID-0085-salesforce",
+      "identity": "Pallavi Pillai",
+      "platform": "salesforce",
+      "role": "Standard User",
+      "action": "revoked",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:06.313Z",
+      "riskBefore": 56.54,
+      "riskAfter": 36.54
+    },
+    {
+      "id": "HIST-1782060066312",
+      "reviewId": "ID-0085-github",
+      "identity": "Pallavi Pillai",
+      "platform": "github",
+      "role": "User",
+      "action": "revoked",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:06.312Z",
+      "riskBefore": 56.54,
+      "riskAfter": 36.54
+    },
+    {
+      "id": "HIST-1782060066311",
+      "reviewId": "ID-0085-active_directory",
+      "identity": "Pallavi Pillai",
+      "platform": "active_directory",
+      "role": "Domain User",
+      "action": "revoked",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:06.311Z",
+      "riskBefore": 56.54,
+      "riskAfter": 36.54
+    },
+    {
+      "id": "HIST-1782060062524",
+      "reviewId": "ID-0068-salesforce",
+      "identity": "Manish Joshi",
+      "platform": "salesforce",
+      "role": "Standard User",
+      "action": "approved",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:02.524Z",
+      "riskBefore": 59.44,
+      "riskAfter": 59.44
+    },
+    {
+      "id": "HIST-1782060062523",
+      "reviewId": "ID-0068-okta",
+      "identity": "Manish Joshi",
+      "platform": "okta",
+      "role": "SSO User",
+      "action": "approved",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:02.523Z",
+      "riskBefore": 59.44,
+      "riskAfter": 59.44
+    },
+    {
+      "id": "HIST-1782060062522",
+      "reviewId": "ID-0068-aws_iam",
+      "identity": "Manish Joshi",
+      "platform": "aws_iam",
+      "role": "ReadOnlyAccess",
+      "action": "approved",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:02.522Z",
+      "riskBefore": 59.44,
+      "riskAfter": 59.44
+    },
+    {
+      "id": "HIST-1782060062482",
+      "reviewId": "ID-0068-active_directory",
+      "identity": "Manish Joshi",
+      "platform": "active_directory",
+      "role": "Domain User",
+      "action": "approved",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T16:41:02.482Z",
+      "riskBefore": 59.44,
+      "riskAfter": 59.44
+    },
+    {
       "id": "HIST-1782042626287",
       "reviewId": "REQ-1781991500107",
       "identity": "employee",
@@ -29,6 +187,27 @@
       "riskAfter": null
     }
   ],
-  "review_statuses": {},
-  "identity_overrides": {}
+  "review_statuses": {
+    "ID-0068-active_directory": "approved",
+    "ID-0068-okta": "approved",
+    "ID-0068-aws_iam": "approved",
+    "ID-0068-salesforce": "approved",
+    "ID-0085-active_directory": "revoked",
+    "ID-0085-github": "revoked",
+    "ID-0085-salesforce": "revoked",
+    "ID-0030-active_directory": "revoked",
+    "ID-0030-azure_ad": "revoked",
+    "ID-0030-salesforce": "revoked",
+    "ID-0030-github": "revoked"
+  },
+  "identity_overrides": {
+    "ID-0085": {
+      "risk_score": 36.54,
+      "severity": "medium"
+    },
+    "ID-0030": {
+      "risk_score": 35.9,
+      "severity": "medium"
+    }
+  }
 }

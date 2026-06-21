@@ -53,10 +53,9 @@ export default function GlassCard({
     >
       <div
         className="absolute top-0 inset-x-0 h-px pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(227,25,55,0.55), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(227,25,55,0.35), transparent)' }}
       />
-      <div className="absolute -top-10 -right-10 w-20 h-20 rounded-full bg-red-500/[0.03] blur-2xl pointer-events-none" />
-      <div className={`relative z-[1] ${hasNoPadding ? 'h-full' : ''}`}>{children}</div>
+      <div className={`relative ${hasNoPadding ? 'h-full' : ''}`}>{children}</div>
     </motion.div>
   );
 }

@@ -81,8 +81,8 @@ export default function Privileges() {
 
         <GlassCard delay={0.25} hover={false}>
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Admin Distribution by Platform</h3>
-          <div className="w-full min-w-0" style={{ minHeight: 250 }}>
-            <ResponsiveContainer width="99%" height={300}>
+          <div style={{ width: '100%', height: 300 }}>
+            <ResponsiveContainer>
               <BarChart data={platformStats} layout="vertical">
                 <XAxis type="number" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="platform" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={100} />

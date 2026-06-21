@@ -1288,8 +1288,8 @@ function TimelineTab({ identity: id }) {
         <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
           <Activity size={14} className="text-red-400" /> Risk Score Evolution
         </h3>
-        <div className="w-full min-w-0" style={{ minHeight: 200 }}>
-          <ResponsiveContainer width="99%" height={220}>
+        <div style={{ width: '100%', height: 220 }}>
+          <ResponsiveContainer>
             <AreaChart data={evolutionData}>
               <defs>
                 <linearGradient id="riskEvoGrad" x1="0" y1="0" x2="0" y2="1">

@@ -24,8 +24,8 @@ export default function InteractiveBarChart({
   return (
     <div>
       {title && <h3 className="text-sm font-semibold text-slate-300 mb-4 font-orbitron">{title}</h3>}
-      <div className="w-full min-w-0" style={{ minHeight: Math.max(height - 20, 160) }}>
-      <ResponsiveContainer width="99%" height={height}>
+      <div style={{ width: '100%', height }}>
+      <ResponsiveContainer>
         <BarChart
           data={data}
           layout={isVertical ? 'vertical' : 'horizontal'}

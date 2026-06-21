@@ -305,8 +305,8 @@ export default function BlastRadius() {
                   </button>
                 )}
               </div>
-              <div className="w-full min-w-0" style={{ minHeight: 200 }}>
-              <ResponsiveContainer width="99%" height={250}>
+              <div style={{ width: '100%', height: 250 }}>
+              <ResponsiveContainer>
                 <BarChart data={chartData}>
                   <XAxis dataKey="platform" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} width={30} />

@@ -5,6 +5,7 @@ import { Bell, X, Clock, CheckCircle, XCircle, Menu } from 'lucide-react';
 import Sidebar, { useSidebar } from './Sidebar';
 import SphereBackground from '../shared/SphereBackground';
 import { useAuth } from '../../context/AuthContext';
+import { usePlatformData } from '../../context/PlatformDataContext';
 import { getAccessRequests } from '../../services/storageService';
 
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub' };
@@ -19,6 +20,7 @@ const ROLE_TOP_BAR = {
 
 export default function DashboardLayout() {
   const { user } = useAuth();
+  const { loading: dataLoading } = usePlatformData();
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const [dismissedIds, setDismissedIds] = useState(() => {
@@ -95,7 +97,7 @@ export default function DashboardLayout() {
   const { toggle: toggleSidebar } = useSidebar();
 
   return (
-    <div className="min-h-screen relative">
+    <div className={`min-h-screen relative${user?.role === 'auditor' ? ' auditor-theme' : ''}`}>
       <SphereBackground />
 
       <Sidebar />
@@ -190,6 +192,13 @@ export default function DashboardLayout() {
       </div>
 
       <main className="ml-0 lg:ml-64 pt-14 min-h-screen relative z-10">
+        {dataLoading && (
+          <div className="px-3 sm:px-4 lg:px-6 xl:px-8 pt-3">
+            <div className="text-xs text-amber-400/90 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
+              Loading live pipeline data from API… (dashboard shows cached data meanwhile)
+            </div>
+          </div>
+        )}
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}

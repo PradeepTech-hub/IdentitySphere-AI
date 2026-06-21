@@ -179,7 +179,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar — always visible >= 1024px */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 z-50 flex-col overflow-hidden"
+      <aside className={`hidden lg:flex fixed left-0 top-0 bottom-0 w-64 z-50 flex-col overflow-hidden${user?.role === 'auditor' ? ' auditor-theme' : ''}`}
         style={{ background: 'rgba(5, 6, 13, 0.95)', backdropFilter: 'blur(20px)', borderRight: '1px solid rgba(227, 25, 55, 0.18)' }}>
         {sidebarContent}
       </aside>
@@ -192,7 +192,7 @@ export default function Sidebar() {
               className="fixed inset-0 z-[60] bg-black/60 lg:hidden" onClick={close} />
             <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed left-0 top-0 bottom-0 w-64 z-[70] flex flex-col overflow-hidden lg:hidden"
+              className={`fixed left-0 top-0 bottom-0 w-64 z-[70] flex flex-col overflow-hidden lg:hidden${user?.role === 'auditor' ? ' auditor-theme' : ''}`}
               style={{ background: 'rgba(5, 6, 13, 0.98)', backdropFilter: 'blur(20px)', borderRight: '1px solid rgba(227, 25, 55, 0.18)' }}>
               {sidebarContent}
             </motion.aside>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -12,9 +12,13 @@ import PlatformIcon from '../../components/shared/PlatformIcon';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import {
   getIdentities, updateIdentity,
-  getAccessRequests, saveAccessRequests,
-  getReviewHistory, saveReviewHistory,
+  getAccessRequests, getReviewHistory, getReviewStatuses,
 } from '../../services/storageService';
+import {
+  appendReviewHistory, saveReviewStatuses, updateAccessRequest, patchIdentityRisk,
+} from '../../services/governanceService';
+import { usePlatformData } from '../../context/PlatformDataContext';
+import { useAuth } from '../../context/AuthContext';
 
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 const STATUS_STYLES = {
@@ -59,13 +63,20 @@ function explainRisk(id) {
 
 export default function AccessReview() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data, refresh } = usePlatformData();
   const [reviewHistory, setReviewHistory] = useState(() => getReviewHistory());
   const [filter, setFilter] = useState('all');
   const [actionResults, setActionResults] = useState({});
-  const [reviewStatuses, setReviewStatuses] = useState({});
+  const [reviewStatuses, setReviewStatuses] = useState(() => getReviewStatuses());
   const [drawerUser, setDrawerUser] = useState(null);
 
-  const identities = useMemo(() => getIdentities(), [reviewStatuses]);
+  useEffect(() => {
+    setReviewHistory(getReviewHistory());
+    setReviewStatuses(getReviewStatuses());
+  }, [data]);
+
+  const identities = useMemo(() => getIdentities(), [data, reviewStatuses]);
   const pendingRequests = useMemo(() => getAccessRequests().filter(r => r.status === 'pending'), [reviewStatuses]);
 
   const reviewItems = useMemo(() => {
@@ -95,39 +106,105 @@ export default function AccessReview() {
   const filteredGroups = filter === 'all' ? grouped : grouped.filter(g => g.items.some(i => i.status === filter));
   const stats = { pending: reviewItems.filter(i => i.status === 'pending').length, approved: reviewItems.filter(i => i.status === 'approved').length, revoked: reviewItems.filter(i => i.status === 'revoked').length, escalated: reviewItems.filter(i => i.status === 'escalated').length };
 
-  const handleAction = useCallback((key, action, item) => {
-    setReviewStatuses(prev => ({ ...prev, [key]: action }));
+  const handleAction = useCallback(async (key, action, item) => {
+    const reviewer = user?.name || user?.email || 'Admin';
+    setReviewStatuses((prev) => ({ ...prev, [key]: action }));
     const before = item.riskScore;
     const reduction = action === 'revoked' ? Math.round(before * 0.35) : action === 'escalated' ? Math.round(before * 0.1) : 0;
     const after = Math.max(0, before - reduction);
-    setActionResults(prev => ({ ...prev, [key]: { action, beforeScore: before, afterScore: after, reduction } }));
-    if (action === 'revoked') updateIdentity(item.personId, { risk_score: after, severity: after >= 70 ? 'critical' : after >= 45 ? 'high' : after >= 25 ? 'medium' : 'low' });
-    setReviewHistory(prev => { const u = [{ id: `HIST-${Date.now()}`, reviewId: key, identity: item.identity, platform: item.platform, role: item.role, action, reviewer: 'Pradeep M', timestamp: new Date().toISOString(), riskBefore: before, riskAfter: after }, ...prev]; saveReviewHistory(u); return u; });
-  }, []);
+    setActionResults((prev) => ({ ...prev, [key]: { action, beforeScore: before, afterScore: after, reduction } }));
+    try {
+      await saveReviewStatuses({ ...getReviewStatuses(), [key]: action });
+      const entry = {
+        id: `HIST-${Date.now()}`,
+        reviewId: key,
+        identity: item.identity,
+        platform: item.platform,
+        role: item.role,
+        action,
+        reviewer,
+        timestamp: new Date().toISOString(),
+        riskBefore: before,
+        riskAfter: after,
+      };
+      const history = await appendReviewHistory([entry]);
+      setReviewHistory(history);
+      if (action === 'revoked') {
+        const severity = after >= 70 ? 'critical' : after >= 45 ? 'high' : after >= 25 ? 'medium' : 'low';
+        await patchIdentityRisk(item.personId, { risk_score: after, severity });
+        updateIdentity(item.personId, { risk_score: after, severity });
+      }
+      await refresh();
+    } catch (err) {
+      console.error(err);
+    }
+  }, [user, refresh]);
 
-  const bulkAction = useCallback((action) => {
-    const pending = reviewItems.filter(i => i.status === 'pending');
+  const bulkAction = useCallback(async (action) => {
+    const pending = reviewItems.filter((i) => i.status === 'pending');
+    const reviewer = user?.name || user?.email || 'Admin';
     const newStatuses = {};
-    pending.forEach(item => {
+    const entries = [];
+    pending.forEach((item) => {
       newStatuses[item.key] = action;
       const before = item.riskScore;
       const reduction = action === 'revoked' ? Math.round(before * 0.35) : action === 'escalated' ? Math.round(before * 0.1) : 0;
       const after = Math.max(0, before - reduction);
-      setActionResults(prev => ({ ...prev, [item.key]: { action, beforeScore: before, afterScore: after, reduction } }));
-      if (action === 'revoked') updateIdentity(item.personId, { risk_score: after, severity: after >= 70 ? 'critical' : after >= 45 ? 'high' : after >= 25 ? 'medium' : 'low' });
+      setActionResults((prev) => ({ ...prev, [item.key]: { action, beforeScore: before, afterScore: after, reduction } }));
+      if (action === 'revoked') {
+        const severity = after >= 70 ? 'critical' : after >= 45 ? 'high' : after >= 25 ? 'medium' : 'low';
+        patchIdentityRisk(item.personId, { risk_score: after, severity }).catch(() => {});
+        updateIdentity(item.personId, { risk_score: after, severity });
+      }
+      entries.push({
+        id: `HIST-${Date.now()}-${item.key}`,
+        reviewId: item.key,
+        identity: item.identity,
+        platform: item.platform,
+        role: item.role,
+        action,
+        reviewer,
+        timestamp: new Date().toISOString(),
+        riskBefore: before,
+        riskAfter: after,
+      });
     });
-    setReviewStatuses(prev => ({ ...prev, ...newStatuses }));
-    const entries = pending.map(item => ({ id: `HIST-${Date.now()}-${item.key}`, reviewId: item.key, identity: item.identity, platform: item.platform, role: item.role, action, reviewer: 'Pradeep M', timestamp: new Date().toISOString(), riskBefore: item.riskScore, riskAfter: Math.max(0, item.riskScore - (action === 'revoked' ? Math.round(item.riskScore * 0.35) : 0)) }));
-    setReviewHistory(prev => { const u = [...entries, ...prev]; saveReviewHistory(u); return u; });
-  }, [reviewItems]);
+    setReviewStatuses((prev) => ({ ...prev, ...newStatuses }));
+    try {
+      await saveReviewStatuses({ ...getReviewStatuses(), ...newStatuses });
+      const history = await appendReviewHistory(entries);
+      setReviewHistory(history);
+      await refresh();
+    } catch (err) {
+      console.error(err);
+    }
+  }, [reviewItems, user, refresh]);
 
-  const handleRequestAction = useCallback((reqId, action) => {
-    const allReqs = getAccessRequests();
-    saveAccessRequests(allReqs.map(r => r.id !== reqId ? r : { ...r, status: action, reviewedBy: 'Pradeep M', reviewedAt: new Date().toISOString(), expiresAt: action === 'approved' ? new Date(Date.now() + r.durationDays * 86400000).toISOString() : null }));
-    const req = allReqs.find(r => r.id === reqId);
-    if (req) setReviewHistory(prev => { const u = [{ id: `HIST-${Date.now()}`, reviewId: reqId, identity: req.employeeName, platform: req.platform, role: req.role, action: action === 'approved' ? 'approved' : 'revoked', reviewer: 'Pradeep M', timestamp: new Date().toISOString() }, ...prev]; saveReviewHistory(u); return u; });
-    setReviewStatuses(prev => ({ ...prev, [`req-${reqId}`]: action }));
-  }, []);
+  const handleRequestAction = useCallback(async (reqId, action) => {
+    const reviewer = user?.name || user?.email || 'Admin';
+    const apiStatus = action === 'approved' ? 'approved' : 'rejected';
+    try {
+      await updateAccessRequest(reqId, { status: apiStatus, reviewedBy: reviewer });
+      const req = getAccessRequests().find((r) => r.id === reqId);
+      if (req) {
+        const history = await appendReviewHistory([{
+          id: `HIST-${Date.now()}`,
+          reviewId: reqId,
+          identity: req.employeeName,
+          platform: req.platform,
+          role: req.role,
+          action: action === 'approved' ? 'approved' : 'revoked',
+          reviewer,
+          timestamp: new Date().toISOString(),
+        }]);
+        setReviewHistory(history);
+      }
+      setReviewStatuses((prev) => ({ ...prev, [`req-${reqId}`]: action }));
+      await refresh();
+    } catch (err) {
+      console.error(err);
+    }
+  }, [user, refresh]);
 
   const drawer = drawerUser ? grouped.find(g => g.personId === drawerUser) : null;
 

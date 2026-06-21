@@ -1,29 +1,42 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, CheckCircle, XCircle, Clock, Key } from 'lucide-react';
+import { Activity, CheckCircle, XCircle, Clock } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { useAuth } from '../../context/AuthContext';
-import { getAccessRequests, getLifecycleEvents } from '../../services/storageService';
-
+import { fetchEmployeeActivity } from '../../services/governanceService';
 
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
+
 export default function EmployeeActivity() {
   const { user } = useAuth();
+  const [feed, setFeed] = useState({ lifecycle: [], requests: [] });
+
+  useEffect(() => {
+    fetchEmployeeActivity().then(setFeed).catch(() => setFeed({ lifecycle: [], requests: [] }));
+  }, [user]);
 
   const activities = useMemo(() => {
-    const reqs = getAccessRequests().filter(r => r.employeeEmail === user?.email).map(r => ({
-      id: r.id, type: 'request', action: r.status === 'pending' ? 'Requested' : r.status === 'approved' ? 'Granted' : r.status === 'rejected' ? 'Denied' : 'Expired',
-      detail: `${r.role} on ${PLATFORM_LABELS[r.platform] || r.platform}`, platform: r.platform, time: r.reviewedAt || r.createdAt,
+    const reqs = (feed.requests || []).map((r) => ({
+      id: r.id,
+      type: 'request',
+      action: r.status === 'pending' ? 'Requested' : r.status === 'approved' ? 'Granted' : r.status === 'rejected' ? 'Denied' : 'Expired',
+      detail: `${r.role} on ${PLATFORM_LABELS[r.platform] || r.platform}`,
+      platform: r.platform,
+      time: r.reviewedAt || r.createdAt,
       color: r.status === 'approved' ? 'text-green-400' : r.status === 'rejected' ? 'text-red-400' : 'text-yellow-400',
     }));
-    const lifecycle = getLifecycleEvents().filter(e => e.identity === user?.name).map(e => ({
-      id: e.id, type: 'lifecycle', action: e.type === 'joiner' ? 'Onboarded' : e.type === 'mover' ? 'Transferred' : 'Offboarded',
-      detail: `${e.department}${e.newDepartment ? ` → ${e.newDepartment}` : ''}`, platform: e.platforms?.[0], time: e.date,
+    const lifecycle = (feed.lifecycle || []).map((e) => ({
+      id: e.id,
+      type: 'lifecycle',
+      action: e.type === 'joiner' ? 'Onboarded' : e.type === 'mover' ? 'Transferred' : 'Offboarded',
+      detail: `${e.department}${e.newDepartment ? ` → ${e.newDepartment}` : ''}`,
+      platform: e.platforms?.[0],
+      time: e.date,
       color: e.type === 'joiner' ? 'text-emerald-400' : e.type === 'mover' ? 'text-blue-400' : 'text-red-400',
     }));
     return [...reqs, ...lifecycle].sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
-  }, [user]);
+  }, [feed]);
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">

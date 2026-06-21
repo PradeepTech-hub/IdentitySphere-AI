@@ -36,10 +36,10 @@ npm run dev
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | admin@identitysphere.ai | admin123 |
-| Auditor | auditor@identitysphere.ai | audit123 |
-| Executive | executive@identitysphere.ai | exec123 |
-| Employee | employee@identitysphere.ai | emp123 |
+| Admin | admin@identitysphere.ai | Admin123!Secure |
+| Auditor | auditor@identitysphere.ai | Admin123!Secure |
+| Executive | executive@identitysphere.ai | Admin123!Secure |
+| Employee | employee@identitysphere.ai | Admin123!Secure |
 
 ## What it does
 

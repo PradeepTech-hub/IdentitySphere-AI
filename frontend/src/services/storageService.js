@@ -1,4 +1,5 @@
 import { getPlatformCache } from './dataService';
+import { getGovernanceCache } from './governanceService';
 
 const KEYS = {
   IDENTITIES: 'is_identities',
@@ -178,13 +179,35 @@ export function saveLifecycleEvents(data) { write(KEYS.LIFECYCLE, data); }
 export function getAccessReviews() { return read(KEYS.ACCESS_REVIEWS) || []; }
 export function saveAccessReviews(data) { write(KEYS.ACCESS_REVIEWS, data); }
 
-// Access Requests (Employee)
-export function getAccessRequests() { return read(KEYS.ACCESS_REQUESTS) || []; }
-export function saveAccessRequests(data) { write(KEYS.ACCESS_REQUESTS, data); }
+// Access Requests (Employee) — prefer API governance store
+export function getAccessRequests() {
+  const live = getPlatformCache()?.governance?.access_requests;
+  if (Array.isArray(live)) return live;
+  const gov = getGovernanceCache()?.access_requests;
+  if (Array.isArray(gov)) return gov;
+  return read(KEYS.ACCESS_REQUESTS) || [];
+}
+export async function saveAccessRequests(data) {
+  write(KEYS.ACCESS_REQUESTS, data);
+}
 
 // Review History
-export function getReviewHistory() { return read(KEYS.REVIEW_HISTORY) || []; }
-export function saveReviewHistory(data) { write(KEYS.REVIEW_HISTORY, data); }
+export function getReviewHistory() {
+  const live = getPlatformCache()?.governance?.review_history;
+  if (Array.isArray(live)) return live;
+  const gov = getGovernanceCache()?.review_history;
+  if (Array.isArray(gov)) return gov;
+  return read(KEYS.REVIEW_HISTORY) || [];
+}
+export async function saveReviewHistory(data) {
+  write(KEYS.REVIEW_HISTORY, data);
+}
+
+export function getReviewStatuses() {
+  const live = getPlatformCache()?.governance?.review_statuses;
+  if (live && Object.keys(live).length) return live;
+  return getGovernanceCache()?.review_statuses || {};
+}
 
 // Reset
 export function resetAll() {

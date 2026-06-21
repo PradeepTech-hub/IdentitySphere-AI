@@ -1,11 +1,10 @@
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Key, Layers } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { useAuth } from '../../context/AuthContext';
-import { getIdentities } from '../../services/storageService';
-
+import { fetchEmployeeProfile } from '../../services/governanceService';
 
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 const ROLE_MAP = { active_directory: { admin: 'Domain Admin', user: 'Domain User' }, aws_iam: { admin: 'AdministratorAccess', user: 'ReadOnlyAccess' }, okta: { admin: 'Org Admin', user: 'SSO User' }, salesforce: { admin: 'System Administrator', user: 'Standard User' } };
@@ -13,7 +12,12 @@ const GROUP_MAP = { active_directory: 'VPN-Users', aws_iam: 'Cloud-Users', okta:
 
 export default function EmployeeRoles() {
   const { user } = useAuth();
-  const myIdentity = useMemo(() => getIdentities().find(i => i.email === user?.email || i.display_name === user?.name), [user]);
+  const [myIdentity, setMyIdentity] = useState(null);
+
+  useEffect(() => {
+    fetchEmployeeProfile().then((res) => setMyIdentity(res.identity)).catch(() => setMyIdentity(null));
+  }, [user]);
+
   const myPlatforms = myIdentity?.platforms || [];
 
   return (

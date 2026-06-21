@@ -1,47 +1,57 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 import { ResponsiveContainer } from 'recharts';
 
 /**
- * Deferred chart wrapper — waits for the DOM element to have a real
- * width before rendering ResponsiveContainer.  Uses ResizeObserver
- * with a setTimeout fallback so it always renders within 500ms.
+ * Recharts 3 charts read size from ResponsiveContainerContext — they ignore
+ * width/height props on AreaChart/PieChart directly. Measure the parent, then
+ * mount ResponsiveContainer with numeric dimensions once layout is stable.
  */
 export default function ChartContainer({ children, height = 300, className = '' }) {
   const ref = useRef(null);
-  const [dims, setDims] = useState(null);
+  const [width, setWidth] = useState(0);
 
-  const measure = useCallback(() => {
-    if (!ref.current) return;
-    const w = ref.current.offsetWidth;
-    if (w > 10) setDims({ w, h: height });
-  }, [height]);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
 
-  useEffect(() => {
+    const measure = () => {
+      const next = Math.floor(el.getBoundingClientRect().width);
+      if (next > 0) setWidth((prev) => (prev === next ? prev : next));
+    };
+
     measure();
-    if (dims) return;
 
-    // ResizeObserver fires when the element gets layout dimensions
-    let ro;
-    if (typeof ResizeObserver !== 'undefined' && ref.current) {
-      ro = new ResizeObserver(() => measure());
-      ro.observe(ref.current);
-    }
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
 
-    // Fallback: force-render after 400ms even if observer hasn't fired
-    const timer = setTimeout(() => {
-      if (!dims) setDims({ w: ref.current?.offsetWidth || 400, h: height });
+    window.addEventListener('resize', measure);
+    document.addEventListener('visibilitychange', measure);
+
+    const timers = [100, 350, 700, 1200].map((ms) => window.setTimeout(measure, ms));
+    const fallback = window.setTimeout(() => {
+      const w = el.offsetWidth;
+      if (w > 10) setWidth((prev) => (prev > 0 ? prev : w));
     }, 400);
 
     return () => {
       ro?.disconnect();
-      clearTimeout(timer);
+      window.removeEventListener('resize', measure);
+      document.removeEventListener('visibilitychange', measure);
+      timers.forEach((t) => window.clearTimeout(t));
+      window.clearTimeout(fallback);
     };
-  }, [measure, dims, height]);
+  }, [height]);
+
+  const ready = width > 0;
 
   return (
-    <div ref={ref} className={className} style={{ width: '100%', height }}>
-      {dims ? (
-        <ResponsiveContainer width="100%" height={height}>
+    <div
+      ref={ref}
+      className={`chart-shell ${className}`.trim()}
+      style={{ width: '100%', minWidth: 0, height, minHeight: height, position: 'relative' }}
+    >
+      {ready ? (
+        <ResponsiveContainer width={width} height={height} debounce={0}>
           {children}
         </ResponsiveContainer>
       ) : null}

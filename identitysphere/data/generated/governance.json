@@ -1,0 +1,21 @@
+{
+  "access_requests": [
+    {
+      "id": "REQ-1781991500107",
+      "employeeEmail": "employee@identitysphere.ai",
+      "employeeName": "employee",
+      "platform": "okta",
+      "role": "admin",
+      "durationDays": 7,
+      "justification": "test",
+      "status": "pending",
+      "createdAt": "2026-06-20T21:38:20.107070+00:00",
+      "expiresAt": null,
+      "reviewedBy": null,
+      "reviewedAt": null
+    }
+  ],
+  "review_history": [],
+  "review_statuses": {},
+  "identity_overrides": {}
+}

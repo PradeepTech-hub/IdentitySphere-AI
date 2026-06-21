@@ -94,9 +94,31 @@ def _load():
     _cache["_loaded"] = True
 
 
+def _merge_identity_overrides(identities: list[dict]) -> list[dict]:
+    from identitysphere.core.governance_store import get_identity_overrides
+
+    overrides = get_identity_overrides()
+    if not overrides:
+        return identities
+    merged = []
+    for ident in identities:
+        pid = ident.get("person_id")
+        if pid in overrides:
+            merged.append({**ident, **overrides[pid]})
+        else:
+            merged.append(ident)
+    return merged
+
+
 @app.on_event("startup")
 def startup():
+    import os
+
+    os.environ.setdefault("AUTH_DEV_LOG_OTP", "true")
     _load()
+    platform = _cache.get("platform", {})
+    if platform.get("identities"):
+        platform["identities"] = _merge_identity_overrides(platform["identities"])
 
 
 class CopilotRequest(BaseModel):
@@ -129,7 +151,14 @@ def stats():
 @app.get("/api/identities")
 def identities():
     p = _cache.get("platform", {})
-    return p.get("identities", [])
+    return _merge_identity_overrides(p.get("identities", []))
+
+
+from identitysphere.auth.routes import router as auth_router
+from identitysphere.core.governance_routes import router as governance_router
+
+app.include_router(auth_router)
+app.include_router(governance_router)
 
 
 @app.get("/api/identities/{person_id}")
@@ -137,6 +166,10 @@ def identity_detail(person_id: str):
     p = _cache.get("platform", {})
     for ident in p.get("identities", []):
         if ident["person_id"] == person_id:
+            from identitysphere.core.governance_store import get_identity_overrides
+
+            overrides = get_identity_overrides().get(person_id, {})
+            ident = {**ident, **overrides}
             ent = [e for e in _cache.get("entitlements", []) if e.get("person_id") == person_id]
             mem = [m for m in _cache.get("memberships", []) if m.get("person_id") == person_id]
             evt = [e for e in _cache.get("audit_events", []) if e.get("person_id") == person_id]

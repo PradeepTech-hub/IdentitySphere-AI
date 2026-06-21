@@ -170,8 +170,8 @@ export default function ExecutiveDashboard() {
         </div>
       </GlassCard>
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <GlassCard hover={false} delay={0.12} className="lg:col-span-2" id="risk-trends">
+      <div className="grid lg:grid-cols-3 gap-4 min-w-0">
+        <GlassCard hover={false} delay={0.12} className="lg:col-span-2 min-w-0" id="risk-trends">
           <InteractiveAreaChart
             title="Risk Trends (Last 6 Months)"
             data={RISK_TREND_6MO}
@@ -206,8 +206,8 @@ export default function ExecutiveDashboard() {
         </GlassCard>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <GlassCard hover={false} delay={0.16} id="business-impact">
+      <div className="grid lg:grid-cols-3 gap-4 min-w-0">
+        <GlassCard hover={false} delay={0.16} id="business-impact" className="min-w-0">
           <InteractivePieChart data={businessUnitImpact} height={240} title="Business Impact by Business Unit" />
           <button type="button" onClick={exportReportPdf} className="mt-2 text-[10px] text-red-400 font-orbitron hover:text-red-300 transition-colors flex items-center gap-1">
             View Business Impact Report <ArrowRight size={10} />
@@ -312,8 +312,8 @@ export default function ExecutiveDashboard() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <GlassCard hover={false} delay={0.2} className="lg:col-span-2">
+      <div className="grid lg:grid-cols-3 gap-4 min-w-0">
+        <GlassCard hover={false} delay={0.2} className="lg:col-span-2 min-w-0">
           <InteractiveAreaChart
             title="Identity Risk Trend (30 Days)"
             data={trendData}
@@ -324,7 +324,7 @@ export default function ExecutiveDashboard() {
             ]}
           />
         </GlassCard>
-        <GlassCard hover={false} delay={0.25}>
+        <GlassCard hover={false} delay={0.25} className="min-w-0">
           <InteractivePieChart data={pieData} height={220} title="Severity Breakdown" />
         </GlassCard>
       </div>

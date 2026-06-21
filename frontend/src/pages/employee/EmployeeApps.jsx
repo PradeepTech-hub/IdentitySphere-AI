@@ -1,20 +1,26 @@
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Server, Shield, Lock, Unlock, Clock, CheckCircle } from 'lucide-react';
+import { Server, Shield, Lock, Unlock, CheckCircle } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { useAuth } from '../../context/AuthContext';
-import { getIdentities } from '../../services/storageService';
+import { fetchEmployeeProfile } from '../../services/governanceService';
 
-
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub', azure_ad: 'Azure AD', servicenow: 'ServiceNow' };
 const ROLE_MAP = { active_directory: 'Domain User', aws_iam: 'ReadOnlyAccess', okta: 'SSO User', salesforce: 'Standard User' };
 const PLATFORM_DESC = { active_directory: 'Corporate directory and Windows resources', aws_iam: 'Cloud infrastructure and storage', okta: 'Single sign-on portal', salesforce: 'CRM and business applications' };
 
 export default function EmployeeApps() {
   const { user } = useAuth();
-  const myIdentity = useMemo(() => getIdentities().find(i => i.email === user?.email || i.display_name === user?.name), [user]);
-  const myPlatforms = myIdentity?.platforms || [];
+  const [identity, setIdentity] = useState(null);
+
+  useEffect(() => {
+    fetchEmployeeProfile()
+      .then((res) => setIdentity(res.identity))
+      .catch(() => setIdentity(null));
+  }, [user]);
+
+  const myPlatforms = identity?.platforms || [];
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -33,7 +39,7 @@ export default function EmployeeApps() {
                   <p className="text-[10px] text-slate-500 mt-0.5">{PLATFORM_DESC[p] || 'Enterprise platform'}</p>
                   <div className="flex items-center gap-3 mt-3 text-xs text-slate-400">
                     <span className="flex items-center gap-1"><Shield size={10} /> {ROLE_MAP[p] || 'User'}</span>
-                    <span className="flex items-center gap-1">{myIdentity?.mfa_complete ? <Lock size={10} className="text-emerald-400" /> : <Unlock size={10} className="text-red-400" />} MFA</span>
+                    <span className="flex items-center gap-1">{identity?.mfa_complete ? <Lock size={10} className="text-emerald-400" /> : <Unlock size={10} className="text-red-400" />} MFA</span>
                     <span className="flex items-center gap-1"><CheckCircle size={10} className="text-emerald-400" /> Active</span>
                   </div>
                 </div>

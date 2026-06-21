@@ -40,7 +40,7 @@ function CompliancePage() {
           <SectionHeader title="Framework Alignment Matrix" icon={FileText} />
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="text-[10px] text-slate-500 uppercase border-b border-white/5 font-orbitron tracking-wider">
+              <thead><tr className="text-[10px] text-slate-500 uppercase border-b border-white/5 tracking-wide font-medium">
                 <th className="text-left pb-2.5 font-medium">Capability</th><th className="text-left pb-2.5 font-medium">NIST</th>
                 <th className="text-left pb-2.5 font-medium">MITRE</th><th className="text-left pb-2.5 font-medium">GDPR</th>
                 <th className="text-left pb-2.5 font-medium">CIS</th><th className="text-right pb-2.5 font-medium">Findings</th>
@@ -82,8 +82,8 @@ function EvidencePage() {
           <GlassCard className="!p-3">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-white font-orbitron tracking-wide truncate">{e.finding}</p>
-                <p className="text-[10px] text-slate-500 font-orbitron mt-1">{e.source} · {e.controls}</p>
+                <p className="text-sm font-semibold text-white truncate">{e.finding}</p>
+                <p className="text-[10px] text-slate-500 mt-1">{e.source} · {e.controls}</p>
               </div>
               <FloatingCounter value={e.count} color="red" size="2xl" />
             </div>
@@ -119,11 +119,11 @@ function ExportsPage() {
                     <Download size={14} className="text-red-400" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white font-orbitron tracking-wide truncate">{f.name}</p>
-                    <p className="text-[9px] text-slate-500 font-orbitron uppercase tracking-wider">{f.rows} rows · {f.size}</p>
+                    <p className="text-sm font-medium text-white truncate">{f.name}</p>
+                    <p className="text-[9px] text-slate-500 uppercase tracking-wide">{f.rows} rows · {f.size}</p>
                   </div>
                 </div>
-                <button type="button" className="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-orbitron uppercase tracking-wider border border-red-500/20 hover:bg-red-500/20 transition-all shrink-0">
+                <button type="button" className="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-semibold uppercase tracking-wide border border-red-500/20 hover:bg-red-500/20 transition-all shrink-0">
                   Export
                 </button>
               </div>
@@ -159,7 +159,7 @@ export default function AuditorDashboard() {
         {tabs.map(t => (
           <NavLink key={t.to} to={t.to} end={t.end}
             className={({ isActive }) =>
-              `flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-orbitron uppercase tracking-wider transition-all ${isActive ? 'bg-red-500/10 text-red-400 border border-red-500/20 shadow-sm shadow-red-500/10' : 'text-slate-400 hover:text-slate-300 hover:bg-white/5 border border-transparent'}`
+              `flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium uppercase tracking-wide transition-all ${isActive ? 'bg-red-500/10 text-red-400 border border-red-500/20 shadow-sm shadow-red-500/10' : 'text-slate-400 hover:text-slate-300 hover:bg-white/5 border border-transparent'}`
             }>
             <t.icon size={14} />{t.label}
           </NavLink>

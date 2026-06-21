@@ -1,16 +1,18 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Lock, Unlock, CheckCircle, XCircle, AlertTriangle, Clock, Sparkles, Smartphone } from 'lucide-react';
+import { Shield, Lock, CheckCircle, XCircle, AlertTriangle, Clock, Sparkles, Smartphone } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
-import PlatformIcon from '../../components/shared/PlatformIcon';
-import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { useAuth } from '../../context/AuthContext';
-import { getIdentities } from '../../services/storageService';
-
+import { fetchEmployeeProfile } from '../../services/governanceService';
 
 export default function EmployeeSecurity() {
   const { user } = useAuth();
-  const myIdentity = useMemo(() => getIdentities().find(i => i.email === user?.email || i.display_name === user?.name), [user]);
+  const [myIdentity, setMyIdentity] = useState(null);
+
+  useEffect(() => {
+    fetchEmployeeProfile().then((res) => setMyIdentity(res.identity)).catch(() => setMyIdentity(null));
+  }, [user]);
+
   const platforms = myIdentity?.platforms || [];
 
   const hygieneScore = useMemo(() => {

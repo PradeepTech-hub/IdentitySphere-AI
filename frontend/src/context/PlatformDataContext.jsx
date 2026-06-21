@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { initPlatformData, getPlatformCache } from '../services/dataService';
+import { loadGovernanceSnapshot, getGovernanceCache } from '../services/governanceService';
 
 const PlatformDataContext = createContext({
   loading: true,
@@ -9,29 +10,23 @@ const PlatformDataContext = createContext({
 
 export function PlatformDataProvider({ children }) {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(() => getPlatformCache());
 
   const refresh = async () => {
     setLoading(true);
-    const loaded = await initPlatformData();
-    setData(loaded);
-    setLoading(false);
+    try {
+      const [loaded] = await Promise.all([initPlatformData(), loadGovernanceSnapshot()]);
+      setData({ ...loaded, governance: getGovernanceCache() });
+    } catch {
+      setData(getPlatformCache());
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     refresh();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-10 h-10 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-400 text-sm font-orbitron">Loading identity intelligence…</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <PlatformDataContext.Provider value={{ loading, data, refresh }}>

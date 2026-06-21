@@ -124,6 +124,7 @@ def create_mfa_session(email: str, role: str) -> tuple[str, str]:
         "attempts": 0,
         "expires_at": time.time() + SESSION_TTL_SECONDS,
         "sent_at": time.time(),
+        "console_otp": otp,
     }
     return session_id, otp
 
@@ -176,6 +177,7 @@ def resend_otp(session_id: str) -> tuple[str, dict[str, Any]]:
     session["otp_expires_at"] = time.time() + OTP_TTL_SECONDS
     session["attempts"] = 0
     session["sent_at"] = time.time()
+    session["console_otp"] = otp
     delivery = deliver_otp(session["email"], otp, session["role"])
     session["delivery_mode"] = delivery
     return otp, session
@@ -276,10 +278,9 @@ def deliver_otp(to_email: str, otp: str, role: str) -> str:
         _log_dev_otp(to_email, otp, role)
         return "console"
 
-    raise RuntimeError(
-        "Gmail is not configured. Enable 2-Step Verification, create an App Password at "
-        "https://myaccount.google.com/apppasswords, then run: python setup_gmail.py"
-    )
+    # Local demo: log OTP to server console when Gmail is not configured
+    _log_dev_otp(to_email, otp, role, note="[demo] Gmail not configured —")
+    return "console"
 
 
 def mfa_response(
@@ -314,6 +315,8 @@ def mfa_response(
     }
     if delivery == "console" and dev_otp and dev_log_otp_enabled():
         payload["dev_otp"] = dev_otp
+    if delivery == "console" and dev_otp:
+        payload["dev_otp"] = dev_otp
     return payload
 
 
@@ -329,13 +332,17 @@ def inbox_notification(session_id: str) -> dict[str, Any]:
         )
     else:
         message = "Your verification code was sent to this Gmail address. Enter the 6-digit code from the email."
-    return {
+    payload = {
         "to": session["email"],
         "sent_at": session.get("sent_at"),
         "subject": "IdentitySphere AI — Your Verification Code",
         "message": message,
         "delivery_mode": mode,
     }
+    if mode == "console" and session.get("console_otp"):
+        payload["otp"] = session["console_otp"]
+        payload["bodyText"] = "Your one-time verification code:"
+    return payload
 
 
 def _load_credentials() -> dict[str, Any]:

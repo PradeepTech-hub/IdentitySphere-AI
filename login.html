@@ -951,12 +951,34 @@ function selectRole(role){
 ════════════════════════════ */
 async function submitLogin(e){
   e.preventDefault();
-  if(!validateLoginFields(true)){ shakCard(); return; }
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const isDemoEmail = Object.values(ROLE_DEMO_EMAIL).map(e => e.toLowerCase()).includes(email);
+  if (!isDemoEmail && !validateLoginFields(true)) { shakCard(); return; }
+  const password = document.getElementById('loginPass').value || 'Admin123!Secure';
 
   const btn = document.getElementById('loginBtn');
   btn.disabled = true;
   try {
-    redirectToReactApp();
+    const res = await fetch(API_BASE + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password, role: currentRole }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = data.error || data.detail?.error || (Array.isArray(data.detail) ? data.detail[0]?.msg : null) || 'Login failed';
+      throw new Error(msg);
+    }
+    showMfaScreen(data);
+    if (data.dev_otp) {
+      document.getElementById('emailInboxLoading').style.display = 'none';
+      document.getElementById('emailInboxContent').style.display = 'block';
+      document.getElementById('inboxTo').textContent = email;
+      document.getElementById('inboxOtp').textContent = data.dev_otp;
+    }
+  } catch (err) {
+    alert(err.message || 'Could not sign in. Is the API running on port 8000?');
   } finally {
     btn.disabled = false;
   }
@@ -976,15 +998,13 @@ function togglePw(){
 }
 
 async function simulateBiometric(){
-  if(!validateLoginFields(true)){ shakCard(); return; }
-  const bioBtn = document.getElementById('bioBtn');
-  bioBtn.classList.add('scanning');
-  bioBtn.textContent = '🫆 Scanning biometric…';
-  await new Promise(r => setTimeout(r, 1400));
-  bioBtn.classList.remove('scanning');
-  bioBtn.classList.add('success');
-  bioBtn.textContent = '✓ Biometric verified';
-  redirectToReactApp();
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const isDemoEmail = Object.values(ROLE_DEMO_EMAIL).map(e => e.toLowerCase()).includes(email);
+  if (!isDemoEmail && !validateLoginFields(true)) { shakCard(); return; }
+  if (!document.getElementById('loginPass').value) {
+    document.getElementById('loginPass').value = 'Admin123!Secure';
+  }
+  await submitLogin({ preventDefault: () => {} });
 }
 
 /* ════════════════════════════
@@ -1017,15 +1037,16 @@ async function verifyOtp(){
       body: JSON.stringify({ otp: all })
     });
     const data = await res.json();
-    if(!res.ok) throw new Error(data.error || 'Invalid verification code');
+    if(!res.ok) throw new Error(data.error || data.detail?.error || 'Invalid verification code');
+    sessionStorage.setItem('is_auth', JSON.stringify({
+      email: data.email,
+      role: data.role,
+      name: displayNameFromEmail(data.email),
+      auth_token: data.auth_token,
+    }));
     window.location.href = data.redirect || ROLE_DASHBOARD[currentRole] || '/admin';
   } catch (err) {
-    const all = [...Array(6)].map((_,i)=>document.getElementById('otp'+i).value).join('');
-    if (all.length === 6) {
-      redirectToReactApp();
-      return;
-    }
-    alert(err.message || 'Enter a 6-digit verification code.');
+    alert(err.message || 'Enter a 6-digit verification code from the API terminal or inbox panel.');
     for(let i=0;i<6;i++){ document.getElementById('otp'+i).value=''; }
     document.getElementById('otp0').focus();
   }

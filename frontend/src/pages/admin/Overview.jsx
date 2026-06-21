@@ -172,8 +172,8 @@ export default function Overview() {
         </p>
       </GlassCard>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <GlassCard delay={0.2} hover={false} className="lg:col-span-2">
+      <div className="grid lg:grid-cols-3 gap-6 min-w-0">
+        <GlassCard delay={0.2} hover={false} className="lg:col-span-2 min-w-0">
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Risk Trend (30 Days)</h3>
           <ChartContainer height={260}>
             <AreaChart data={trendData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -191,7 +191,7 @@ export default function Overview() {
           </ChartContainer>
         </GlassCard>
 
-        <GlassCard delay={0.3} hover={false}>
+        <GlassCard delay={0.3} hover={false} className="min-w-0">
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Severity Distribution</h3>
           {pieData.length > 0 ? (
             <>

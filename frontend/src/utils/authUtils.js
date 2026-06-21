@@ -23,7 +23,7 @@ export function getRoleTitle(role) {
   return ROLE_TITLES[role] || role.charAt(0).toUpperCase() + role.slice(1);
 }
 
-export function buildUserFromAuth({ email, role, name, title }) {
+export function buildUserFromAuth({ email, role, name, title, auth_token }) {
   if (!email) return null;
 
   const trimmedEmail = email.trim();
@@ -43,6 +43,7 @@ export function buildUserFromAuth({ email, role, name, title }) {
     role: resolvedRole,
     name: resolvedName,
     title: title || demo?.title || getRoleTitle(resolvedRole),
+    auth_token: auth_token || undefined,
   };
 }
 
@@ -55,6 +56,7 @@ export function persistAuthSession(user) {
       role: user.role,
       name: user.name,
       title: user.title,
+      auth_token: user.auth_token,
     }),
   );
 }

@@ -1,37 +1,60 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Key, Clock, CheckCircle, XCircle, Send, FileText } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { useAuth } from '../../context/AuthContext';
-import { getAccessRequests, saveAccessRequests } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
+import { createAccessRequest, fetchAccessRequests } from '../../services/governanceService';
 
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 const PLATFORMS = ['active_directory', 'aws_iam', 'okta', 'salesforce'];
+const ROLES = {
+  active_directory: ['Read-Only User', 'Helpdesk Operator', 'Server Admin', 'Domain Admin'],
+  aws_iam: ['ViewOnlyAccess', 'ReadOnlyAccess', 'PowerUserAccess', 'AdministratorAccess'],
+  okta: ['SSO User', 'Group Admin', 'App Admin', 'Org Admin'],
+  salesforce: ['Read Only', 'Standard User', 'Report Viewer', 'System Administrator'],
+};
 const DURATIONS = [{ label: '1 Day', days: 1 }, { label: '7 Days', days: 7 }, { label: '14 Days', days: 14 }, { label: '30 Days', days: 30 }];
 const STATUS_STYLES = { pending: { label: 'Pending', color: 'text-yellow-400', bg: 'bg-yellow-500/10', icon: Clock }, approved: { label: 'Approved', color: 'text-green-400', bg: 'bg-green-500/10', icon: CheckCircle }, rejected: { label: 'Rejected', color: 'text-red-400', bg: 'bg-red-500/10', icon: XCircle }, expired: { label: 'Expired', color: 'text-slate-400', bg: 'bg-slate-500/10', icon: Clock } };
 
 export default function EmployeeRequests() {
   const { user } = useAuth();
-  const [requests, setRequests] = useState(() => getAccessRequests().filter(r => r.employeeEmail === user?.email));
+  const { refresh } = usePlatformData();
+  const [requests, setRequests] = useState([]);
   const [form, setForm] = useState({ platform: 'active_directory', role: '', duration: 7, justification: '' });
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!user?.email) return;
+    fetchAccessRequests({ employeeEmail: user.email }).then(setRequests).catch(() => setRequests([]));
+  }, [user, refresh]);
+
   const stats = { total: requests.length, pending: requests.filter(r => r.status === 'pending').length, approved: requests.filter(r => r.status === 'approved').length, rejected: requests.filter(r => r.status === 'rejected').length };
 
-  const handleSubmit = useCallback(() => {
-    if (!form.justification.trim() || !form.role) return;
+  const handleSubmit = useCallback(async () => {
+    if (!form.justification.trim() || !form.role || !user?.email) return;
     setSubmitting(true);
-    setTimeout(() => {
-      const newReq = { id: `REQ-${Date.now()}`, employeeEmail: user.email, employeeName: user.name, platform: form.platform, role: form.role, durationDays: form.duration, justification: form.justification, status: 'pending', createdAt: new Date().toISOString(), expiresAt: null, reviewedBy: null, reviewedAt: null };
-      const all = getAccessRequests(); all.push(newReq); saveAccessRequests(all);
-      setRequests(prev => [newReq, ...prev]);
+    try {
+      const row = await createAccessRequest({
+        platform: form.platform,
+        role: form.role,
+        durationDays: form.duration,
+        justification: form.justification,
+        employeeName: user.name,
+      });
+      setRequests((prev) => [row, ...prev]);
       setForm({ platform: 'active_directory', role: '', duration: 7, justification: '' });
-      setShowForm(false); setSubmitting(false);
-    }, 800);
-  }, [form, user]);
+      setShowForm(false);
+      await refresh();
+    } catch (err) {
+      alert(err.message || 'Could not submit request');
+    } finally {
+      setSubmitting(false);
+    }
+  }, [form, user, refresh]);
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -63,26 +86,26 @@ export default function EmployeeRequests() {
         )}
       </AnimatePresence>
 
-      <GlassCard hover={false} className="border-red-500/10">
-        <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2"><FileText size={14} className="text-red-400" /> Request History</h3>
-        {requests.length === 0 ? (<div className="flex flex-col items-center gap-3 py-12"><Key size={40} className="text-slate-700" /><p className="text-sm text-slate-500">No access requests yet</p></div>) : (
-          <div className="space-y-2">
-            {requests.map((req, i) => { const s = STATUS_STYLES[req.status] || STATUS_STYLES.pending; const SI = s.icon; return (
-              <motion.div key={req.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.02 }}
-                className="rounded-lg px-4 py-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(227,25,55,0.08)' }}>
-                <div className="flex items-center gap-4">
-                  <PlatformIcon platform={req.platform} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2"><span className="text-sm text-white font-medium">{req.role}</span><span className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full ${s.bg} ${s.color}`}><SI size={10} /> {s.label}</span></div>
-                    <p className="text-[10px] text-slate-500 mt-0.5">{req.durationDays}d | {req.justification} | {new Date(req.createdAt).toLocaleDateString()}</p>
-                  </div>
-                  {req.expiresAt && <span className="text-[10px] text-slate-500">Expires: {new Date(req.expiresAt).toLocaleDateString()}</span>}
+      <div className="space-y-2">
+        {requests.length === 0 ? (
+          <GlassCard hover={false}><p className="text-sm text-slate-500 text-center py-8">No requests yet — create one above</p></GlassCard>
+        ) : requests.map((req, i) => {
+          const st = STATUS_STYLES[req.status] || STATUS_STYLES.pending;
+          const StIcon = st.icon;
+          return (
+            <GlassCard key={req.id} delay={i * 0.03} hover={false}>
+              <div className="flex items-center gap-4">
+                <PlatformIcon platform={req.platform} size="md" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2"><span className="text-sm font-semibold text-white">{req.role}</span><span className={`text-[10px] px-2 py-0.5 rounded-full ${st.bg} ${st.color} flex items-center gap-1`}><StIcon size={10} />{st.label}</span></div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">{PLATFORM_LABELS[req.platform]} · {req.durationDays}d · {new Date(req.createdAt).toLocaleDateString()}</p>
+                  <p className="text-xs text-slate-400 mt-1 truncate">{req.justification}</p>
                 </div>
-              </motion.div>
-            ); })}
-          </div>
-        )}
-      </GlassCard>
+              </div>
+            </GlassCard>
+          );
+        })}
+      </div>
     </motion.div>
   );
 }

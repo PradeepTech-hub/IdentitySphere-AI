@@ -1,7 +1,8 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { USERS } from '../data/mockData';
 import { seedIfNeeded } from '../services/storageService';
 import { buildUserFromAuth, persistAuthSession } from '../utils/authUtils';
+import { fetchAuthMe, getAuthToken } from '../services/governanceService';
 
 seedIfNeeded();
 
@@ -19,6 +20,32 @@ function readStoredAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(readStoredAuth);
+  const [authReady, setAuthReady] = useState(!getAuthToken());
+
+  useEffect(() => {
+    const token = getAuthToken();
+    if (!token) {
+      setAuthReady(true);
+      return;
+    }
+    fetchAuthMe()
+      .then((me) => {
+        const stored = readStoredAuth();
+        const userData = buildUserFromAuth({
+          email: me.email,
+          role: me.role,
+          name: stored?.name,
+          auth_token: token,
+        });
+        setUser(userData);
+        persistAuthSession(userData);
+      })
+      .catch(() => {
+        sessionStorage.removeItem('is_auth');
+        setUser(null);
+      })
+      .finally(() => setAuthReady(true));
+  }, []);
 
   const login = (email) => {
     const trimmed = (email || '').trim();
@@ -41,6 +68,14 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem('is_auth');
     window.location.href = '/login.html';
   };
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>

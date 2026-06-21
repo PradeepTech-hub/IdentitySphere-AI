@@ -53,6 +53,39 @@ body {
   color: #64748b;
 }
 
+/* Auditor portal: Orbitron on h1–h3 only; Inter for body, labels, tables, nav */
+.auditor-theme {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.auditor-theme h1,
+.auditor-theme h2,
+.auditor-theme h3 {
+  font-family: 'Orbitron', 'Inter', sans-serif !important;
+  letter-spacing: 0.05em;
+}
+
+.auditor-theme.dashboard-theme .page-subtitle,
+.auditor-theme.dashboard-theme .section-subtitle,
+.auditor-theme.dashboard-theme .form-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  font-size: inherit;
+}
+
+.auditor-theme .font-orbitron {
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: normal;
+}
+
+.auditor-theme h1.font-orbitron,
+.auditor-theme h2.font-orbitron,
+.auditor-theme h3.font-orbitron {
+  font-family: 'Orbitron', 'Inter', sans-serif !important;
+  letter-spacing: 0.05em;
+}
+
 @layer utilities {
   .glass {
     background: rgba(8,10,18,0.82);
@@ -301,10 +334,17 @@ html, body, #root { max-width: 100vw; overflow-x: hidden; }
 .responsive-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .responsive-table table { min-width: 640px; }
 
-/* Chart containers — ensure minimum height and proper sizing */
-.recharts-responsive-container { min-height: 180px !important; }
-.recharts-wrapper { max-width: 100% !important; }
-.recharts-surface { max-width: 100%; }
+/* Chart containers — grid/flex children need min-width:0; Recharts 3 uses ResponsiveContainer */
+.chart-shell {
+  width: 100%;
+  min-width: 0;
+}
+.recharts-responsive-container {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+.recharts-wrapper { width: 100% !important; max-width: 100% !important; }
+.recharts-surface { overflow: visible; }
 
 /* Mobile typography scale */
 @media (max-width: 640px) {

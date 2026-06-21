@@ -8,7 +8,8 @@ import RoleWelcomeBar from '../../components/shared/RoleWelcomeBar';
 import SectionHeader from '../../components/shared/SectionHeader';
 import StatCard from '../../components/shared/StatCard';
 import { useAuth } from '../../context/AuthContext';
-import { getAccessRequests, saveAccessRequests } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
+import { createAccessRequest, expireApprovedRequests, fetchAccessRequests } from '../../services/governanceService';
 
 const PLATFORMS = ['active_directory', 'aws_iam', 'okta', 'salesforce', 'github'];
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub' };
@@ -35,60 +36,48 @@ const STATUS_STYLES = {
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
+  const { refresh } = usePlatformData();
   const [requests, setRequests] = useState([]);
   const [form, setForm] = useState({ platform: 'active_directory', role: '', duration: 7, justification: '' });
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const all = getAccessRequests();
-    setRequests(all.filter(r => r.employeeEmail === user?.email));
-  }, [user]);
-
-  useEffect(() => {
-    const all = getAccessRequests();
-    let changed = false;
-    const now = new Date();
-    const updated = all.map(r => {
-      if (r.status === 'approved' && r.expiresAt && new Date(r.expiresAt) < now) {
-        changed = true;
-        return { ...r, status: 'expired' };
-      }
-      return r;
-    });
-    if (changed) {
-      saveAccessRequests(updated);
-      setRequests(updated.filter(r => r.employeeEmail === user?.email));
+  const loadRequests = useCallback(async () => {
+    if (!user?.email) return;
+    try {
+      await expireApprovedRequests();
+      const rows = await fetchAccessRequests({ employeeEmail: user.email });
+      setRequests(rows);
+    } catch {
+      setRequests([]);
     }
   }, [user]);
 
-  const handleSubmit = useCallback(() => {
-    if (!form.justification.trim() || !form.role) return;
+  useEffect(() => {
+    loadRequests();
+  }, [loadRequests, refresh]);
+
+  const handleSubmit = useCallback(async () => {
+    if (!form.justification.trim() || !form.role || !user?.email) return;
     setSubmitting(true);
-    setTimeout(() => {
-      const newReq = {
-        id: `REQ-${Date.now()}`,
-        employeeEmail: user.email,
-        employeeName: user.name,
+    try {
+      const row = await createAccessRequest({
         platform: form.platform,
         role: form.role,
         durationDays: form.duration,
         justification: form.justification,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-        expiresAt: null,
-        reviewedBy: null,
-        reviewedAt: null,
-      };
-      const all = getAccessRequests();
-      all.push(newReq);
-      saveAccessRequests(all);
-      setRequests(prev => [newReq, ...prev]);
+        employeeName: user.name,
+      });
+      setRequests((prev) => [row, ...prev]);
       setForm({ platform: 'active_directory', role: '', duration: 7, justification: '' });
       setShowForm(false);
+      await refresh();
+    } catch (err) {
+      alert(err.message || 'Could not submit request');
+    } finally {
       setSubmitting(false);
-    }, 800);
-  }, [form, user]);
+    }
+  }, [form, user, refresh]);
 
   const stats = {
     total: requests.length,

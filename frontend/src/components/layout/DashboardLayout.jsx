@@ -197,7 +197,7 @@ export default function DashboardLayout() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3 }}
-            className="p-3 sm:p-4 lg:p-5 dashboard-theme"
+            className="p-3 sm:p-4 lg:p-6 xl:p-8 dashboard-theme max-w-[1600px]"
           >
             <Outlet />
           </motion.div>

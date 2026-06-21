@@ -305,16 +305,18 @@ export default function BlastRadius() {
                   </button>
                 )}
               </div>
-              <ResponsiveContainer width="100%" height={250}>
+              <div className="w-full min-w-0" style={{ minHeight: 200 }}>
+              <ResponsiveContainer width="99%" height={250}>
                 <BarChart data={chartData}>
                   <XAxis dataKey="platform" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} wrapperStyle={{ zIndex: 1000 }} />
                   <Bar dataKey="resources" radius={[6, 6, 0, 0]} barSize={40}>
                     {chartData.map((d, i) => <Cell key={i} fill={COLORS[Object.keys(analysis.byPlatform)[i]] || '#64748b'} fillOpacity={0.8} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              </div>
             </GlassCard>
 
             {/* Simulation Panel */}

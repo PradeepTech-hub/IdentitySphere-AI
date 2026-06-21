@@ -81,16 +81,18 @@ export default function Privileges() {
 
         <GlassCard delay={0.25} hover={false}>
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Admin Distribution by Platform</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={platformStats} layout="vertical">
-              <XAxis type="number" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="platform" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={120} />
-              <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} wrapperStyle={{ zIndex: 1000 }} />
-              <Bar dataKey="admins" radius={[0, 6, 6, 0]} barSize={20}>
-                {platformStats.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.7} />)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="w-full min-w-0" style={{ minHeight: 250 }}>
+            <ResponsiveContainer width="99%" height={300}>
+              <BarChart data={platformStats} layout="vertical">
+                <XAxis type="number" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="platform" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={100} />
+                <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} wrapperStyle={{ zIndex: 1000 }} />
+                <Bar dataKey="admins" radius={[0, 6, 6, 0]} barSize={20}>
+                  {platformStats.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.7} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </GlassCard>
       </div>
 

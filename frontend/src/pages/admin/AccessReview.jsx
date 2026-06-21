@@ -170,46 +170,48 @@ export default function AccessReview() {
           const topAiRec = group.items[0]?.aiRec;
           return (
             <motion.div key={group.personId} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: gIdx * 0.02 }}
-              className="rounded-xl px-3 sm:px-5 py-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(227,25,55,0.1)' }}>
-              {/* Top row: avatar + identity info */}
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
-                  style={{ background: 'rgba(227,25,55,0.12)', color: '#E31937', border: '1px solid rgba(227,25,55,0.25)' }}>
-                  {(group.identity || '?')[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                    <span className="text-sm font-bold text-white">{group.identity}</span>
-                    <SeverityBadge severity={group.severity?.toLowerCase() || 'medium'} />
-                    <span className="text-xs font-mono text-red-400">{group.riskScore}</span>
+              className="rounded-xl px-4 sm:px-5 py-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(227,25,55,0.1)' }}>
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-center">
+                {/* Left: identity info */}
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
+                    style={{ background: 'rgba(227,25,55,0.12)', color: '#E31937', border: '1px solid rgba(227,25,55,0.25)' }}>
+                    {(group.identity || '?')[0]}
                   </div>
-                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1 text-[11px] text-slate-500">
-                    <span>{group.department}</span>
-                    <div className="flex gap-0.5">{[...new Set(group.items.map(i => i.platform))].map(p => <PlatformIcon key={p} platform={p} size="sm" />)}</div>
-                    <span>{group.items.length} privilege(s)</span>
-                    {pendingItems.length > 0 && <span className="text-yellow-400 font-semibold">{pendingItems.length} pending</span>}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-bold text-white truncate">{group.identity}</span>
+                      <SeverityBadge severity={group.severity?.toLowerCase() || 'medium'} />
+                      <span className="text-xs font-mono text-red-400 shrink-0">{group.riskScore}</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
+                      <span>{group.department}</span>
+                      <div className="flex gap-0.5">{[...new Set(group.items.map(i => i.platform))].map(p => <PlatformIcon key={p} platform={p} size="sm" />)}</div>
+                      <span>{group.items.length} privilege(s)</span>
+                      {pendingItems.length > 0 && <span className="text-yellow-400 font-semibold">{pendingItems.length} pending</span>}
+                    </div>
                   </div>
                 </div>
-              </div>
-              {/* Bottom row: actions — stacks below on mobile */}
-              <div className="flex flex-wrap items-center gap-2 mt-2.5 pt-2.5 border-t border-white/5 sm:border-0 sm:pt-0 sm:mt-0 sm:absolute sm:right-5 sm:top-1/2 sm:-translate-y-1/2" style={{ position: 'relative' }}>
-                {topAiRec && (
-                  <span className={`text-[10px] font-semibold flex items-center gap-1 ${topAiRec.action === 'Revoke' ? 'text-red-400' : topAiRec.action === 'Escalate' ? 'text-orange-400' : 'text-green-400'}`}>
-                    <Sparkles size={10} /> AI: {topAiRec.action}
-                  </span>
-                )}
-                {pendingItems.length > 0 && (
-                  <>
-                    <motion.button whileTap={{ scale: 0.95 }} onClick={() => pendingItems.forEach(it => handleAction(it.key, 'approved', it))}
-                      className="px-2.5 py-1 rounded bg-green-500/10 text-green-400 text-[10px] font-semibold border border-green-500/20 hover:bg-green-500/20 transition-all">Approve</motion.button>
-                    <motion.button whileTap={{ scale: 0.95 }} onClick={() => pendingItems.forEach(it => handleAction(it.key, 'revoked', it))}
-                      className="px-2.5 py-1 rounded bg-red-500/10 text-red-400 text-[10px] font-semibold border border-red-500/20 hover:bg-red-500/20 transition-all">Revoke</motion.button>
-                  </>
-                )}
-                <button onClick={() => setDrawerUser(group.personId)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 text-slate-300 text-[10px] font-semibold border border-white/10 hover:bg-white/10 transition-all">
-                  <Eye size={10} /> Details
-                </button>
+                {/* Right: actions */}
+                <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                  {topAiRec && (
+                    <span className={`text-[10px] font-semibold flex items-center gap-1 shrink-0 ${topAiRec.action === 'Revoke' ? 'text-red-400' : topAiRec.action === 'Escalate' ? 'text-orange-400' : 'text-green-400'}`}>
+                      <Sparkles size={10} /> AI: {topAiRec.action}
+                    </span>
+                  )}
+                  {pendingItems.length > 0 && (
+                    <>
+                      <motion.button whileTap={{ scale: 0.95 }} onClick={() => pendingItems.forEach(it => handleAction(it.key, 'approved', it))}
+                        className="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 text-[10px] font-semibold border border-green-500/20 hover:bg-green-500/20 transition-all">Approve</motion.button>
+                      <motion.button whileTap={{ scale: 0.95 }} onClick={() => pendingItems.forEach(it => handleAction(it.key, 'revoked', it))}
+                        className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-semibold border border-red-500/20 hover:bg-red-500/20 transition-all">Revoke</motion.button>
+                    </>
+                  )}
+                  <button onClick={() => setDrawerUser(group.personId)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 text-[10px] font-semibold border border-white/10 hover:bg-white/10 transition-all">
+                    <Eye size={10} /> Details
+                  </button>
+                </div>
               </div>
             </motion.div>
           );

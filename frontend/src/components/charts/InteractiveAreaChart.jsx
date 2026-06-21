@@ -22,7 +22,8 @@ export default function InteractiveAreaChart({
   return (
     <div>
       {title && <h3 className="text-sm font-semibold text-slate-300 mb-4 font-orbitron">{title}</h3>}
-      <ResponsiveContainer width="100%" height={height}>
+      <div className="w-full min-w-0" style={{ minHeight: Math.max(height - 20, 160) }}>
+      <ResponsiveContainer width="99%" height={height}>
         <AreaChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
           <defs>
             {series.map((s) => (
@@ -79,6 +80,7 @@ export default function InteractiveAreaChart({
           )}
         </AreaChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }

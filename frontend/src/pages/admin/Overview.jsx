@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, AlertTriangle, ShieldCheck, Bell, TrendingDown, Activity, Server, Key, Sparkles, Target, Shield } from 'lucide-react';
+import { Users, AlertTriangle, ShieldCheck, Bell, TrendingDown, Activity, Server, Key, Sparkles, Target, Shield, FileDown, FileText, ExternalLink } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import ChartContainer from '../../components/shared/ChartContainer';
 import GlassCard from '../../components/shared/GlassCard';
@@ -11,13 +11,21 @@ import PlatformIcon from '../../components/shared/PlatformIcon';
 import PrivilegeHeatmap from '../../components/shared/PrivilegeHeatmap';
 import { getIdentities, getRiskEvents, getIncidents } from '../../services/storageService';
 import { usePlatformData } from '../../context/PlatformDataContext';
-import { TREND_DATA } from '../../data/mockData';
+import { buildRiskTrend } from '../../utils/liveMetrics';
+import {
+  openRiskReportHtml,
+  downloadRiskReportHtml,
+  downloadRiskReportPdf,
+  downloadRiskReportJson,
+  fetchRiskReportJson,
+} from '../../utils/exportRiskReport';
 
 const PIE_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e'];
 
 export default function Overview() {
   const navigate = useNavigate();
   const { data } = usePlatformData();
+  const [exporting, setExporting] = useState(false);
   const identities = useMemo(() => getIdentities(), [data]);
   const risks = useMemo(() => getRiskEvents(), [data]);
   const incidents = useMemo(() => getIncidents(), [data]);
@@ -31,6 +39,7 @@ export default function Overview() {
   const mfaGaps = identities.filter(i => !i.mfa_complete && i.status === 'Active').length;
   const dormantAccounts = identities.filter(i => i.status === 'Dormant' || (i.max_dormancy_days || 0) > 90).length;
   const orphanedAccounts = identities.filter(i => i.status === 'Orphaned').length;
+  const offboardingGapCount = data?.offboarding_gaps?.length || risks.filter(r => r.type === 'offboarding_gap').length;
   const activeIncidents = incidents.filter(i => i.status !== 'resolved').length;
   const platforms = new Set(identities.flatMap(i => i.platforms || [])).size;
 
@@ -42,6 +51,10 @@ export default function Overview() {
   const topCategory = Object.entries(riskTypeDist).sort(([,a],[,b]) => b - a)[0];
 
   const topRiskyUsers = [...identities].sort((a, b) => (b.risk_score || 0) - (a.risk_score || 0)).slice(0, 6);
+  const trendData = useMemo(
+    () => buildRiskTrend(criticalRisks, incidents.filter((i) => i.status === 'resolved').length),
+    [criticalRisks, incidents],
+  );
 
   const STAT_CARDS = [
     { label: 'Total Identities', value: totalIdentities, icon: Users, color: 'text-red-400', bg: 'from-red-500/10 to-rose-500/5' },
@@ -54,11 +67,41 @@ export default function Overview() {
     { label: 'Orphaned', value: orphanedAccounts, icon: Target, color: 'text-red-400', bg: 'from-red-500/10 to-rose-500/5' },
   ];
 
+  const handleExportPdf = async () => {
+    setExporting(true);
+    try {
+      const report = await fetchRiskReportJson();
+      downloadRiskReportPdf(report);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Identity Security Operations Center</h1>
-        <p className="text-sm text-slate-500 mt-1">Real-time identity threat intelligence across your hybrid enterprise</p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Identity Security Operations Center</h1>
+          <p className="text-sm text-slate-500 mt-1">Real-time identity threat intelligence across your hybrid enterprise</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={openRiskReportHtml}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-colors">
+            <ExternalLink size={14} /> View Report
+          </button>
+          <button type="button" onClick={downloadRiskReportHtml}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-colors">
+            <FileText size={14} /> HTML
+          </button>
+          <button type="button" onClick={handleExportPdf} disabled={exporting}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-xs text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50">
+            <FileDown size={14} /> {exporting ? 'Exporting…' : 'PDF'}
+          </button>
+          <button type="button" onClick={downloadRiskReportJson}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-colors">
+            <FileDown size={14} /> JSON
+          </button>
+        </div>
       </div>
 
       <GlassCard className="border-red-500/20 bg-red-500/[0.04]" glow>
@@ -117,6 +160,15 @@ export default function Overview() {
           {mfaGaps > 0 && <><strong className="text-yellow-400">{mfaGaps}</strong> accounts lack MFA. </>}
           {dormantAccounts > 0 && <><strong className="text-amber-400">{dormantAccounts}</strong> dormant account(s) require review. </>}
           {orphanedAccounts > 0 && <><strong className="text-red-400">{orphanedAccounts}</strong> orphaned account(s) need immediate remediation.</>}
+          {offboardingGapCount > 0 && (
+            <>
+              {' '}
+              <button type="button" onClick={() => navigate('/admin/offboarding-gaps')} className="text-red-400 underline hover:text-red-300">
+                {offboardingGapCount} offboarding gap(s)
+              </button>
+              {' '}detected across platforms.
+            </>
+          )}
         </p>
       </GlassCard>
 
@@ -124,7 +176,7 @@ export default function Overview() {
         <GlassCard delay={0.2} hover={false} className="lg:col-span-2">
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Risk Trend (30 Days)</h3>
           <ChartContainer height={260}>
-            <AreaChart data={TREND_DATA} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+            <AreaChart data={trendData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="ovCritGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ef4444" stopOpacity={0.3}/><stop offset="100%" stopColor="#ef4444" stopOpacity={0}/></linearGradient>
                 <linearGradient id="ovHighGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f97316" stopOpacity={0.2}/><stop offset="100%" stopColor="#f97316" stopOpacity={0}/></linearGradient>

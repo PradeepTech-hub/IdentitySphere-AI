@@ -9,8 +9,9 @@ import GlassCard from '../../components/shared/GlassCard';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
-import { getIdentities, getRiskEvents, getLifecycleEvents } from '../../services/storageService';
+import { getIdentities, getRiskEvents } from '../../services/storageService';
 import { useScenario } from '../../context/ScenarioContext';
+import { usePlatformData } from '../../context/PlatformDataContext';
 
 
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
@@ -62,9 +63,10 @@ export default function Risks() {
   const [filter, setFilter] = useState('all');
   const [expandedId, setExpandedId] = useState(null);
   const { scenarios } = useScenario();
+  const { data } = usePlatformData();
 
-  const identities = useMemo(() => getIdentities(), []);
-  const lifecycleEvents = useMemo(() => getLifecycleEvents(), []);
+  const identities = useMemo(() => getIdentities(), [data]);
+  const lifecycleEvents = useMemo(() => data?.lifecycle_events || [], [data]);
 
   const findings = useMemo(() => {
     const storedRisks = getRiskEvents();

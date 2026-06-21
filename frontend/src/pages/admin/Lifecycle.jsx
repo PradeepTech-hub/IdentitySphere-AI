@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   UserPlus, UserMinus, ArrowRightLeft, Shield, CheckCircle, XCircle,
@@ -14,6 +14,7 @@ import {
   getLifecycleEvents, saveLifecycleEvents,
   addIdentity, getIdentities, updateIdentity,
 } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
 
 
 const LIFECYCLE_STATES = {
@@ -109,8 +110,23 @@ function IdentitySuggestInput({ value, onChange, onSelect, placeholder, borderCo
 
 export default function Lifecycle() {
   const navigate = useNavigate();
+  const { data: platformData } = usePlatformData();
   const [events, setEvents] = useState(() => getLifecycleEvents());
   const [activeTab, setActiveTab] = useState('all');
+
+  useEffect(() => {
+    const pipelineEvents = platformData?.lifecycle_events || [];
+    const localOnly = getLifecycleEvents().filter((e) => e.source !== 'pipeline');
+    const merged = [...pipelineEvents, ...localOnly];
+    const seen = new Set();
+    const unique = merged.filter((e) => {
+      const key = e.id || `${e.type}-${e.identity}-${e.date}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    setEvents(unique.sort((a, b) => (b.date || '').localeCompare(a.date || '')));
+  }, [platformData]);
   const [showJoinerForm, setShowJoinerForm] = useState(false);
   const [showMoverForm, setShowMoverForm] = useState(false);
   const [showLeaverForm, setShowLeaverForm] = useState(false);

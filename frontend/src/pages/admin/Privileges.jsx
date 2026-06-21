@@ -10,11 +10,13 @@ import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { getIdentities } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
 
 
 export default function Privileges() {
   const navigate = useNavigate();
-  const identities = useMemo(() => getIdentities().filter(i => i.status !== 'Disabled' && i.status !== 'Offboarded'), []);
+  const { data } = usePlatformData();
+  const identities = useMemo(() => getIdentities().filter(i => i.status !== 'Disabled' && i.status !== 'Offboarded'), [data]);
 
   const adminUsers = identities.filter(i => i.is_admin);
   const crossPlatformAdmins = adminUsers.filter(i => (i.platforms?.length || 0) >= 2);

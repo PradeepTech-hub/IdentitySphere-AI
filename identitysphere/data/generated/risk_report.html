@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IdentitySphere AI — Identity Risk Report</title>
+  <style>
+    :root { --red: #c1122f; --bg: #0f1117; --card: #1a1d27; --text: #e2e8f0; --muted: #94a3b8; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.5; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
+    .subtitle { color: var(--muted); margin: 0 0 2rem; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .metric { background: var(--card); border: 1px solid #2d3348; border-radius: 10px; padding: 1rem; }
+    .metric .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+    .metric .value { font-size: 1.35rem; font-weight: 700; color: #f87171; margin-top: 0.25rem; }
+    .identity-card { background: var(--card); border: 1px solid #2d3348; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; page-break-inside: avoid; }
+    .identity-card header { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 0.75rem; }
+    .rank { font-size: 1.5rem; font-weight: 800; color: var(--red); min-width: 2rem; }
+    .identity-card h2 { margin: 0; font-size: 1.15rem; }
+    .meta { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.85rem; }
+    .badges { margin-left: auto; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .badge { padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+    .severity-critical, .severity-high { background: #7f1d1d; color: #fecaca; }
+    .severity-medium { background: #78350f; color: #fde68a; }
+    .severity-low { background: #14532d; color: #bbf7d0; }
+    .score { background: #1e3a5f; color: #93c5fd; }
+    .title { color: var(--muted); font-size: 0.9rem; margin: 0 0 1rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 0.5rem; }
+    table.factors { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    table.factors td { padding: 0.35rem 0; border-bottom: 1px solid #2d3348; }
+    table.factors .num { text-align: right; font-family: monospace; }
+    .remediation { margin: 0; padding-left: 1.25rem; font-size: 0.9rem; }
+    .remediation li { margin-bottom: 0.35rem; }
+    .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #2d3348; color: var(--muted); font-size: 0.8rem; }
+    @media print {
+      body { background: white; color: #111; }
+      .identity-card, .metric { border-color: #ccc; background: #fafafa; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>IdentitySphere AI — Sample Risk Report</h1>
+    <p class="subtitle">Cross-platform identity &amp; privilege risk assessment · Generated 2026-06-20T18:29:55.932544</p>
+
+    <div class="summary">
+      <div class="metric"><div class="label">Identity coverage</div><div class="value">100.0%</div></div>
+      <div class="metric"><div class="label">Alert consolidation</div><div class="value">88.4%</div></div>
+      <div class="metric"><div class="label">Risk events</div><div class="value">639</div></div>
+      <div class="metric"><div class="label">Detection precision</div><div class="value">69.2%</div></div>
+    </div>
+
+    
+        <section class="identity-card">
+          <header>
+            <span class="rank">#1</span>
+            <div>
+              <h2>Denise Lucas</h2>
+              <p class="meta">ID-0031 · Engineering</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">60.37/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: Denise Lucas (HIGH - 60.37/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>6.02</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>5.71</td></tr><tr><td>Dormancy</td><td class='num'>9.58</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>14.06</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> Okta, Active Directory, Azure AD, Salesforce</p>
+              <p><strong>Evidence items:</strong> 8</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Investigate dormant account; disable if no longer needed</li><li>Address critical/high detector findings immediately</li><li>Investigate anomalous behavioral pattern; verify account ownership</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#2</span>
+            <div>
+              <h2>John Douglas</h2>
+              <p class="meta">ID-0072 · Engineering</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">56.19/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: John Douglas (HIGH - 56.19/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>15.86</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>8.57</td></tr><tr><td>Dormancy</td><td class='num'>0.25</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>6.51</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> Salesforce, Active Directory, ServiceNow, Azure AD</p>
+              <p><strong>Evidence items:</strong> 11</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Review cross-platform admin necessity; implement JIT access</li><li>Address critical/high detector findings immediately</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#3</span>
+            <div>
+              <h2>Anthony Rogers</h2>
+              <p class="meta">ID-0083 · Marketing</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">55.74/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: Anthony Rogers (HIGH - 55.74/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>15.66</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>8.57</td></tr><tr><td>Dormancy</td><td class='num'>0.21</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>6.3</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> GitHub, Okta, Salesforce, ServiceNow</p>
+              <p><strong>Evidence items:</strong> 7</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Review cross-platform admin necessity; implement JIT access</li><li>Address critical/high detector findings immediately</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#4</span>
+            <div>
+              <h2>Christopher Hernandez</h2>
+              <p class="meta">ID-0078 · IT Operations</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">52.33/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: Christopher Hernandez (HIGH - 52.33/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>12.85</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>8.57</td></tr><tr><td>Dormancy</td><td class='num'>0.08</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>5.83</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> ServiceNow, Active Directory, Azure AD, Okta</p>
+              <p><strong>Evidence items:</strong> 9</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Review cross-platform admin necessity; implement JIT access</li><li>Address critical/high detector findings immediately</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#5</span>
+            <div>
+              <h2>Jessica Sheppard</h2>
+              <p class="meta">ID-0097 · Marketing</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">47.86/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: Jessica Sheppard (HIGH - 47.86/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>15.46</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>11.43</td></tr><tr><td>Dormancy</td><td class='num'>0.29</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>7.65</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> GitHub, Okta, Active Directory, Salesforce</p>
+              <p><strong>Evidence items:</strong> 4</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Review cross-platform admin necessity; implement JIT access</li><li>Address critical/high detector findings immediately</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#6</span>
+            <div>
+              <h2>Roberto Ramirez</h2>
+              <p class="meta">ID-0003 · Sales</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">47.25/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: Roberto Ramirez (HIGH - 47.25/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>0.4</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>0.0</td></tr><tr><td>Dormancy</td><td class='num'>9.49</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>12.36</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> ServiceNow, GitHub, AWS IAM, Active Directory</p>
+              <p><strong>Evidence items:</strong> 6</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Investigate dormant account; disable if no longer needed</li><li>Address critical/high detector findings immediately</li><li>Investigate anomalous behavioral pattern; verify account ownership</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#7</span>
+            <div>
+              <h2>John Odonnell</h2>
+              <p class="meta">ID-0049 · Sales</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">45.77/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: John Odonnell (HIGH - 45.77/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>15.66</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>5.71</td></tr><tr><td>Dormancy</td><td class='num'>0.41</td></tr><tr><td>Detector Severity</td><td class='num'>18.75</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>5.24</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> Active Directory, Azure AD, Okta, GitHub</p>
+              <p><strong>Evidence items:</strong> 2</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Address critical/high detector findings immediately</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#8</span>
+            <div>
+              <h2>Jessica Marsh</h2>
+              <p class="meta">ID-0082 · Engineering</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">45.27/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: Jessica Marsh (HIGH - 45.27/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>8.33</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>8.57</td></tr><tr><td>Dormancy</td><td class='num'>0.66</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>2.71</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> Active Directory, Azure AD, Okta</p>
+              <p><strong>Evidence items:</strong> 6</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Review cross-platform admin necessity; implement JIT access</li><li>Address critical/high detector findings immediately</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#9</span>
+            <div>
+              <h2>John Lee</h2>
+              <p class="meta">ID-0032 · Sales</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-high">HIGH</span>
+              <span class="badge score">45.06/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: John Lee (HIGH - 45.06/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>0.23</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>0.0</td></tr><tr><td>Dormancy</td><td class='num'>8.92</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>10.91</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> Salesforce, AWS IAM, Active Directory, Azure AD</p>
+              <p><strong>Evidence items:</strong> 6</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Investigate dormant account; disable if no longer needed</li><li>Address critical/high detector findings immediately</li><li>Investigate anomalous behavioral pattern; verify account ownership</li></ol>
+        </section>
+        
+
+        <section class="identity-card">
+          <header>
+            <span class="rank">#10</span>
+            <div>
+              <h2>Linda Morales</h2>
+              <p class="meta">ID-0011 · Legal</p>
+            </div>
+            <div class="badges">
+              <span class="badge severity-medium">MEDIUM</span>
+              <span class="badge score">42.92/100</span>
+            </div>
+          </header>
+          <p class="title">Composite risk: Linda Morales (MEDIUM - 42.92/100)</p>
+          <div class="grid-2">
+            <div>
+              <h3>Score factors</h3>
+              <table class="factors"><tbody><tr><td>Privilege Breadth</td><td class='num'>6.33</td></tr><tr><td>Cross Platform Exposure</td><td class='num'>5.71</td></tr><tr><td>Dormancy</td><td class='num'>5.88</td></tr><tr><td>Detector Severity</td><td class='num'>25.0</td></tr><tr><td>Behavioral Anomaly</td><td class='num'>10.73</td></tr></tbody></table>
+            </div>
+            <div>
+              <h3>Exposure</h3>
+              <p><strong>Platforms:</strong> Salesforce, Okta, AWS IAM, Active Directory</p>
+              <p><strong>Evidence items:</strong> 6</p>
+              <p><strong>Compliance:</strong> NIST AC-2, NIST AC-6, CIS 5, CIS 6</p>
+            </div>
+          </div>
+          <h3>Platform-specific remediation</h3>
+          <ol class="remediation"><li>Address critical/high detector findings immediately</li><li>Investigate anomalous behavioral pattern; verify account ownership</li></ol>
+        </section>
+        
+
+    <div class="footer">
+      IdentitySphere AI · Option A Graph-Based Cross-Platform Identity Intelligence ·
+      Frameworks: NIST AC-2/AC-6, MITRE T1078/T1098/T1550, GDPR Art. 5/32, CIS 5/6
+    </div>
+  </div>
+</body>
+</html>

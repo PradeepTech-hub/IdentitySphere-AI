@@ -12,7 +12,7 @@ from typing import Any
 import networkx as nx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
 logger = logging.getLogger("identitysphere.api")
@@ -247,9 +247,19 @@ def attack_paths(person_id: str):
 
 @app.post("/api/copilot/chat")
 def copilot_chat(body: CopilotRequest):
+    import yaml
     from identitysphere.core.copilot import SecurityCopilot
 
     _load()
+    config_path = ROOT / "identitysphere" / "config" / "settings.yaml"
+    config = {}
+    if config_path.exists():
+        with open(config_path, encoding="utf-8") as f:
+            config = yaml.safe_load(f) or {}
+
+    copilot_mode = config.get("copilot", {}).get("mode", "offline")
+    copilot = SecurityCopilot(config=config)
+
     p = _cache.get("platform", {})
     identities = {i["person_id"]: i for i in p.get("identities", [])}
     person_id = body.person_id
@@ -260,25 +270,83 @@ def copilot_chat(body: CopilotRequest):
                 person_id = ident["person_id"]
                 break
 
-    copilot = SecurityCopilot(config={"copilot": {"mode": "offline"}})
     if person_id and person_id in identities:
         ident_data = identities[person_id]
         score = _cache.get("identity_scores", {}).get(person_id, {})
         risks = [r for r in _cache.get("risk_events", []) if r.get("identityId") == person_id]
+        remediation = []
+        for r in risks:
+            remediation.extend(r.get("remediation_steps") or [])
+        remediation = list(dict.fromkeys(remediation))[:8]
+
         narrative = copilot.generate_risk_narrative_offline(
             display_name=ident_data.get("display_name", person_id),
             risk_score=score.get("final_score", ident_data.get("risk_score", 0)),
             severity=score.get("severity", ident_data.get("severity", "low")),
             factors=score.get("factors", []),
             risks=risks,
-            remediation=ident_data.get("remediation_steps", []),
+            remediation=remediation or ident_data.get("remediation_steps", []),
         )
-        return {"response": narrative, "person_id": person_id, "mode": "offline"}
+        return {"response": narrative, "person_id": person_id, "mode": copilot_mode}
 
     return {
         "response": copilot.generate_general_response(body.query, len(identities)),
-        "mode": "offline",
+        "mode": copilot_mode,
     }
+
+
+@app.get("/api/risk-report")
+def risk_report_json():
+    report = _cache.get("report", {})
+    top = report.get("top_risky_identities", [])[:10]
+    return {
+        "generated_at": report.get("metadata", {}).get("run_timestamp"),
+        "success_metrics": report.get("success_metrics", {}),
+        "top_risky_identities": top,
+    }
+
+
+@app.get("/api/risk-report/html")
+def risk_report_html():
+    from identitysphere.core.risk_report import build_risk_report_html
+
+    report = _cache.get("report", {})
+    if not report.get("top_risky_identities"):
+        raise HTTPException(404, "Risk report not available — run pipeline first")
+    return HTMLResponse(build_risk_report_html(report))
+
+
+@app.get("/api/risk-report/download")
+def risk_report_download():
+    path = DATA_DIR / "risk_report.html"
+    if not path.exists():
+        from identitysphere.core.risk_report import write_risk_report_html
+        report = _cache.get("report", {})
+        if not report:
+            raise HTTPException(404, "Risk report not available — run pipeline first")
+        write_risk_report_html(report, path)
+    return FileResponse(path, media_type="text/html", filename="identitysphere_risk_report.html")
+
+
+@app.get("/api/offboarding-gaps")
+def offboarding_gaps():
+    from identitysphere.core.offboarding_gaps import compute_offboarding_gaps
+
+    rows = _cache.get("offboarding", [])
+    events = _cache.get("risk_events", [])
+    return compute_offboarding_gaps(rows, events)
+
+
+@app.get("/api/lifecycle-events")
+def lifecycle_events():
+    from identitysphere.core.lifecycle_events import build_lifecycle_events
+
+    p = _cache.get("platform", {})
+    return build_lifecycle_events(
+        _cache.get("offboarding", []),
+        _cache.get("risk_events", []),
+        p.get("identities", []),
+    )
 
 
 @app.post("/api/pipeline/run")

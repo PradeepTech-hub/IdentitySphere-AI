@@ -9,43 +9,9 @@ import GlassCard from '../../components/shared/GlassCard';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
-import { COMPLIANCE_MAP } from '../../data/mockData';
 import { getIdentities, getRiskEvents } from '../../services/storageService';
 import { usePlatformData } from '../../context/PlatformDataContext';
-
-const FRAMEWORK_DATA = [
-  {
-    framework: 'NIST 800-53', color: '#00bcd4', score: 82,
-    controls: [
-      { id: 'AC-2', name: 'Account Management', status: 'partial', findings: 172, evidence: 'Orphaned accounts, offboarding gaps, stale accounts detected', recommendation: 'Automate account lifecycle management and enforce timely deprovisioning', gap: 'Accounts not disabled within 24h of termination', effort: 'Medium' },
-      { id: 'AC-6', name: 'Least Privilege', status: 'fail', findings: 178, evidence: 'Over-privileged users, cross-platform admins, SoD violations', recommendation: 'Implement JIT access, periodic access reviews, and privilege reduction', gap: 'Excessive admin privileges across platforms', effort: 'High' },
-      { id: 'IA-4', name: 'Identifier Management', status: 'partial', findings: 167, evidence: 'MFA gaps, stale tokens across platforms', recommendation: 'Enforce MFA on all accounts, implement token rotation policy', gap: 'MFA not enforced on all active accounts', effort: 'Low' },
-    ],
-  },
-  {
-    framework: 'CIS Controls v8', color: '#ff9800', score: 75,
-    controls: [
-      { id: 'Control 5', name: 'Account Management', status: 'partial', findings: 172, evidence: 'Account lifecycle gaps across AD, Okta, AWS, Salesforce', recommendation: 'Centralize identity governance with automated provisioning', gap: 'No centralized identity lifecycle automation', effort: 'High' },
-      { id: 'Control 6', name: 'Access Control Management', status: 'fail', findings: 452, evidence: 'Excessive privileges, missing MFA, SoD violations, token abuse', recommendation: 'Deploy role-based access control with periodic certification', gap: 'No periodic access certification program', effort: 'High' },
-    ],
-  },
-  {
-    framework: 'ISO 27001:2022', color: '#9c27b0', score: 80,
-    controls: [
-      { id: 'A.5.15', name: 'Access Control', status: 'partial', findings: 178, evidence: 'Over-privileged accounts and lack of regular access reviews', recommendation: 'Establish quarterly access review campaigns', gap: 'No quarterly access review process', effort: 'Medium' },
-      { id: 'A.5.16', name: 'Identity Management', status: 'partial', findings: 60, evidence: 'Orphaned accounts across multiple platforms', recommendation: 'Implement automated identity lifecycle management', gap: 'Orphaned accounts not auto-detected', effort: 'Medium' },
-      { id: 'A.5.17', name: 'Authentication Information', status: 'fail', findings: 167, evidence: 'MFA gaps and stale credentials', recommendation: 'Enforce MFA and credential rotation policies', gap: 'No enforced credential rotation policy', effort: 'Low' },
-      { id: 'A.8.2', name: 'Privileged Access Rights', status: 'fail', findings: 119, evidence: 'Cross-platform admin sprawl without justification', recommendation: 'Implement privileged access management (PAM)', gap: 'No PAM solution deployed', effort: 'High' },
-    ],
-  },
-  {
-    framework: 'GDPR', color: '#4caf50', score: 70,
-    controls: [
-      { id: 'Art. 5', name: 'Data Processing Principles', status: 'partial', findings: 199, evidence: 'Orphaned accounts with access to personal data, SoD violations', recommendation: 'Ensure data minimization through regular access reviews', gap: 'Data access not minimized per role', effort: 'Medium' },
-      { id: 'Art. 32', name: 'Security of Processing', status: 'fail', findings: 306, evidence: 'MFA gaps, token abuse, privilege escalation, offboarding failures', recommendation: 'Implement comprehensive security controls for data processing', gap: 'Multiple security control gaps identified', effort: 'High' },
-    ],
-  },
-];
+import { buildLiveFrameworkData, buildComplianceMap } from '../../utils/liveMetrics';
 
 const STATUS_STYLES = {
   pass: { label: 'PASS', color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', icon: CheckCircle },
@@ -54,8 +20,6 @@ const STATUS_STYLES = {
 };
 
 const EFFORT_COLORS = { Low: 'text-green-400', Medium: 'text-yellow-400', High: 'text-red-400' };
-
-const allControls = FRAMEWORK_DATA.flatMap(f => f.controls.map(c => ({ ...c, framework: f.framework, frameworkColor: f.color })));
 
 export default function Compliance() {
   const [selectedFramework, setSelectedFramework] = useState(null);
@@ -69,6 +33,13 @@ export default function Compliance() {
   const risks = useMemo(() => getRiskEvents(), [data]);
   const liveCompliance = data?.compliance_mapping || [];
   const capabilityRows = liveCompliance.length ? liveCompliance : [];
+
+  const FRAMEWORK_DATA = useMemo(() => buildLiveFrameworkData(identities, risks), [identities, risks]);
+  const allControls = useMemo(
+    () => FRAMEWORK_DATA.flatMap((f) => f.controls.map((c) => ({ ...c, framework: f.framework, frameworkColor: f.color }))),
+    [FRAMEWORK_DATA],
+  );
+  const liveComplianceMap = useMemo(() => buildComplianceMap(risks, identities), [risks, identities]);
 
   const totalControls = allControls.length;
   const passControls = allControls.filter(c => c.status === 'pass').length;
@@ -571,7 +542,7 @@ export default function Compliance() {
               <th className="text-right pb-3 font-medium">Findings</th>
             </tr></thead>
             <tbody>
-              {COMPLIANCE_MAP.map((r, i) => (
+              {liveComplianceMap.map((r, i) => (
                 <motion.tr key={r.capability} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 + i * 0.03 }}
                   className="border-b border-white/[0.03] hover:bg-white/[0.02]">
                   <td className="py-2.5 text-white font-medium">{r.capability}</td>

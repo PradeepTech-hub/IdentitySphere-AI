@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ReactFlow, Background, Controls } from 'reactflow';
@@ -17,6 +17,8 @@ import {
   getRiskEvents,
   getBlastRadii,
 } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
+import { fetchGraph, fetchAttackPaths } from '../../services/dataService';
 
 const PLATFORM_LABELS = {
   active_directory: 'Active Directory',
@@ -239,14 +241,39 @@ export default function AttackPaths() {
     return match || null;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [identities, setIdentities] = useState(() => getStoredIdentities());
-  const [loading] = useState(false);
+  const { data } = usePlatformData();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIdentity, setSelectedIdentity] = useState(preSelected);
   const [identityDetail, setIdentityDetail] = useState(preSelected);
   const [filter, setFilter] = useState('all');
   const [selectedNode, setSelectedNode] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [identities, setIdentities] = useState(() => getStoredIdentities());
+  const [apiGraph, setApiGraph] = useState(null);
+  const [apiPaths, setApiPaths] = useState([]);
+
+  useEffect(() => {
+    setIdentities(getStoredIdentities());
+  }, [data]);
+
+  useEffect(() => {
+    if (!selectedIdentity?.person_id) {
+      setApiGraph(null);
+      setApiPaths([]);
+      return;
+    }
+    let cancelled = false;
+    Promise.all([
+      fetchGraph(selectedIdentity.person_id).catch(() => null),
+      fetchAttackPaths(selectedIdentity.person_id).catch(() => null),
+    ]).then(([graph, paths]) => {
+      if (cancelled) return;
+      if (graph?.nodes?.length) setApiGraph(graph);
+      else setApiGraph(null);
+      setApiPaths(paths?.paths || []);
+    });
+    return () => { cancelled = true; };
+  }, [selectedIdentity?.person_id]);
 
   const filteredIdentities = useMemo(() => {
     let list = identities;
@@ -286,8 +313,11 @@ export default function AttackPaths() {
   }, [selectedIdentity]);
 
   const { nodes: graphNodes, edges: graphEdges } = useMemo(() => {
+    if (apiGraph?.nodes?.length) {
+      return { nodes: apiGraph.nodes, edges: apiGraph.edges };
+    }
     return buildAttackGraph(selectedIdentity, riskEvent, blastRadius);
-  }, [selectedIdentity, riskEvent, blastRadius]);
+  }, [apiGraph, selectedIdentity, riskEvent, blastRadius]);
 
   const narrative = useMemo(() => {
     return buildNarrative(selectedIdentity, riskEvent);

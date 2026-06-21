@@ -1,0 +1,4339 @@
+[
+  {
+    "id": "INC-001",
+    "title": "Mfa Disabled: Christopher Hernandez",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Christopher Hernandez",
+    "identities": [
+      "Christopher Hernandez"
+    ],
+    "identity_ids": [
+      "ID-0078"
+    ],
+    "created": "2026-06-20T18:29:55.671908",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "active_directory",
+      "azure_ad"
+    ],
+    "avg_score": 91.45,
+    "max_score": 91.45,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on active_directory for christopher.hernandez",
+      "Enable MFA on azure_ad for christopher.hernandez"
+    ]
+  },
+  {
+    "id": "INC-002",
+    "title": "Cross Platform Admin: Christopher Hernandez",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Christopher Hernandez",
+    "identities": [
+      "Christopher Hernandez"
+    ],
+    "identity_ids": [
+      "ID-0078"
+    ],
+    "created": "2026-06-20T18:29:55.671908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "okta",
+      "servicenow"
+    ],
+    "avg_score": 91.45,
+    "max_score": 91.45,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Christopher Hernandez",
+      "Review admin necessity on okta for Christopher Hernandez",
+      "Review admin necessity on servicenow for Christopher Hernandez",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-003",
+    "title": "Privilege Escalation: Christopher Hernandez",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Christopher Hernandez",
+    "identities": [
+      "Christopher Hernandez"
+    ],
+    "identity_ids": [
+      "ID-0078"
+    ],
+    "created": "2026-06-20T18:29:55.671908",
+    "type": "privilege_escalation",
+    "risk_types": [
+      "privilege_escalation"
+    ],
+    "platforms": [
+      "active_directory",
+      "servicenow",
+      "azure_ad"
+    ],
+    "avg_score": 91.45,
+    "max_score": 91.45,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 1 identity/identities. Primary pattern: privilege escalation.",
+    "remediation_steps": [
+      "Investigate group_added on active_directory",
+      "Verify authorization for role: Domain Admin",
+      "Revert change if unauthorized",
+      "Investigate permission_changed on active_directory",
+      "Verify authorization for role: Enterprise Admin",
+      "Investigate role_assigned on servicenow",
+      "Verify authorization for role: itil_admin",
+      "Investigate permission_changed on azure_ad"
+    ]
+  },
+  {
+    "id": "INC-004",
+    "title": "Stale Account cluster (5 identities, 16 signals)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Michael Osborn, Denise Lucas, John Douglas",
+    "identities": [
+      "Michael Osborn",
+      "Denise Lucas",
+      "John Douglas",
+      "Jessica Marsh",
+      "Anthony Rogers"
+    ],
+    "identity_ids": [
+      "ID-0014",
+      "ID-0031",
+      "ID-0072",
+      "ID-0082",
+      "ID-0083"
+    ],
+    "created": "2026-06-20T18:29:55.671908",
+    "type": "stale_account",
+    "risk_types": [
+      "stale_account",
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "azure_ad",
+      "github",
+      "okta",
+      "salesforce",
+      "active_directory"
+    ],
+    "avg_score": 81.36,
+    "max_score": 90.96,
+    "signal_count": 16,
+    "narrative": "Cluster of 16 related signal(s) across 5 identity/identities. Primary pattern: stale account.",
+    "remediation_steps": [
+      "Review and disable azure_ad account acct-azu-ID-0014-e98e71",
+      "Confirm with Michael Osborn if access is still needed",
+      "Review and disable github account acct-git-ID-0014-34aaf3",
+      "Review and disable okta account acct-okt-ID-0014-6c6361",
+      "Review and disable salesforce account acct-sal-ID-0014-c1e6be",
+      "Enable MFA on azure_ad for michael.osborn",
+      "Enable MFA on okta for michael.osborn",
+      "Review and disable okta account acct-okt-ID-0031-7a4040"
+    ]
+  },
+  {
+    "id": "INC-005",
+    "title": "Sod Violation cluster (Denise Lucas, Martha Torres, John Douglas)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Denise Lucas, Martha Torres, John Douglas",
+    "identities": [
+      "Denise Lucas",
+      "Martha Torres",
+      "John Douglas"
+    ],
+    "identity_ids": [
+      "ID-0031",
+      "ID-0067",
+      "ID-0072"
+    ],
+    "created": "2026-06-20T18:29:55.671908",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce",
+      "aws_iam",
+      "github"
+    ],
+    "avg_score": 89.74,
+    "max_score": 90.96,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 3 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible",
+      "Separate Cloud Admin + Domain Admin responsibilities across different identities",
+      "Separate Code Owner + Infrastructure Admin responsibilities across different identities"
+    ]
+  },
+  {
+    "id": "INC-006",
+    "title": "Privilege Escalation cluster (6 identities, 35 signals)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Shelby Byrd, Martha Torres, John Douglas",
+    "identities": [
+      "Shelby Byrd",
+      "Martha Torres",
+      "John Douglas",
+      "Thomas Bender",
+      "Jessica Marsh",
+      "Anthony Rogers"
+    ],
+    "identity_ids": [
+      "ID-0066",
+      "ID-0067",
+      "ID-0072",
+      "ID-0081",
+      "ID-0082",
+      "ID-0083"
+    ],
+    "created": "2026-06-20T18:29:55.671908",
+    "type": "privilege_escalation",
+    "risk_types": [
+      "privilege_escalation"
+    ],
+    "platforms": [
+      "okta",
+      "azure_ad",
+      "servicenow",
+      "aws_iam",
+      "active_directory",
+      "salesforce",
+      "github"
+    ],
+    "avg_score": 88.35,
+    "max_score": 90.96,
+    "signal_count": 35,
+    "narrative": "Cluster of 35 related signal(s) across 6 identity/identities. Primary pattern: privilege escalation.",
+    "remediation_steps": [
+      "Investigate permission_changed on okta",
+      "Verify authorization for role: App Admin",
+      "Revert change if unauthorized",
+      "Investigate group_added on azure_ad",
+      "Verify authorization for role: Global Administrator",
+      "Investigate permission_changed on servicenow",
+      "Verify authorization for role: itil_admin",
+      "Investigate group_added on servicenow"
+    ]
+  },
+  {
+    "id": "INC-007",
+    "title": "Cross Platform Admin cluster (5 identities, 6 signals)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Martha Torres, John Douglas, Thomas Bender",
+    "identities": [
+      "Martha Torres",
+      "John Douglas",
+      "Thomas Bender",
+      "Jessica Marsh",
+      "Anthony Rogers"
+    ],
+    "identity_ids": [
+      "ID-0067",
+      "ID-0072",
+      "ID-0081",
+      "ID-0082",
+      "ID-0083"
+    ],
+    "created": "2026-06-20T18:29:55.671908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "active_directory",
+      "aws_iam",
+      "github",
+      "salesforce",
+      "servicenow",
+      "azure_ad",
+      "okta"
+    ],
+    "avg_score": 86.27,
+    "max_score": 90.96,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 5 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Martha Torres",
+      "Review admin necessity on aws_iam for Martha Torres",
+      "Review admin necessity on github for Martha Torres",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for John Douglas",
+      "Review admin necessity on salesforce for John Douglas",
+      "Review admin necessity on servicenow for John Douglas",
+      "Review admin necessity on azure_ad for Thomas Bender"
+    ]
+  },
+  {
+    "id": "INC-008",
+    "title": "Cross Platform Admin cluster (6 identities, 6 signals)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Linda Morales, Gene Miller, Patricia Simmons",
+    "identities": [
+      "Linda Morales",
+      "Gene Miller",
+      "Patricia Simmons",
+      "Shannon Walton",
+      "John Gonzales",
+      "Caleb Russell"
+    ],
+    "identity_ids": [
+      "ID-0011",
+      "ID-0069",
+      "ID-0075",
+      "ID-0076",
+      "ID-0077",
+      "ID-0079"
+    ],
+    "created": "2026-06-20T18:29:55.671908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "okta",
+      "salesforce",
+      "aws_iam",
+      "servicenow",
+      "active_directory",
+      "github"
+    ],
+    "avg_score": 84.32,
+    "max_score": 89.73,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 6 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on okta for Linda Morales",
+      "Review admin necessity on salesforce for Linda Morales",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on okta for Gene Miller",
+      "Review admin necessity on salesforce for Gene Miller",
+      "Review admin necessity on aws_iam for Patricia Simmons",
+      "Review admin necessity on servicenow for Patricia Simmons",
+      "Review admin necessity on okta for Shannon Walton"
+    ]
+  },
+  {
+    "id": "INC-009",
+    "title": "Privilege Escalation cluster (10 identities, 61 signals)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Gene Miller, Stanley Mercado, Kimberly Robinson",
+    "identities": [
+      "Gene Miller",
+      "Stanley Mercado",
+      "Kimberly Robinson",
+      "Patricia Simmons",
+      "Shannon Walton",
+      "John Gonzales",
+      "Caleb Russell",
+      "Perry Carrillo",
+      "Tina Ferguson",
+      "Christopher Patterson"
+    ],
+    "identity_ids": [
+      "ID-0069",
+      "ID-0071",
+      "ID-0073",
+      "ID-0075",
+      "ID-0076",
+      "ID-0077",
+      "ID-0079",
+      "ID-0080",
+      "ID-0084",
+      "ID-0085"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "privilege_escalation",
+    "risk_types": [
+      "privilege_escalation"
+    ],
+    "platforms": [
+      "github",
+      "salesforce",
+      "aws_iam",
+      "servicenow",
+      "okta",
+      "azure_ad",
+      "active_directory"
+    ],
+    "avg_score": 85.36,
+    "max_score": 89.73,
+    "signal_count": 61,
+    "narrative": "Cluster of 61 related signal(s) across 10 identity/identities. Primary pattern: privilege escalation.",
+    "remediation_steps": [
+      "Investigate permission_changed on github",
+      "Verify authorization for role: Admin",
+      "Revert change if unauthorized",
+      "Investigate group_added on salesforce",
+      "Verify authorization for role: Modify All Data",
+      "Verify authorization for role: Owner",
+      "Investigate permission_changed on aws_iam",
+      "Verify authorization for role: AdministratorAccess"
+    ]
+  },
+  {
+    "id": "INC-010",
+    "title": "Orphaned Account: Stanley Mercado",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Stanley Mercado",
+    "identities": [
+      "Stanley Mercado"
+    ],
+    "identity_ids": [
+      "ID-0071"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "aws_iam",
+      "okta",
+      "servicenow"
+    ],
+    "avg_score": 88.34,
+    "max_score": 88.34,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable aws_iam account acct-aws-ID-0071-2b0675 immediately",
+      "Disable okta account acct-okt-ID-0071-b2ab24 immediately",
+      "Disable servicenow account acct-ser-ID-0071-e88677 immediately"
+    ]
+  },
+  {
+    "id": "INC-011",
+    "title": "Stale Account cluster (6 identities, 18 signals)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Roberto Ramirez, Linda Morales, John Lee",
+    "identities": [
+      "Roberto Ramirez",
+      "Linda Morales",
+      "John Lee",
+      "Shannon Walton",
+      "Perry Carrillo",
+      "Tina Ferguson"
+    ],
+    "identity_ids": [
+      "ID-0003",
+      "ID-0011",
+      "ID-0032",
+      "ID-0076",
+      "ID-0080",
+      "ID-0084"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "stale_account",
+    "risk_types": [
+      "stale_account",
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "servicenow",
+      "github",
+      "aws_iam",
+      "active_directory",
+      "salesforce",
+      "okta",
+      "azure_ad"
+    ],
+    "avg_score": 79.58,
+    "max_score": 87.16,
+    "signal_count": 18,
+    "narrative": "Cluster of 18 related signal(s) across 6 identity/identities. Primary pattern: stale account.",
+    "remediation_steps": [
+      "Review and disable servicenow account acct-ser-ID-0003-2007d3",
+      "Confirm with Roberto Ramirez if access is still needed",
+      "Review and disable github account acct-git-ID-0003-adc3fe",
+      "Review and disable aws_iam account acct-aws-ID-0003-b4d76b",
+      "Review and disable active_directory account acct-act-ID-0003-60610e",
+      "Enable MFA on servicenow for roberto.ramirez",
+      "Review and disable salesforce account acct-sal-ID-0011-3ad8d6",
+      "Confirm with Linda Morales if access is still needed"
+    ]
+  },
+  {
+    "id": "INC-012",
+    "title": "Cross Platform Admin cluster (Denise Lucas, Shelby Byrd)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Denise Lucas, Shelby Byrd",
+    "identities": [
+      "Denise Lucas",
+      "Shelby Byrd"
+    ],
+    "identity_ids": [
+      "ID-0031",
+      "ID-0066"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce",
+      "okta"
+    ],
+    "avg_score": 85.95,
+    "max_score": 86.92,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Denise Lucas",
+      "Review admin necessity on salesforce for Denise Lucas",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on okta for Shelby Byrd",
+      "Review admin necessity on salesforce for Shelby Byrd"
+    ]
+  },
+  {
+    "id": "INC-013",
+    "title": "Offboarding Gap: Denise Lucas",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Denise Lucas",
+    "identities": [
+      "Denise Lucas"
+    ],
+    "identity_ids": [
+      "ID-0031"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "active_directory"
+    ],
+    "avg_score": 86.92,
+    "max_score": 86.92,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on active_directory",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-014",
+    "title": "Privilege Escalation cluster (Marco Ramos, Lindsay Hernandez, Stephen Solis)",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Marco Ramos, Lindsay Hernandez, Stephen Solis",
+    "identities": [
+      "Marco Ramos",
+      "Lindsay Hernandez",
+      "Stephen Solis"
+    ],
+    "identity_ids": [
+      "ID-0068",
+      "ID-0070",
+      "ID-0074"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "privilege_escalation",
+    "risk_types": [
+      "privilege_escalation"
+    ],
+    "platforms": [
+      "azure_ad",
+      "aws_iam",
+      "okta",
+      "active_directory",
+      "salesforce",
+      "github"
+    ],
+    "avg_score": 81.33,
+    "max_score": 83.96,
+    "signal_count": 17,
+    "narrative": "Cluster of 17 related signal(s) across 3 identity/identities. Primary pattern: privilege escalation.",
+    "remediation_steps": [
+      "Investigate group_added on azure_ad",
+      "Verify authorization for role: User Administrator",
+      "Revert change if unauthorized",
+      "Investigate permission_changed on aws_iam",
+      "Verify authorization for role: AdministratorAccess",
+      "Investigate permission_changed on azure_ad",
+      "Investigate group_added on okta",
+      "Verify authorization for role: App Admin"
+    ]
+  },
+  {
+    "id": "INC-015",
+    "title": "Cross Platform Admin: Stephen Solis",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Stephen Solis",
+    "identities": [
+      "Stephen Solis"
+    ],
+    "identity_ids": [
+      "ID-0074"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "okta",
+      "salesforce"
+    ],
+    "avg_score": 83.96,
+    "max_score": 83.96,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on okta for Stephen Solis",
+      "Review admin necessity on salesforce for Stephen Solis",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-016",
+    "title": "Offboarding Gap: Linda Morales",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Linda Morales",
+    "identities": [
+      "Linda Morales"
+    ],
+    "identity_ids": [
+      "ID-0011"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "okta",
+      "aws_iam",
+      "active_directory"
+    ],
+    "avg_score": 81.82,
+    "max_score": 81.82,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on okta",
+      "Immediately disable account on aws_iam",
+      "Immediately disable account on active_directory",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-017",
+    "title": "Mfa Disabled: Lindsay Hernandez",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Lindsay Hernandez",
+    "identities": [
+      "Lindsay Hernandez"
+    ],
+    "identity_ids": [
+      "ID-0070"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "okta"
+    ],
+    "avg_score": 80.55,
+    "max_score": 80.55,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on okta for lindsay.hernandez"
+    ]
+  },
+  {
+    "id": "INC-018",
+    "title": "Offboarding Gap: Roberto Ramirez",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Roberto Ramirez",
+    "identities": [
+      "Roberto Ramirez"
+    ],
+    "identity_ids": [
+      "ID-0003"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "servicenow",
+      "active_directory"
+    ],
+    "avg_score": 79.43,
+    "max_score": 79.43,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on servicenow",
+      "Immediately disable account on active_directory",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-019",
+    "title": "Offboarding Gap: John Lee",
+    "severity": "critical",
+    "status": "open",
+    "identity": "John Lee",
+    "identities": [
+      "John Lee"
+    ],
+    "identity_ids": [
+      "ID-0032"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "active_directory"
+    ],
+    "avg_score": 74.46,
+    "max_score": 74.46,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on active_directory",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-020",
+    "title": "Offboarding Gap: Michael Osborn",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Michael Osborn",
+    "identities": [
+      "Michael Osborn"
+    ],
+    "identity_ids": [
+      "ID-0014"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "github"
+    ],
+    "avg_score": 71.75,
+    "max_score": 71.75,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on github",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-021",
+    "title": "Orphaned Account: Jessica Sheppard",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Jessica Sheppard",
+    "identities": [
+      "Jessica Sheppard"
+    ],
+    "identity_ids": [
+      "ID-0097"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "github",
+      "okta",
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 70.14,
+    "max_score": 70.14,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable github account acct-git-ID-0097-147994 immediately",
+      "Disable okta account acct-okt-ID-0097-78b167 immediately",
+      "Disable active_directory account acct-act-ID-0097-fb2d2b immediately",
+      "Disable salesforce account acct-sal-ID-0097-3c4cae immediately",
+      "Review admin necessity on active_directory for Jessica Sheppard",
+      "Review admin necessity on github for Jessica Sheppard",
+      "Review admin necessity on okta for Jessica Sheppard",
+      "Review admin necessity on salesforce for Jessica Sheppard"
+    ]
+  },
+  {
+    "id": "INC-022",
+    "title": "Sod Violation: Jessica Sheppard",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Jessica Sheppard",
+    "identities": [
+      "Jessica Sheppard"
+    ],
+    "identity_ids": [
+      "ID-0097"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 70.14,
+    "max_score": 70.14,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
+    ]
+  },
+  {
+    "id": "INC-023",
+    "title": "Token Abuse: Jessica Sheppard",
+    "severity": "critical",
+    "status": "open",
+    "identity": "Jessica Sheppard",
+    "identities": [
+      "Jessica Sheppard"
+    ],
+    "identity_ids": [
+      "ID-0097"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "github",
+      "salesforce",
+      "okta",
+      "active_directory"
+    ],
+    "avg_score": 70.14,
+    "max_score": 70.14,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-024",
+    "title": "Mfa Disabled cluster (9 identities, 21 signals)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Donald Garcia, Amy Robinson, Noah Howard",
+    "identities": [
+      "Donald Garcia",
+      "Amy Robinson",
+      "Noah Howard",
+      "Cynthia Diaz",
+      "David Alvarez",
+      "Matthew Chapman",
+      "Corey Pearson",
+      "Kevin Riggs",
+      "Mark Hernandez"
+    ],
+    "identity_ids": [
+      "ID-0000",
+      "ID-0002",
+      "ID-0004",
+      "ID-0008",
+      "ID-0023",
+      "ID-0026",
+      "ID-0034",
+      "ID-0046",
+      "ID-0174"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled",
+      "stale_account"
+    ],
+    "platforms": [
+      "servicenow",
+      "salesforce",
+      "azure_ad",
+      "github",
+      "okta",
+      "aws_iam",
+      "active_directory"
+    ],
+    "avg_score": 60.38,
+    "max_score": 67.58,
+    "signal_count": 21,
+    "narrative": "Cluster of 21 related signal(s) across 9 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on servicenow for donald.garcia",
+      "Review and disable salesforce account acct-sal-ID-0002-1d4c25",
+      "Confirm with Amy Robinson if access is still needed",
+      "Review and disable azure_ad account acct-azu-ID-0002-388391",
+      "Review and disable servicenow account acct-ser-ID-0002-82e4de",
+      "Review and disable github account acct-git-ID-0002-b42f6c",
+      "Review and disable okta account acct-okt-ID-0004-98834c",
+      "Confirm with Noah Howard if access is still needed"
+    ]
+  },
+  {
+    "id": "INC-025",
+    "title": "Offboarding Gap cluster (5 identities, 5 signals)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Amy Robinson, Noah Howard, David Alvarez",
+    "identities": [
+      "Amy Robinson",
+      "Noah Howard",
+      "David Alvarez",
+      "Matthew Chapman",
+      "Corey Pearson"
+    ],
+    "identity_ids": [
+      "ID-0002",
+      "ID-0004",
+      "ID-0023",
+      "ID-0026",
+      "ID-0034"
+    ],
+    "created": "2026-06-20T18:29:55.672908",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "azure_ad",
+      "servicenow",
+      "okta",
+      "salesforce",
+      "aws_iam",
+      "github"
+    ],
+    "avg_score": 59.56,
+    "max_score": 67.58,
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 5 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on azure_ad",
+      "Immediately disable account on servicenow",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on okta",
+      "Immediately disable account on salesforce",
+      "Immediately disable account on aws_iam",
+      "Immediately disable account on github"
+    ]
+  },
+  {
+    "id": "INC-026",
+    "title": "Orphaned Account cluster (Donald Garcia, Corey Pearson)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Donald Garcia, Corey Pearson",
+    "identities": [
+      "Donald Garcia",
+      "Corey Pearson"
+    ],
+    "identity_ids": [
+      "ID-0000",
+      "ID-0034"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "active_directory",
+      "servicenow",
+      "github",
+      "aws_iam"
+    ],
+    "avg_score": 61.41,
+    "max_score": 66.49,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable active_directory account acct-act-ID-0000-878243 immediately",
+      "Disable servicenow account acct-ser-ID-0000-828ba7 immediately",
+      "Disable github account acct-git-ID-0000-e539cf immediately",
+      "Disable github account acct-git-ID-0034-c27d7c immediately",
+      "Disable aws_iam account acct-aws-ID-0034-f6fabd immediately",
+      "Disable servicenow account acct-ser-ID-0034-da0246 immediately"
+    ]
+  },
+  {
+    "id": "INC-027",
+    "title": "Cross Platform Admin: Donald Garcia",
+    "severity": "high",
+    "status": "open",
+    "identity": "Donald Garcia",
+    "identities": [
+      "Donald Garcia"
+    ],
+    "identity_ids": [
+      "ID-0000"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "servicenow"
+    ],
+    "avg_score": 66.49,
+    "max_score": 66.49,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Donald Garcia",
+      "Review admin necessity on servicenow for Donald Garcia",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-028",
+    "title": "Offboarding Gap cluster (Donald Garcia, Cynthia Diaz)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Donald Garcia, Cynthia Diaz",
+    "identities": [
+      "Donald Garcia",
+      "Cynthia Diaz"
+    ],
+    "identity_ids": [
+      "ID-0000",
+      "ID-0008"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "active_directory",
+      "servicenow",
+      "github",
+      "azure_ad",
+      "okta",
+      "salesforce"
+    ],
+    "avg_score": 64.74,
+    "max_score": 66.49,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on active_directory",
+      "Immediately disable account on servicenow",
+      "Immediately disable account on github",
+      "Immediately disable account on azure_ad",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on okta",
+      "Immediately disable account on salesforce"
+    ]
+  },
+  {
+    "id": "INC-029",
+    "title": "Stale Account cluster (8 identities, 22 signals)",
+    "severity": "high",
+    "status": "open",
+    "identity": "David Nielsen, Douglas Taylor, Monica Evans",
+    "identities": [
+      "David Nielsen",
+      "Douglas Taylor",
+      "Monica Evans",
+      "Stephanie Nielsen",
+      "Tamara Hickman",
+      "Debra Kim",
+      "John Odonnell",
+      "Mark Vang"
+    ],
+    "identity_ids": [
+      "ID-0005",
+      "ID-0013",
+      "ID-0019",
+      "ID-0020",
+      "ID-0024",
+      "ID-0025",
+      "ID-0049",
+      "ID-0182"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "stale_account",
+    "risk_types": [
+      "stale_account",
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "salesforce",
+      "servicenow",
+      "github",
+      "aws_iam",
+      "active_directory",
+      "okta",
+      "azure_ad"
+    ],
+    "avg_score": 55.81,
+    "max_score": 64.86,
+    "signal_count": 22,
+    "narrative": "Cluster of 22 related signal(s) across 8 identity/identities. Primary pattern: stale account.",
+    "remediation_steps": [
+      "Review and disable salesforce account acct-sal-ID-0005-b8ddfb",
+      "Confirm with David Nielsen if access is still needed",
+      "Review and disable servicenow account acct-ser-ID-0005-50400d",
+      "Review and disable github account acct-git-ID-0005-6e8507",
+      "Review and disable aws_iam account acct-aws-ID-0005-99a289",
+      "Review and disable active_directory account acct-act-ID-0013-c70517",
+      "Confirm with Douglas Taylor if access is still needed",
+      "Review and disable servicenow account acct-ser-ID-0013-2d8098"
+    ]
+  },
+  {
+    "id": "INC-030",
+    "title": "Orphaned Account cluster (Paul Carlson, Monica Evans)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Paul Carlson, Monica Evans",
+    "identities": [
+      "Paul Carlson",
+      "Monica Evans"
+    ],
+    "identity_ids": [
+      "ID-0016",
+      "ID-0019"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "servicenow",
+      "aws_iam",
+      "active_directory",
+      "okta"
+    ],
+    "avg_score": 63.26,
+    "max_score": 64.86,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable servicenow account acct-ser-ID-0016-0471d9 immediately",
+      "Disable aws_iam account acct-aws-ID-0016-cd737c immediately",
+      "Disable active_directory account acct-act-ID-0016-41efaa immediately",
+      "Disable okta account acct-okt-ID-0019-63d646 immediately",
+      "Disable active_directory account acct-act-ID-0019-413b48 immediately",
+      "Disable aws_iam account acct-aws-ID-0019-16b47b immediately"
+    ]
+  },
+  {
+    "id": "INC-031",
+    "title": "Cross Platform Admin cluster (Paul Carlson, Monica Evans)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Paul Carlson, Monica Evans",
+    "identities": [
+      "Paul Carlson",
+      "Monica Evans"
+    ],
+    "identity_ids": [
+      "ID-0016",
+      "ID-0019"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "github",
+      "okta"
+    ],
+    "avg_score": 63.26,
+    "max_score": 64.86,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Paul Carlson",
+      "Review admin necessity on github for Paul Carlson",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Monica Evans",
+      "Review admin necessity on okta for Monica Evans"
+    ]
+  },
+  {
+    "id": "INC-032",
+    "title": "Offboarding Gap: Monica Evans",
+    "severity": "high",
+    "status": "open",
+    "identity": "Monica Evans",
+    "identities": [
+      "Monica Evans"
+    ],
+    "identity_ids": [
+      "ID-0019"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "salesforce"
+    ],
+    "avg_score": 64.86,
+    "max_score": 64.86,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on salesforce",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-033",
+    "title": "Offboarding Gap cluster (7 identities, 7 signals)",
+    "severity": "high",
+    "status": "open",
+    "identity": "David Nielsen, Douglas Taylor, Paul Carlson",
+    "identities": [
+      "David Nielsen",
+      "Douglas Taylor",
+      "Paul Carlson",
+      "Ryan Chavez",
+      "Stephanie Nielsen",
+      "Tamara Hickman",
+      "Debra Kim"
+    ],
+    "identity_ids": [
+      "ID-0005",
+      "ID-0013",
+      "ID-0016",
+      "ID-0018",
+      "ID-0020",
+      "ID-0024",
+      "ID-0025"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "servicenow",
+      "aws_iam",
+      "active_directory",
+      "github",
+      "okta",
+      "salesforce",
+      "azure_ad"
+    ],
+    "avg_score": 56.05,
+    "max_score": 61.66,
+    "signal_count": 7,
+    "narrative": "Cluster of 7 related signal(s) across 7 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on servicenow",
+      "Immediately disable account on aws_iam",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on active_directory",
+      "Immediately disable account on github",
+      "Disable aws_iam account acct-aws-ID-0018-3ca1bb immediately",
+      "Disable active_directory account acct-act-ID-0018-282cd4 immediately",
+      "Immediately disable account on okta"
+    ]
+  },
+  {
+    "id": "INC-034",
+    "title": "Cross Platform Admin cluster (Kevin Riggs, Bradley Graham)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Kevin Riggs, Bradley Graham",
+    "identities": [
+      "Kevin Riggs",
+      "Bradley Graham"
+    ],
+    "identity_ids": [
+      "ID-0046",
+      "ID-0063"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "github",
+      "salesforce",
+      "azure_ad"
+    ],
+    "avg_score": 51.18,
+    "max_score": 57.06,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Kevin Riggs",
+      "Review admin necessity on github for Kevin Riggs",
+      "Review admin necessity on salesforce for Kevin Riggs",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on azure_ad for Bradley Graham",
+      "Review admin necessity on github for Bradley Graham",
+      "Review admin necessity on salesforce for Bradley Graham"
+    ]
+  },
+  {
+    "id": "INC-035",
+    "title": "Orphaned Account: Bradley Graham",
+    "severity": "high",
+    "status": "open",
+    "identity": "Bradley Graham",
+    "identities": [
+      "Bradley Graham"
+    ],
+    "identity_ids": [
+      "ID-0063"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "salesforce",
+      "servicenow",
+      "github",
+      "azure_ad"
+    ],
+    "avg_score": 57.06,
+    "max_score": 57.06,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable salesforce account acct-sal-ID-0063-7c370b immediately",
+      "Disable servicenow account acct-ser-ID-0063-d08a3e immediately",
+      "Disable github account acct-git-ID-0063-151193 immediately",
+      "Disable azure_ad account acct-azu-ID-0063-85ff92 immediately"
+    ]
+  },
+  {
+    "id": "INC-036",
+    "title": "Cross Platform Admin cluster (4 identities, 4 signals)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Ryan Henderson, Dale Humphrey, James Sellers",
+    "identities": [
+      "Ryan Henderson",
+      "Dale Humphrey",
+      "James Sellers",
+      "Mark Hernandez"
+    ],
+    "identity_ids": [
+      "ID-0030",
+      "ID-0047",
+      "ID-0058",
+      "ID-0174"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "servicenow",
+      "okta",
+      "github"
+    ],
+    "avg_score": 52.57,
+    "max_score": 57.0,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 4 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Ryan Henderson",
+      "Review admin necessity on servicenow for Ryan Henderson",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Dale Humphrey",
+      "Review admin necessity on okta for Dale Humphrey",
+      "Review admin necessity on active_directory for James Sellers",
+      "Review admin necessity on github for James Sellers",
+      "Review admin necessity on active_directory for Mark Hernandez"
+    ]
+  },
+  {
+    "id": "INC-037",
+    "title": "Orphaned Account: Ryan Henderson",
+    "severity": "high",
+    "status": "open",
+    "identity": "Ryan Henderson",
+    "identities": [
+      "Ryan Henderson"
+    ],
+    "identity_ids": [
+      "ID-0030"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "active_directory"
+    ],
+    "avg_score": 53.75,
+    "max_score": 53.75,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable active_directory account acct-act-ID-0030-8e0585 immediately",
+      "Immediately disable account on active_directory",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-038",
+    "title": "Offboarding Gap cluster (Kendra Galloway, Crystal Perez)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Kendra Galloway, Crystal Perez",
+    "identities": [
+      "Kendra Galloway",
+      "Crystal Perez"
+    ],
+    "identity_ids": [
+      "ID-0007",
+      "ID-0027"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "azure_ad",
+      "salesforce",
+      "active_directory"
+    ],
+    "avg_score": 50.83,
+    "max_score": 51.81,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on azure_ad",
+      "Immediately disable account on salesforce",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on active_directory"
+    ]
+  },
+  {
+    "id": "INC-039",
+    "title": "Stale Account cluster (Crystal Perez, Angel Doyle)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Crystal Perez, Angel Doyle",
+    "identities": [
+      "Crystal Perez",
+      "Angel Doyle"
+    ],
+    "identity_ids": [
+      "ID-0027",
+      "ID-0056"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "stale_account",
+    "risk_types": [
+      "stale_account",
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "salesforce",
+      "active_directory"
+    ],
+    "avg_score": 51.63,
+    "max_score": 51.81,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 2 identity/identities. Primary pattern: stale account.",
+    "remediation_steps": [
+      "Review and disable salesforce account acct-sal-ID-0027-8ab778",
+      "Confirm with Crystal Perez if access is still needed",
+      "Review and disable active_directory account acct-act-ID-0027-a2eae8",
+      "Enable MFA on salesforce for angel.doyle"
+    ]
+  },
+  {
+    "id": "INC-040",
+    "title": "Cross Platform Admin cluster (Angel Doyle, Sarah Johnston)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Angel Doyle, Sarah Johnston",
+    "identities": [
+      "Angel Doyle",
+      "Sarah Johnston"
+    ],
+    "identity_ids": [
+      "ID-0056",
+      "ID-0092"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "okta",
+      "aws_iam",
+      "salesforce"
+    ],
+    "avg_score": 49.22,
+    "max_score": 51.28,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Angel Doyle",
+      "Review admin necessity on okta for Angel Doyle",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on aws_iam for Sarah Johnston",
+      "Review admin necessity on salesforce for Sarah Johnston"
+    ]
+  },
+  {
+    "id": "INC-041",
+    "title": "Cross Platform Admin cluster (Bobby Diaz, Mark Vang)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Bobby Diaz, Mark Vang",
+    "identities": [
+      "Bobby Diaz",
+      "Mark Vang"
+    ],
+    "identity_ids": [
+      "ID-0053",
+      "ID-0182"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "active_directory",
+      "github",
+      "okta",
+      "aws_iam",
+      "servicenow"
+    ],
+    "avg_score": 50.45,
+    "max_score": 51.23,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Bobby Diaz",
+      "Review admin necessity on github for Bobby Diaz",
+      "Review admin necessity on okta for Bobby Diaz",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Disable aws_iam account acct-aws-ID-0182-8491cc immediately",
+      "Disable okta account acct-okt-ID-0182-703a82 immediately",
+      "Disable servicenow account acct-ser-ID-0182-da32ef immediately",
+      "Review admin necessity on aws_iam for Mark Vang"
+    ]
+  },
+  {
+    "id": "INC-042",
+    "title": "Sod Violation: Mark Vang",
+    "severity": "high",
+    "status": "open",
+    "identity": "Mark Vang",
+    "identities": [
+      "Mark Vang"
+    ],
+    "identity_ids": [
+      "ID-0182"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "okta",
+      "aws_iam"
+    ],
+    "avg_score": 51.23,
+    "max_score": 51.23,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate SSO Admin + Cloud Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
+    ]
+  },
+  {
+    "id": "INC-043",
+    "title": "Offboarding Gap: Ryan Chavez",
+    "severity": "high",
+    "status": "open",
+    "identity": "Ryan Chavez",
+    "identities": [
+      "Ryan Chavez"
+    ],
+    "identity_ids": [
+      "ID-0018"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "github"
+    ],
+    "avg_score": 50.9,
+    "max_score": 50.9,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on github",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-044",
+    "title": "Orphaned Account: Kendra Galloway",
+    "severity": "high",
+    "status": "open",
+    "identity": "Kendra Galloway",
+    "identities": [
+      "Kendra Galloway"
+    ],
+    "identity_ids": [
+      "ID-0007"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "azure_ad",
+      "salesforce",
+      "active_directory"
+    ],
+    "avg_score": 49.85,
+    "max_score": 49.85,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable azure_ad account acct-azu-ID-0007-caa1d1 immediately",
+      "Disable salesforce account acct-sal-ID-0007-29cccf immediately",
+      "Disable active_directory account acct-act-ID-0007-e502d8 immediately"
+    ]
+  },
+  {
+    "id": "INC-045",
+    "title": "Cross Platform Admin cluster (Erik Haynes, Johnny Miller)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Erik Haynes, Johnny Miller",
+    "identities": [
+      "Erik Haynes",
+      "Johnny Miller"
+    ],
+    "identity_ids": [
+      "ID-0057",
+      "ID-0087"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "azure_ad",
+      "salesforce",
+      "aws_iam",
+      "okta"
+    ],
+    "avg_score": 46.78,
+    "max_score": 48.53,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Erik Haynes",
+      "Review admin necessity on azure_ad for Erik Haynes",
+      "Review admin necessity on salesforce for Erik Haynes",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on aws_iam for Johnny Miller",
+      "Review admin necessity on okta for Johnny Miller",
+      "Review admin necessity on salesforce for Johnny Miller"
+    ]
+  },
+  {
+    "id": "INC-046",
+    "title": "Sod Violation cluster (Erik Haynes, Johnny Miller)",
+    "severity": "high",
+    "status": "open",
+    "identity": "Erik Haynes, Johnny Miller",
+    "identities": [
+      "Erik Haynes",
+      "Johnny Miller"
+    ],
+    "identity_ids": [
+      "ID-0057",
+      "ID-0087"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce",
+      "okta",
+      "aws_iam"
+    ],
+    "avg_score": 46.78,
+    "max_score": 48.53,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible",
+      "Separate SSO Admin + Cloud Admin responsibilities across different identities"
+    ]
+  },
+  {
+    "id": "INC-047",
+    "title": "Token Abuse: Johnny Miller",
+    "severity": "high",
+    "status": "open",
+    "identity": "Johnny Miller",
+    "identities": [
+      "Johnny Miller"
+    ],
+    "identity_ids": [
+      "ID-0087"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce",
+      "okta"
+    ],
+    "avg_score": 48.53,
+    "max_score": 48.53,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-048",
+    "title": "Token Abuse: Sarah Johnston",
+    "severity": "high",
+    "status": "open",
+    "identity": "Sarah Johnston",
+    "identities": [
+      "Sarah Johnston"
+    ],
+    "identity_ids": [
+      "ID-0092"
+    ],
+    "created": "2026-06-20T18:29:55.673906",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "okta",
+      "salesforce",
+      "aws_iam",
+      "github"
+    ],
+    "avg_score": 47.17,
+    "max_score": 47.17,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-049",
+    "title": "Cross Platform Admin: John Odonnell",
+    "severity": "high",
+    "status": "open",
+    "identity": "John Odonnell",
+    "identities": [
+      "John Odonnell"
+    ],
+    "identity_ids": [
+      "ID-0049"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "github",
+      "okta"
+    ],
+    "avg_score": 45.73,
+    "max_score": 45.73,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on github for John Odonnell",
+      "Review admin necessity on okta for John Odonnell",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-050",
+    "title": "Sod Violation: Kevin Riggs",
+    "severity": "high",
+    "status": "open",
+    "identity": "Kevin Riggs",
+    "identities": [
+      "Kevin Riggs"
+    ],
+    "identity_ids": [
+      "ID-0046"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 45.31,
+    "max_score": 45.31,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
+    ]
+  },
+  {
+    "id": "INC-051",
+    "title": "Orphaned Account cluster (15 identities, 17 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Joshua Washington, Steven Baxter, Casey Jones",
+    "identities": [
+      "Joshua Washington",
+      "Steven Baxter",
+      "Casey Jones",
+      "John Wheeler",
+      "Wendy Jones",
+      "Nicole Suarez",
+      "Scott Thornton",
+      "Stacie Marshall",
+      "Caroline Martinez",
+      "Nicole Pena",
+      "Charlene Jones",
+      "Jennifer Montes",
+      "Jennifer Black",
+      "Laurie Shelton",
+      "Sydney Barrera"
+    ],
+    "identity_ids": [
+      "ID-0028",
+      "ID-0033",
+      "ID-0040",
+      "ID-0041",
+      "ID-0044",
+      "ID-0045",
+      "ID-0051",
+      "ID-0090",
+      "ID-0094",
+      "ID-0168",
+      "ID-0181",
+      "ID-0228",
+      "ID-0233",
+      "ID-0258",
+      "ID-0284"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "offboarding_gap",
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "aws_iam",
+      "github",
+      "okta",
+      "active_directory",
+      "azure_ad",
+      "servicenow",
+      "salesforce"
+    ],
+    "avg_score": 36.56,
+    "max_score": 43.41,
+    "signal_count": 17,
+    "narrative": "Cluster of 17 related signal(s) across 15 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable aws_iam account acct-aws-ID-0028-904d5e immediately",
+      "Disable github account acct-git-ID-0028-70b8ce immediately",
+      "Immediately disable account on aws_iam",
+      "Immediately disable account on github",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on okta",
+      "Immediately disable account on active_directory",
+      "Review admin necessity on aws_iam for Casey Jones"
+    ]
+  },
+  {
+    "id": "INC-052",
+    "title": "Stale Account cluster (27 identities, 46 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Steven Baxter, Gabriel Tucker, Casey Jones",
+    "identities": [
+      "Steven Baxter",
+      "Gabriel Tucker",
+      "Casey Jones",
+      "Stacie Marshall",
+      "Emily Ruiz",
+      "Charlene Jones",
+      "Julia Kline",
+      "Laurie Shelton",
+      "svc-stage-thought",
+      "svc-page-yourself",
+      "svc-itself-rock",
+      "svc-market-turn",
+      "svc-short-assume",
+      "svc-option-garden",
+      "svc-never-however",
+      "svc-machine-while",
+      "svc-office-health",
+      "svc-require-sport",
+      "svc-suggest-room",
+      "svc-open-fire",
+      "svc-down-year",
+      "svc-finish-spend",
+      "svc-fight-sea",
+      "svc-despite-road",
+      "svc-sea-middle",
+      "svc-free-media",
+      "svc-require-of"
+    ],
+    "identity_ids": [
+      "ID-0033",
+      "ID-0035",
+      "ID-0040",
+      "ID-0090",
+      "ID-0164",
+      "ID-0181",
+      "ID-0252",
+      "ID-0258",
+      "SVC-0000",
+      "SVC-0004",
+      "SVC-0009",
+      "SVC-0013",
+      "SVC-0015",
+      "SVC-0018",
+      "SVC-0020",
+      "SVC-0022",
+      "SVC-0024",
+      "SVC-0025",
+      "SVC-0028",
+      "SVC-0032",
+      "SVC-0033",
+      "SVC-0034",
+      "SVC-0035",
+      "SVC-0036",
+      "SVC-0037",
+      "SVC-0038",
+      "SVC-0044"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "stale_account",
+    "risk_types": [
+      "stale_account",
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "okta",
+      "active_directory",
+      "servicenow",
+      "aws_iam",
+      "github",
+      "salesforce",
+      "azure_ad"
+    ],
+    "avg_score": 32.0,
+    "max_score": 43.41,
+    "signal_count": 46,
+    "narrative": "Cluster of 46 related signal(s) across 27 identity/identities. Primary pattern: stale account.",
+    "remediation_steps": [
+      "Review and disable okta account acct-okt-ID-0033-8f3e6c",
+      "Confirm with Steven Baxter if access is still needed",
+      "Review and disable active_directory account acct-act-ID-0033-3d4ae1",
+      "Enable MFA on servicenow for gabriel.tucker",
+      "Enable MFA on aws_iam for cjones",
+      "Enable MFA on active_directory for stacie.marshall",
+      "Enable MFA on servicenow for emily.ruiz",
+      "Enable MFA on active_directory for charlene.jones"
+    ]
+  },
+  {
+    "id": "INC-053",
+    "title": "Sod Violation cluster (8 identities, 8 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Casey Jones, Wendy Jones, Nicole Pena",
+    "identities": [
+      "Casey Jones",
+      "Wendy Jones",
+      "Nicole Pena",
+      "Charlene Jones",
+      "Jennifer Montes",
+      "Jennifer Black",
+      "Laurie Shelton",
+      "Vanessa Reed"
+    ],
+    "identity_ids": [
+      "ID-0040",
+      "ID-0044",
+      "ID-0168",
+      "ID-0181",
+      "ID-0228",
+      "ID-0233",
+      "ID-0258",
+      "ID-0281"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "okta",
+      "aws_iam",
+      "github",
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 34.76,
+    "max_score": 43.09,
+    "signal_count": 8,
+    "narrative": "Cluster of 8 related signal(s) across 8 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate SSO Admin + Cloud Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible",
+      "Separate Code Owner + Infrastructure Admin responsibilities across different identities",
+      "Separate Cloud Admin + Domain Admin responsibilities across different identities",
+      "Separate CRM Admin + Domain Admin responsibilities across different identities"
+    ]
+  },
+  {
+    "id": "INC-054",
+    "title": "Mfa Disabled cluster (13 identities, 15 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Michelle Hernandez, Sarah Koch, Christopher Tucker",
+    "identities": [
+      "Michelle Hernandez",
+      "Sarah Koch",
+      "Christopher Tucker",
+      "Thomas Mueller",
+      "Leslie Green",
+      "Bradley Cook",
+      "Mark Gibson",
+      "Dale Romero",
+      "Jane Mason",
+      "John Sheppard",
+      "Nicole Arias",
+      "Ian Taylor",
+      "Carrie Short"
+    ],
+    "identity_ids": [
+      "ID-0015",
+      "ID-0021",
+      "ID-0022",
+      "ID-0029",
+      "ID-0042",
+      "ID-0050",
+      "ID-0086",
+      "ID-0189",
+      "ID-0201",
+      "ID-0229",
+      "ID-0235",
+      "ID-0248",
+      "ID-0254"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled",
+      "stale_account"
+    ],
+    "platforms": [
+      "aws_iam",
+      "azure_ad",
+      "okta",
+      "salesforce",
+      "servicenow",
+      "github",
+      "active_directory"
+    ],
+    "avg_score": 35.45,
+    "max_score": 42.76,
+    "signal_count": 15,
+    "narrative": "Cluster of 15 related signal(s) across 13 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on aws_iam for mhernandez",
+      "Enable MFA on azure_ad for sarah.koch",
+      "Review and disable aws_iam account acct-aws-ID-0022-940e25",
+      "Confirm with Christopher Tucker if access is still needed",
+      "Review and disable okta account acct-okt-ID-0022-f4dc7d",
+      "Enable MFA on salesforce for thomas.mueller",
+      "Enable MFA on servicenow for leslie.green",
+      "Enable MFA on okta for bradley.cook"
+    ]
+  },
+  {
+    "id": "INC-055",
+    "title": "Offboarding Gap: Christopher Tucker",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Christopher Tucker",
+    "identities": [
+      "Christopher Tucker"
+    ],
+    "identity_ids": [
+      "ID-0022"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "aws_iam",
+      "okta"
+    ],
+    "avg_score": 42.76,
+    "max_score": 42.76,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on aws_iam",
+      "Immediately disable account on okta",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-056",
+    "title": "Token Abuse: Stacie Marshall",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Stacie Marshall",
+    "identities": [
+      "Stacie Marshall"
+    ],
+    "identity_ids": [
+      "ID-0090"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "active_directory",
+      "servicenow"
+    ],
+    "avg_score": 42.31,
+    "max_score": 42.31,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-057",
+    "title": "Orphaned Account cluster (5 identities, 7 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Cynthia Ferguson, Leonard Rios, Michelle Hernandez",
+    "identities": [
+      "Cynthia Ferguson",
+      "Leonard Rios",
+      "Michelle Hernandez",
+      "Sarah Koch",
+      "Thomas Mueller"
+    ],
+    "identity_ids": [
+      "ID-0009",
+      "ID-0012",
+      "ID-0015",
+      "ID-0021",
+      "ID-0029"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "aws_iam",
+      "okta",
+      "azure_ad"
+    ],
+    "avg_score": 40.72,
+    "max_score": 42.12,
+    "signal_count": 7,
+    "narrative": "Cluster of 7 related signal(s) across 5 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable aws_iam account acct-aws-ID-0009-506dcb immediately",
+      "Immediately disable account on aws_iam",
+      "Audit for any unauthorized access since termination date",
+      "Immediately disable account on okta",
+      "Disable azure_ad account acct-azu-ID-0021-2e28dd immediately"
+    ]
+  },
+  {
+    "id": "INC-058",
+    "title": "Orphaned Account cluster (Gabriel Tucker, Jennifer Montes)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Gabriel Tucker, Jennifer Montes",
+    "identities": [
+      "Gabriel Tucker",
+      "Jennifer Montes"
+    ],
+    "identity_ids": [
+      "ID-0035",
+      "ID-0228"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "servicenow",
+      "github",
+      "azure_ad",
+      "aws_iam",
+      "okta"
+    ],
+    "avg_score": 41.91,
+    "max_score": 42.05,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 2 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable servicenow account acct-ser-ID-0035-058338 immediately",
+      "Disable github account acct-git-ID-0035-6b4951 immediately",
+      "Disable azure_ad account acct-azu-ID-0035-d5b5cf immediately",
+      "Immediately disable account on servicenow",
+      "Immediately disable account on github",
+      "Immediately disable account on azure_ad",
+      "Audit for any unauthorized access since termination date",
+      "Disable aws_iam account acct-aws-ID-0228-e8f7c6 immediately"
+    ]
+  },
+  {
+    "id": "INC-059",
+    "title": "Orphaned Account: Emily Ruiz",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Emily Ruiz",
+    "identities": [
+      "Emily Ruiz"
+    ],
+    "identity_ids": [
+      "ID-0164"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "servicenow"
+    ],
+    "avg_score": 41.68,
+    "max_score": 41.68,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable servicenow account acct-ser-ID-0164-fbf47b immediately"
+    ]
+  },
+  {
+    "id": "INC-060",
+    "title": "Mfa Disabled: Tanya Riley",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Tanya Riley",
+    "identities": [
+      "Tanya Riley"
+    ],
+    "identity_ids": [
+      "ID-0038"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "azure_ad"
+    ],
+    "avg_score": 41.55,
+    "max_score": 41.55,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on azure_ad for tanya.riley"
+    ]
+  },
+  {
+    "id": "INC-061",
+    "title": "Cross Platform Admin cluster (Tanya Riley, William Frazier, Linda Cohen)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Tanya Riley, William Frazier, Linda Cohen",
+    "identities": [
+      "Tanya Riley",
+      "William Frazier",
+      "Linda Cohen"
+    ],
+    "identity_ids": [
+      "ID-0038",
+      "ID-0060",
+      "ID-0279"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "github",
+      "okta",
+      "servicenow",
+      "salesforce",
+      "azure_ad"
+    ],
+    "avg_score": 37.43,
+    "max_score": 41.55,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on github for Tanya Riley",
+      "Review admin necessity on okta for Tanya Riley",
+      "Review admin necessity on servicenow for Tanya Riley",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on github for William Frazier",
+      "Review admin necessity on salesforce for William Frazier",
+      "Review admin necessity on servicenow for William Frazier",
+      "Disable salesforce account acct-sal-ID-0279-1510c7 immediately"
+    ]
+  },
+  {
+    "id": "INC-062",
+    "title": "Orphaned Account: Thomas Mueller",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Thomas Mueller",
+    "identities": [
+      "Thomas Mueller"
+    ],
+    "identity_ids": [
+      "ID-0029"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "salesforce",
+      "active_directory",
+      "aws_iam"
+    ],
+    "avg_score": 41.12,
+    "max_score": 41.12,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable salesforce account acct-sal-ID-0029-ec1168 immediately",
+      "Disable active_directory account acct-act-ID-0029-9b1414 immediately",
+      "Disable aws_iam account acct-aws-ID-0029-8e43b8 immediately"
+    ]
+  },
+  {
+    "id": "INC-063",
+    "title": "Orphaned Account cluster (17 identities, 19 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Leonard Rios, Michelle Hernandez, Leslie Green",
+    "identities": [
+      "Leonard Rios",
+      "Michelle Hernandez",
+      "Leslie Green",
+      "Bradley Cook",
+      "Rebecca Gardner",
+      "Sara Young",
+      "Donna Ross",
+      "Mark Gibson",
+      "Laura Wilson",
+      "John Sheppard",
+      "Nicole Arias",
+      "Amanda Chen",
+      "Carrie Short",
+      "Patricia York",
+      "Renee Brown",
+      "John Reid",
+      "Richard Williams"
+    ],
+    "identity_ids": [
+      "ID-0012",
+      "ID-0015",
+      "ID-0042",
+      "ID-0050",
+      "ID-0052",
+      "ID-0055",
+      "ID-0059",
+      "ID-0086",
+      "ID-0183",
+      "ID-0229",
+      "ID-0235",
+      "ID-0242",
+      "ID-0254",
+      "ID-0266",
+      "ID-0272",
+      "ID-0274",
+      "ID-0293"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "salesforce",
+      "aws_iam",
+      "azure_ad",
+      "servicenow",
+      "github",
+      "okta",
+      "active_directory"
+    ],
+    "avg_score": 33.09,
+    "max_score": 40.59,
+    "signal_count": 19,
+    "narrative": "Cluster of 19 related signal(s) across 17 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable salesforce account acct-sal-ID-0012-495352 immediately",
+      "Disable aws_iam account acct-aws-ID-0012-d93b12 immediately",
+      "Disable aws_iam account acct-aws-ID-0015-5548ee immediately",
+      "Disable azure_ad account acct-azu-ID-0015-afc8cf immediately",
+      "Review admin necessity on aws_iam for Leslie Green",
+      "Review admin necessity on servicenow for Leslie Green",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on github for Bradley Cook"
+    ]
+  },
+  {
+    "id": "INC-064",
+    "title": "Orphaned Account cluster (6 identities, 6 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Nicole Ward, Thomas Calhoun, Elizabeth Gomez",
+    "identities": [
+      "Nicole Ward",
+      "Thomas Calhoun",
+      "Elizabeth Gomez",
+      "Beverly Terrell",
+      "Mitchell Griffith",
+      "Linda Cohen"
+    ],
+    "identity_ids": [
+      "ID-0006",
+      "ID-0039",
+      "ID-0054",
+      "ID-0061",
+      "ID-0195",
+      "ID-0279"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "azure_ad",
+      "github",
+      "servicenow",
+      "okta",
+      "salesforce",
+      "active_directory"
+    ],
+    "avg_score": 35.53,
+    "max_score": 38.66,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 6 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable azure_ad account acct-azu-ID-0006-17af26 immediately",
+      "Disable github account acct-git-ID-0006-2ceb50 immediately",
+      "Review admin necessity on azure_ad for Thomas Calhoun",
+      "Review admin necessity on servicenow for Thomas Calhoun",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on okta for Elizabeth Gomez",
+      "Review admin necessity on salesforce for Elizabeth Gomez",
+      "Review admin necessity on azure_ad for Beverly Terrell"
+    ]
+  },
+  {
+    "id": "INC-065",
+    "title": "Offboarding Gap: Nicole Ward",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Nicole Ward",
+    "identities": [
+      "Nicole Ward"
+    ],
+    "identity_ids": [
+      "ID-0006"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "github"
+    ],
+    "avg_score": 38.66,
+    "max_score": 38.66,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on github",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-066",
+    "title": "Sod Violation: Mitchell Griffith",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Mitchell Griffith",
+    "identities": [
+      "Mitchell Griffith"
+    ],
+    "identity_ids": [
+      "ID-0195"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 37.91,
+    "max_score": 37.91,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
+    ]
+  },
+  {
+    "id": "INC-067",
+    "title": "Token Abuse: Mark Gibson",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Mark Gibson",
+    "identities": [
+      "Mark Gibson"
+    ],
+    "identity_ids": [
+      "ID-0086"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "okta",
+      "github"
+    ],
+    "avg_score": 37.19,
+    "max_score": 37.19,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-068",
+    "title": "Orphaned Account: Jeffery Wagner",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Jeffery Wagner",
+    "identities": [
+      "Jeffery Wagner"
+    ],
+    "identity_ids": [
+      "ID-0001"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "okta"
+    ],
+    "avg_score": 36.98,
+    "max_score": 36.98,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable okta account acct-okt-ID-0001-afcabf immediately"
+    ]
+  },
+  {
+    "id": "INC-069",
+    "title": "Offboarding Gap: Jeffery Wagner",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Jeffery Wagner",
+    "identities": [
+      "Jeffery Wagner"
+    ],
+    "identity_ids": [
+      "ID-0001"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "salesforce",
+      "okta"
+    ],
+    "avg_score": 36.98,
+    "max_score": 36.98,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on salesforce",
+      "Immediately disable account on okta",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-070",
+    "title": "Cross Platform Admin cluster (Kristin Graham, Vanessa Reed)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Kristin Graham, Vanessa Reed",
+    "identities": [
+      "Kristin Graham",
+      "Vanessa Reed"
+    ],
+    "identity_ids": [
+      "ID-0062",
+      "ID-0281"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "azure_ad",
+      "github",
+      "okta",
+      "active_directory",
+      "aws_iam"
+    ],
+    "avg_score": 33.26,
+    "max_score": 35.29,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on azure_ad for Kristin Graham",
+      "Review admin necessity on github for Kristin Graham",
+      "Review admin necessity on okta for Kristin Graham",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Vanessa Reed",
+      "Review admin necessity on aws_iam for Vanessa Reed",
+      "Review admin necessity on azure_ad for Vanessa Reed"
+    ]
+  },
+  {
+    "id": "INC-071",
+    "title": "Sod Violation cluster (7 identities, 8 signals)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Laura Wilson, Sabrina Collins, John Sheppard",
+    "identities": [
+      "Laura Wilson",
+      "Sabrina Collins",
+      "John Sheppard",
+      "Patricia York",
+      "Zachary Anderson",
+      "John Reid",
+      "Emily Whitney"
+    ],
+    "identity_ids": [
+      "ID-0183",
+      "ID-0221",
+      "ID-0229",
+      "ID-0266",
+      "ID-0271",
+      "ID-0274",
+      "ID-0297"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce",
+      "okta",
+      "aws_iam"
+    ],
+    "avg_score": 30.72,
+    "max_score": 33.86,
+    "signal_count": 8,
+    "narrative": "Cluster of 8 related signal(s) across 7 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible",
+      "Separate SSO Admin + Cloud Admin responsibilities across different identities",
+      "Separate Cloud Admin + Domain Admin responsibilities across different identities"
+    ]
+  },
+  {
+    "id": "INC-072",
+    "title": "Cross Platform Admin cluster (Sabrina Collins, Zachary Anderson, Emily Whitney)",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Sabrina Collins, Zachary Anderson, Emily Whitney",
+    "identities": [
+      "Sabrina Collins",
+      "Zachary Anderson",
+      "Emily Whitney"
+    ],
+    "identity_ids": [
+      "ID-0221",
+      "ID-0271",
+      "ID-0297"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "aws_iam",
+      "azure_ad",
+      "okta",
+      "active_directory"
+    ],
+    "avg_score": 30.44,
+    "max_score": 33.86,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on aws_iam for Sabrina Collins",
+      "Review admin necessity on azure_ad for Sabrina Collins",
+      "Review admin necessity on okta for Sabrina Collins",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on aws_iam for Zachary Anderson",
+      "Review admin necessity on azure_ad for Zachary Anderson",
+      "Review admin necessity on okta for Zachary Anderson",
+      "Review admin necessity on active_directory for Emily Whitney"
+    ]
+  },
+  {
+    "id": "INC-073",
+    "title": "Token Abuse: Caroline Martinez",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Caroline Martinez",
+    "identities": [
+      "Caroline Martinez"
+    ],
+    "identity_ids": [
+      "ID-0094"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "servicenow",
+      "aws_iam",
+      "azure_ad"
+    ],
+    "avg_score": 33.15,
+    "max_score": 33.15,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-074",
+    "title": "Mfa Disabled: Joseph White",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Joseph White",
+    "identities": [
+      "Joseph White"
+    ],
+    "identity_ids": [
+      "ID-0192"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "aws_iam"
+    ],
+    "avg_score": 27.53,
+    "max_score": 27.53,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on aws_iam for jwhite"
+    ]
+  },
+  {
+    "id": "INC-075",
+    "title": "Orphaned Account: Molly Knight",
+    "severity": "medium",
+    "status": "review",
+    "identity": "Molly Knight",
+    "identities": [
+      "Molly Knight"
+    ],
+    "identity_ids": [
+      "ID-0193"
+    ],
+    "created": "2026-06-20T18:29:55.674916",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "active_directory"
+    ],
+    "avg_score": 26.71,
+    "max_score": 26.71,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable active_directory account acct-act-ID-0193-5d0efe immediately"
+    ]
+  },
+  {
+    "id": "INC-076",
+    "title": "Mfa Disabled cluster (66 identities, 91 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Heather Cross, Julia Tapia, Kathy Obrien",
+    "identities": [
+      "Heather Cross",
+      "Julia Tapia",
+      "Kathy Obrien",
+      "Sarah Kane",
+      "Norman Stewart",
+      "Derek Chavez",
+      "Tasha Williams",
+      "Brittney Hayes",
+      "Shelley Henderson",
+      "Megan Villegas",
+      "Brandon Miller",
+      "Toni Miller",
+      "Erika Hudson",
+      "Wesley Barnes",
+      "Alexandra Ward",
+      "Shannon Roach",
+      "Madeline Jones",
+      "Donald Williams",
+      "Joseph Rios",
+      "svc-husband-choose",
+      "svc-term-responsibility",
+      "svc-eight-almost",
+      "svc-school-break",
+      "svc-cut-after",
+      "svc-let-former",
+      "svc-kid-civil",
+      "svc-Democrat-item",
+      "svc-more-stage",
+      "svc-population-wife",
+      "svc-thus-simply",
+      "svc-season-certainly",
+      "svc-natural-despite",
+      "svc-recognize-mean",
+      "svc-former-consumer",
+      "svc-no-guess",
+      "svc-trip-set",
+      "svc-responsibility-question",
+      "svc-everything-poor",
+      "svc-member-dark",
+      "svc-employee-family",
+      "svc-happy-opportunity",
+      "svc-world-world",
+      "svc-stuff-set",
+      "svc-eye-field",
+      "svc-campaign-painting",
+      "svc-hundred-war",
+      "svc-indicate-tell",
+      "svc-hair-spring",
+      "svc-summer-child",
+      "svc-fill-and",
+      "Miguel Reed",
+      "Melissa Taylor",
+      "Mitchell Garcia",
+      "Susan Thompson",
+      "Tammy Mcdowell",
+      "Todd Rosales MD",
+      "Elizabeth Sharp",
+      "Michael Leblanc",
+      "Rachel Fox",
+      "Joseph Wilson",
+      "Jason Elliott",
+      "Laura Williams",
+      "Chad May",
+      "Shelly Anderson",
+      "Alexander Evans",
+      "Shaun Cannon"
+    ],
+    "identity_ids": [
+      "ID-0037",
+      "ID-0106",
+      "ID-0113",
+      "ID-0138",
+      "ID-0144",
+      "ID-0167",
+      "ID-0172",
+      "ID-0178",
+      "ID-0188",
+      "ID-0191",
+      "ID-0196",
+      "ID-0216",
+      "ID-0230",
+      "ID-0231",
+      "ID-0244",
+      "ID-0264",
+      "ID-0270",
+      "ID-0283",
+      "ID-0298",
+      "SVC-0001",
+      "SVC-0002",
+      "SVC-0003",
+      "SVC-0005",
+      "SVC-0006",
+      "SVC-0007",
+      "SVC-0008",
+      "SVC-0010",
+      "SVC-0011",
+      "SVC-0012",
+      "SVC-0014",
+      "SVC-0016",
+      "SVC-0017",
+      "SVC-0019",
+      "SVC-0021",
+      "SVC-0023",
+      "SVC-0026",
+      "SVC-0027",
+      "SVC-0029",
+      "SVC-0030",
+      "SVC-0031",
+      "SVC-0039",
+      "SVC-0040",
+      "SVC-0041",
+      "SVC-0042",
+      "SVC-0043",
+      "SVC-0045",
+      "SVC-0046",
+      "SVC-0047",
+      "SVC-0048",
+      "SVC-0049",
+      "EXT-0000",
+      "EXT-0001",
+      "EXT-0002",
+      "EXT-0004",
+      "EXT-0005",
+      "EXT-0006",
+      "EXT-0009",
+      "EXT-0010",
+      "EXT-0012",
+      "EXT-0013",
+      "EXT-0014",
+      "EXT-0015",
+      "EXT-0016",
+      "EXT-0017",
+      "EXT-0018",
+      "EXT-0019"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled",
+      "stale_account"
+    ],
+    "platforms": [
+      "servicenow",
+      "azure_ad",
+      "okta",
+      "github",
+      "aws_iam",
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 18.98,
+    "max_score": 24.92,
+    "signal_count": 91,
+    "narrative": "Cluster of 91 related signal(s) across 66 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on servicenow for heather.cross",
+      "Enable MFA on azure_ad for julia.tapia",
+      "Enable MFA on okta for kathy.obrien",
+      "Enable MFA on github for sarahk10",
+      "Enable MFA on github for normans17",
+      "Enable MFA on servicenow for derek.chavez",
+      "Enable MFA on aws_iam for twilliams",
+      "Enable MFA on aws_iam for bhayes"
+    ]
+  },
+  {
+    "id": "INC-077",
+    "title": "Orphaned Account cluster (Scott Nelson, Alexandra Ward)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Scott Nelson, Alexandra Ward",
+    "identities": [
+      "Scott Nelson",
+      "Alexandra Ward"
+    ],
+    "identity_ids": [
+      "ID-0197",
+      "ID-0244"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "servicenow",
+      "okta",
+      "azure_ad",
+      "active_directory",
+      "github"
+    ],
+    "avg_score": 22.55,
+    "max_score": 24.91,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable servicenow account acct-ser-ID-0197-3e535c immediately",
+      "Disable okta account acct-okt-ID-0197-22ea70 immediately",
+      "Disable azure_ad account acct-azu-ID-0197-f35713 immediately",
+      "Disable active_directory account acct-act-ID-0244-978985 immediately",
+      "Disable github account acct-git-ID-0244-257cab immediately",
+      "Disable azure_ad account acct-azu-ID-0244-ae8ca1 immediately"
+    ]
+  },
+  {
+    "id": "INC-078",
+    "title": "Cross Platform Admin cluster (22 identities, 22 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Matthew Beard, Kelly Raymond, Charles Hall",
+    "identities": [
+      "Matthew Beard",
+      "Kelly Raymond",
+      "Charles Hall",
+      "Danny Walker",
+      "Brian Sparks",
+      "Stephen Thomas",
+      "Erica Le",
+      "Madison Blankenship",
+      "Derek Chavez",
+      "Tasha Williams",
+      "Brittney Hayes",
+      "Shelley Henderson",
+      "Megan Villegas",
+      "Brandon Miller",
+      "Adrian Turner",
+      "Carlos Ramos",
+      "Mark Grant",
+      "Matthew Miranda",
+      "Erika Hudson",
+      "Joe Vang",
+      "Shannon Roach",
+      "Donald Williams"
+    ],
+    "identity_ids": [
+      "ID-0101",
+      "ID-0109",
+      "ID-0118",
+      "ID-0119",
+      "ID-0120",
+      "ID-0134",
+      "ID-0156",
+      "ID-0165",
+      "ID-0167",
+      "ID-0172",
+      "ID-0178",
+      "ID-0188",
+      "ID-0191",
+      "ID-0196",
+      "ID-0199",
+      "ID-0211",
+      "ID-0219",
+      "ID-0224",
+      "ID-0230",
+      "ID-0236",
+      "ID-0264",
+      "ID-0283"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "github",
+      "servicenow",
+      "active_directory",
+      "okta",
+      "salesforce",
+      "azure_ad",
+      "aws_iam"
+    ],
+    "avg_score": 15.73,
+    "max_score": 24.9,
+    "signal_count": 22,
+    "narrative": "Cluster of 22 related signal(s) across 22 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on github for Matthew Beard",
+      "Review admin necessity on servicenow for Matthew Beard",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Kelly Raymond",
+      "Review admin necessity on github for Kelly Raymond",
+      "Review admin necessity on active_directory for Charles Hall",
+      "Review admin necessity on okta for Charles Hall",
+      "Review admin necessity on okta for Danny Walker"
+    ]
+  },
+  {
+    "id": "INC-079",
+    "title": "Mfa Disabled cluster (Jonathan Smith, William Collins, Eric Cole)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Jonathan Smith, William Collins, Eric Cole",
+    "identities": [
+      "Jonathan Smith",
+      "William Collins",
+      "Eric Cole"
+    ],
+    "identity_ids": [
+      "ID-0150",
+      "ID-0212",
+      "ID-0260"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "azure_ad",
+      "servicenow"
+    ],
+    "avg_score": 22.51,
+    "max_score": 24.73,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on azure_ad for jonathan.smith",
+      "Enable MFA on servicenow for william.collins",
+      "Enable MFA on servicenow for eric.cole"
+    ]
+  },
+  {
+    "id": "INC-080",
+    "title": "Orphaned Account: William Collins",
+    "severity": "low",
+    "status": "review",
+    "identity": "William Collins",
+    "identities": [
+      "William Collins"
+    ],
+    "identity_ids": [
+      "ID-0212"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "aws_iam",
+      "okta",
+      "servicenow"
+    ],
+    "avg_score": 24.73,
+    "max_score": 24.73,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable aws_iam account acct-aws-ID-0212-109eb1 immediately",
+      "Disable okta account acct-okt-ID-0212-2ee7fb immediately",
+      "Disable servicenow account acct-ser-ID-0212-62a3f0 immediately"
+    ]
+  },
+  {
+    "id": "INC-081",
+    "title": "Cross Platform Admin cluster (14 identities, 14 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "John Armstrong, Matthew Chavez, Steve Miller",
+    "identities": [
+      "John Armstrong",
+      "Matthew Chavez",
+      "Steve Miller",
+      "Brianna Warren",
+      "Stephanie Burton",
+      "Alexandria Bishop",
+      "Kim Shelton",
+      "Heather Richardson",
+      "Sergio Acosta",
+      "Tina Gould",
+      "Jacob Holmes",
+      "Marcus Fletcher",
+      "Michael Williams",
+      "Phillip Jensen"
+    ],
+    "identity_ids": [
+      "ID-0153",
+      "ID-0184",
+      "ID-0202",
+      "ID-0205",
+      "ID-0209",
+      "ID-0217",
+      "ID-0218",
+      "ID-0253",
+      "ID-0256",
+      "ID-0257",
+      "ID-0262",
+      "ID-0273",
+      "ID-0287",
+      "ID-0295"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "aws_iam",
+      "salesforce",
+      "azure_ad",
+      "okta",
+      "servicenow",
+      "github",
+      "active_directory"
+    ],
+    "avg_score": 19.11,
+    "max_score": 24.5,
+    "signal_count": 14,
+    "narrative": "Cluster of 14 related signal(s) across 14 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on aws_iam for John Armstrong",
+      "Review admin necessity on salesforce for John Armstrong",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on azure_ad for Matthew Chavez",
+      "Review admin necessity on salesforce for Matthew Chavez",
+      "Disable okta account acct-okt-ID-0202-168dc5 immediately",
+      "Disable servicenow account acct-ser-ID-0202-c7e8ce immediately",
+      "Disable servicenow account acct-ser-ID-0205-56d356 immediately"
+    ]
+  },
+  {
+    "id": "INC-082",
+    "title": "Sod Violation: Stephanie Burton",
+    "severity": "low",
+    "status": "review",
+    "identity": "Stephanie Burton",
+    "identities": [
+      "Stephanie Burton"
+    ],
+    "identity_ids": [
+      "ID-0209"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "aws_iam"
+    ],
+    "avg_score": 24.5,
+    "max_score": 24.5,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate Cloud Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
+    ]
+  },
+  {
+    "id": "INC-083",
+    "title": "Token Abuse cluster (Jeffrey Jones, Tamara Higgins, Charles Vaughn)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Jeffrey Jones, Tamara Higgins, Charles Vaughn",
+    "identities": [
+      "Jeffrey Jones",
+      "Tamara Higgins",
+      "Charles Vaughn"
+    ],
+    "identity_ids": [
+      "ID-0088",
+      "ID-0091",
+      "ID-0093"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "okta",
+      "azure_ad",
+      "active_directory",
+      "github"
+    ],
+    "avg_score": 20.04,
+    "max_score": 23.84,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-084",
+    "title": "Offboarding Gap: Hailey Robinson",
+    "severity": "low",
+    "status": "review",
+    "identity": "Hailey Robinson",
+    "identities": [
+      "Hailey Robinson"
+    ],
+    "identity_ids": [
+      "ID-0010"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "offboarding_gap",
+    "risk_types": [
+      "offboarding_gap"
+    ],
+    "platforms": [
+      "okta",
+      "aws_iam"
+    ],
+    "avg_score": 23.59,
+    "max_score": 23.59,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: offboarding gap.",
+    "remediation_steps": [
+      "Immediately disable account on okta",
+      "Immediately disable account on aws_iam",
+      "Audit for any unauthorized access since termination date"
+    ]
+  },
+  {
+    "id": "INC-085",
+    "title": "Mfa Disabled cluster (7 identities, 7 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Erin Wilson, Adrienne Ellis, Matthew Chavez",
+    "identities": [
+      "Erin Wilson",
+      "Adrienne Ellis",
+      "Matthew Chavez",
+      "Christina Allen",
+      "Heather Richardson",
+      "Sergio Acosta",
+      "Michael Williams"
+    ],
+    "identity_ids": [
+      "ID-0017",
+      "ID-0179",
+      "ID-0184",
+      "ID-0243",
+      "ID-0253",
+      "ID-0256",
+      "ID-0287"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "okta",
+      "github",
+      "azure_ad",
+      "servicenow",
+      "active_directory"
+    ],
+    "avg_score": 21.7,
+    "max_score": 23.03,
+    "signal_count": 7,
+    "narrative": "Cluster of 7 related signal(s) across 7 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on okta for erin.wilson",
+      "Enable MFA on github for adriennee59",
+      "Enable MFA on azure_ad for matthew.chavez",
+      "Enable MFA on servicenow for christina.allen",
+      "Enable MFA on active_directory for heather.richardson",
+      "Enable MFA on github for sergioa35",
+      "Enable MFA on servicenow for michael.williams"
+    ]
+  },
+  {
+    "id": "INC-086",
+    "title": "Orphaned Account cluster (5 identities, 5 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "John Bruce, Mark Smith, Betty Best",
+    "identities": [
+      "John Bruce",
+      "Mark Smith",
+      "Betty Best",
+      "Debra Moody",
+      "Austin Jones"
+    ],
+    "identity_ids": [
+      "ID-0152",
+      "ID-0200",
+      "ID-0214",
+      "ID-0237",
+      "ID-0259"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "azure_ad",
+      "aws_iam",
+      "servicenow",
+      "okta",
+      "github"
+    ],
+    "avg_score": 21.14,
+    "max_score": 22.79,
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 5 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable azure_ad account acct-azu-ID-0152-306794 immediately",
+      "Disable aws_iam account acct-aws-ID-0200-aff0d8 immediately",
+      "Disable servicenow account acct-ser-ID-0214-e34672 immediately",
+      "Disable okta account acct-okt-ID-0237-e44ca1 immediately",
+      "Disable github account acct-git-ID-0259-50f27f immediately"
+    ]
+  },
+  {
+    "id": "INC-087",
+    "title": "Cross Platform Admin cluster (4 identities, 4 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Jonathan Smith, Michelle Ramsey, Stacy Holloway",
+    "identities": [
+      "Jonathan Smith",
+      "Michelle Ramsey",
+      "Stacy Holloway",
+      "Eric Cole"
+    ],
+    "identity_ids": [
+      "ID-0150",
+      "ID-0161",
+      "ID-0171",
+      "ID-0260"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "azure_ad",
+      "salesforce",
+      "okta",
+      "servicenow",
+      "active_directory"
+    ],
+    "avg_score": 20.74,
+    "max_score": 22.07,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 4 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on azure_ad for Jonathan Smith",
+      "Review admin necessity on salesforce for Jonathan Smith",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on okta for Michelle Ramsey",
+      "Review admin necessity on servicenow for Michelle Ramsey",
+      "Review admin necessity on active_directory for Stacy Holloway",
+      "Review admin necessity on servicenow for Stacy Holloway",
+      "Review admin necessity on okta for Eric Cole"
+    ]
+  },
+  {
+    "id": "INC-088",
+    "title": "Orphaned Account cluster (Erin Wilson, Christina Allen, Raymond Love)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Erin Wilson, Christina Allen, Raymond Love",
+    "identities": [
+      "Erin Wilson",
+      "Christina Allen",
+      "Raymond Love"
+    ],
+    "identity_ids": [
+      "ID-0017",
+      "ID-0243",
+      "ID-0269"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "okta",
+      "salesforce",
+      "servicenow",
+      "active_directory",
+      "azure_ad"
+    ],
+    "avg_score": 20.46,
+    "max_score": 21.93,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable okta account acct-okt-ID-0017-cb014e immediately",
+      "Disable salesforce account acct-sal-ID-0017-e6af6f immediately",
+      "Disable servicenow account acct-ser-ID-0017-11b6ea immediately",
+      "Review admin necessity on okta for Christina Allen",
+      "Review admin necessity on salesforce for Christina Allen",
+      "Review admin necessity on servicenow for Christina Allen",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Disable active_directory account acct-act-ID-0269-803b2f immediately"
+    ]
+  },
+  {
+    "id": "INC-089",
+    "title": "Token Abuse: Mary Howell",
+    "severity": "low",
+    "status": "review",
+    "identity": "Mary Howell",
+    "identities": [
+      "Mary Howell"
+    ],
+    "identity_ids": [
+      "ID-0089"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "servicenow",
+      "azure_ad",
+      "active_directory"
+    ],
+    "avg_score": 20.8,
+    "max_score": 20.8,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-090",
+    "title": "Orphaned Account: April Hernandez",
+    "severity": "low",
+    "status": "review",
+    "identity": "April Hernandez",
+    "identities": [
+      "April Hernandez"
+    ],
+    "identity_ids": [
+      "ID-0294"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "salesforce"
+    ],
+    "avg_score": 19.69,
+    "max_score": 19.69,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable salesforce account acct-sal-ID-0294-fca252 immediately"
+    ]
+  },
+  {
+    "id": "INC-091",
+    "title": "Token Abuse cluster (Casey Holland, Ryan Cox)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Casey Holland, Ryan Cox",
+    "identities": [
+      "Casey Holland",
+      "Ryan Cox"
+    ],
+    "identity_ids": [
+      "ID-0095",
+      "ID-0096"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "token_abuse",
+    "risk_types": [
+      "token_abuse"
+    ],
+    "platforms": [
+      "salesforce",
+      "aws_iam",
+      "servicenow",
+      "okta"
+    ],
+    "avg_score": 18.22,
+    "max_score": 19.11,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: token abuse.",
+    "remediation_steps": [
+      "Rotate all tokens/API keys older than 90 days",
+      "Investigate anomalous API volume and source IPs",
+      "Enforce token expiration policy (max 90 days)"
+    ]
+  },
+  {
+    "id": "INC-092",
+    "title": "Cross Platform Admin: Monique Williams",
+    "severity": "low",
+    "status": "review",
+    "identity": "Monique Williams",
+    "identities": [
+      "Monique Williams"
+    ],
+    "identity_ids": [
+      "ID-0232"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "okta",
+      "servicenow"
+    ],
+    "avg_score": 19.04,
+    "max_score": 19.04,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Monique Williams",
+      "Review admin necessity on okta for Monique Williams",
+      "Review admin necessity on servicenow for Monique Williams",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-093",
+    "title": "Mfa Disabled cluster (14 identities, 15 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Matthew Snyder, Michael Turner, Brian Hernandez",
+    "identities": [
+      "Matthew Snyder",
+      "Michael Turner",
+      "Brian Hernandez",
+      "Eric Thompson",
+      "Tanya Harrison",
+      "Mia Rivera",
+      "Andrea Pennington",
+      "Tina Simpson",
+      "Matthew Schwartz",
+      "Casey Welch",
+      "Kathleen Padilla",
+      "Jeffrey Maxwell",
+      "Danielle Dean",
+      "Kylie Blackwell"
+    ],
+    "identity_ids": [
+      "ID-0100",
+      "ID-0108",
+      "ID-0112",
+      "ID-0116",
+      "ID-0125",
+      "ID-0126",
+      "ID-0130",
+      "ID-0140",
+      "ID-0143",
+      "ID-0145",
+      "ID-0146",
+      "ID-0206",
+      "ID-0241",
+      "ID-0249"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "active_directory",
+      "github",
+      "okta",
+      "salesforce",
+      "servicenow",
+      "aws_iam",
+      "azure_ad"
+    ],
+    "avg_score": 4.45,
+    "max_score": 9.46,
+    "signal_count": 15,
+    "narrative": "Cluster of 15 related signal(s) across 14 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on active_directory for matthew.snyder",
+      "Enable MFA on github for michaelt93",
+      "Enable MFA on okta for brian.hernandez",
+      "Enable MFA on okta for eric.thompson",
+      "Enable MFA on salesforce for tanya.harrison",
+      "Enable MFA on github for miar58",
+      "Enable MFA on servicenow for andrea.pennington",
+      "Enable MFA on aws_iam for tsimpson"
+    ]
+  },
+  {
+    "id": "INC-094",
+    "title": "Mfa Disabled cluster (4 identities, 4 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Justin Mendoza, Cindy Jimenez, Ashley Mcdonald",
+    "identities": [
+      "Justin Mendoza",
+      "Cindy Jimenez",
+      "Ashley Mcdonald",
+      "Joshua Hays"
+    ],
+    "identity_ids": [
+      "ID-0110",
+      "ID-0129",
+      "ID-0268",
+      "ID-0291"
+    ],
+    "created": "2026-06-20T18:29:55.675907",
+    "type": "mfa_disabled",
+    "risk_types": [
+      "mfa_disabled"
+    ],
+    "platforms": [
+      "azure_ad",
+      "salesforce",
+      "okta"
+    ],
+    "avg_score": 5.26,
+    "max_score": 8.47,
+    "signal_count": 4,
+    "narrative": "Cluster of 4 related signal(s) across 4 identity/identities. Primary pattern: mfa disabled.",
+    "remediation_steps": [
+      "Enable MFA on azure_ad for justin.mendoza",
+      "Enable MFA on salesforce for cindy.jimenez",
+      "Enable MFA on okta for ashley.mcdonald",
+      "Enable MFA on azure_ad for joshua.hays"
+    ]
+  },
+  {
+    "id": "INC-095",
+    "title": "Cross Platform Admin: Joseph Smith",
+    "severity": "low",
+    "status": "review",
+    "identity": "Joseph Smith",
+    "identities": [
+      "Joseph Smith"
+    ],
+    "identity_ids": [
+      "ID-0136"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "active_directory",
+      "github",
+      "okta",
+      "salesforce"
+    ],
+    "avg_score": 5.82,
+    "max_score": 5.82,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Joseph Smith",
+      "Review admin necessity on github for Joseph Smith",
+      "Review admin necessity on okta for Joseph Smith",
+      "Review admin necessity on salesforce for Joseph Smith",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-096",
+    "title": "Sod Violation: Joseph Smith",
+    "severity": "low",
+    "status": "review",
+    "identity": "Joseph Smith",
+    "identities": [
+      "Joseph Smith"
+    ],
+    "identity_ids": [
+      "ID-0136"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 5.82,
+    "max_score": 5.82,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
+    ]
+  },
+  {
+    "id": "INC-097",
+    "title": "Orphaned Account cluster (Jenny Bray, Michael Turner, Tanya Harrison)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Jenny Bray, Michael Turner, Tanya Harrison",
+    "identities": [
+      "Jenny Bray",
+      "Michael Turner",
+      "Tanya Harrison"
+    ],
+    "identity_ids": [
+      "ID-0107",
+      "ID-0108",
+      "ID-0125"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account",
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "azure_ad",
+      "active_directory",
+      "okta",
+      "aws_iam",
+      "github",
+      "salesforce"
+    ],
+    "avg_score": 3.88,
+    "max_score": 5.66,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 3 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable azure_ad account acct-azu-ID-0107-7ffbab immediately",
+      "Disable active_directory account acct-act-ID-0107-b690f3 immediately",
+      "Disable okta account acct-okt-ID-0107-c53f71 immediately",
+      "Review admin necessity on active_directory for Michael Turner",
+      "Review admin necessity on aws_iam for Michael Turner",
+      "Review admin necessity on github for Michael Turner",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Tanya Harrison"
+    ]
+  },
+  {
+    "id": "INC-098",
+    "title": "Sod Violation cluster (Michael Turner, Tanya Harrison)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Michael Turner, Tanya Harrison",
+    "identities": [
+      "Michael Turner",
+      "Tanya Harrison"
+    ],
+    "identity_ids": [
+      "ID-0108",
+      "ID-0125"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "aws_iam",
+      "github",
+      "salesforce"
+    ],
+    "avg_score": 5.2,
+    "max_score": 5.66,
+    "signal_count": 3,
+    "narrative": "Cluster of 3 related signal(s) across 2 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate Cloud Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible",
+      "Separate Code Owner + Infrastructure Admin responsibilities across different identities",
+      "Separate CRM Admin + Domain Admin responsibilities across different identities"
+    ]
+  },
+  {
+    "id": "INC-099",
+    "title": "Orphaned Account cluster (Jacqueline Nelson, Richard Nelson)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Jacqueline Nelson, Richard Nelson",
+    "identities": [
+      "Jacqueline Nelson",
+      "Richard Nelson"
+    ],
+    "identity_ids": [
+      "ID-0105",
+      "ID-0121"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "salesforce",
+      "azure_ad",
+      "github",
+      "okta",
+      "active_directory",
+      "aws_iam"
+    ],
+    "avg_score": 4.03,
+    "max_score": 4.79,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable salesforce account acct-sal-ID-0105-12400c immediately",
+      "Disable azure_ad account acct-azu-ID-0105-7241c6 immediately",
+      "Disable github account acct-git-ID-0105-ed2a7c immediately",
+      "Disable okta account acct-okt-ID-0105-7eaecc immediately",
+      "Disable salesforce account acct-sal-ID-0121-ed0da0 immediately",
+      "Disable azure_ad account acct-azu-ID-0121-042833 immediately",
+      "Disable active_directory account acct-act-ID-0121-25f75c immediately",
+      "Disable aws_iam account acct-aws-ID-0121-b99a16 immediately"
+    ]
+  },
+  {
+    "id": "INC-100",
+    "title": "Cross Platform Admin cluster (5 identities, 5 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Jacqueline Nelson, Julia Tapia, Pamela Navarro",
+    "identities": [
+      "Jacqueline Nelson",
+      "Julia Tapia",
+      "Pamela Navarro",
+      "Anthony Mccoy",
+      "Norman Stewart"
+    ],
+    "identity_ids": [
+      "ID-0105",
+      "ID-0106",
+      "ID-0122",
+      "ID-0131",
+      "ID-0144"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "github",
+      "okta",
+      "salesforce",
+      "azure_ad",
+      "servicenow",
+      "active_directory"
+    ],
+    "avg_score": 3.52,
+    "max_score": 4.79,
+    "signal_count": 5,
+    "narrative": "Cluster of 5 related signal(s) across 5 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on github for Jacqueline Nelson",
+      "Review admin necessity on okta for Jacqueline Nelson",
+      "Review admin necessity on salesforce for Jacqueline Nelson",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on azure_ad for Julia Tapia",
+      "Review admin necessity on salesforce for Julia Tapia",
+      "Review admin necessity on servicenow for Julia Tapia",
+      "Review admin necessity on github for Pamela Navarro"
+    ]
+  },
+  {
+    "id": "INC-101",
+    "title": "Cross Platform Admin cluster (6 identities, 6 signals)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Matthew Snyder, John Russell, Brian Hernandez",
+    "identities": [
+      "Matthew Snyder",
+      "John Russell",
+      "Brian Hernandez",
+      "Andrea Pennington",
+      "Andrea Davis",
+      "Casey Welch"
+    ],
+    "identity_ids": [
+      "ID-0100",
+      "ID-0102",
+      "ID-0112",
+      "ID-0130",
+      "ID-0132",
+      "ID-0145"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin",
+      "orphaned_account"
+    ],
+    "platforms": [
+      "active_directory",
+      "okta",
+      "salesforce",
+      "servicenow",
+      "github"
+    ],
+    "avg_score": 3.45,
+    "max_score": 4.76,
+    "signal_count": 6,
+    "narrative": "Cluster of 6 related signal(s) across 6 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on active_directory for Matthew Snyder",
+      "Review admin necessity on okta for Matthew Snyder",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for John Russell",
+      "Review admin necessity on okta for John Russell",
+      "Review admin necessity on okta for Brian Hernandez",
+      "Review admin necessity on salesforce for Brian Hernandez",
+      "Review admin necessity on okta for Andrea Pennington"
+    ]
+  },
+  {
+    "id": "INC-102",
+    "title": "Cross Platform Admin cluster (Denise Moon, Cindy Jimenez)",
+    "severity": "low",
+    "status": "review",
+    "identity": "Denise Moon, Cindy Jimenez",
+    "identities": [
+      "Denise Moon",
+      "Cindy Jimenez"
+    ],
+    "identity_ids": [
+      "ID-0124",
+      "ID-0129"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "github",
+      "okta",
+      "active_directory"
+    ],
+    "avg_score": 3.87,
+    "max_score": 4.4,
+    "signal_count": 2,
+    "narrative": "Cluster of 2 related signal(s) across 2 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on github for Denise Moon",
+      "Review admin necessity on okta for Denise Moon",
+      "Consider implementing just-in-time (JIT) admin access",
+      "Review admin necessity on active_directory for Cindy Jimenez",
+      "Review admin necessity on github for Cindy Jimenez"
+    ]
+  },
+  {
+    "id": "INC-103",
+    "title": "Sod Violation: Brian Sparks",
+    "severity": "low",
+    "status": "review",
+    "identity": "Brian Sparks",
+    "identities": [
+      "Brian Sparks"
+    ],
+    "identity_ids": [
+      "ID-0120"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "sod_violation",
+    "risk_types": [
+      "sod_violation"
+    ],
+    "platforms": [
+      "active_directory",
+      "salesforce"
+    ],
+    "avg_score": 4.16,
+    "max_score": 4.16,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: sod violation.",
+    "remediation_steps": [
+      "Separate CRM Admin + Domain Admin responsibilities across different identities",
+      "Implement compensating controls if separation is not possible"
+    ]
+  },
+  {
+    "id": "INC-104",
+    "title": "Orphaned Account: Matthew Schwartz",
+    "severity": "low",
+    "status": "review",
+    "identity": "Matthew Schwartz",
+    "identities": [
+      "Matthew Schwartz"
+    ],
+    "identity_ids": [
+      "ID-0143"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "orphaned_account",
+    "risk_types": [
+      "orphaned_account"
+    ],
+    "platforms": [
+      "okta",
+      "azure_ad",
+      "github",
+      "salesforce"
+    ],
+    "avg_score": 3.73,
+    "max_score": 3.73,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: orphaned account.",
+    "remediation_steps": [
+      "Disable okta account acct-okt-ID-0143-0af966 immediately",
+      "Disable azure_ad account acct-azu-ID-0143-795653 immediately",
+      "Disable github account acct-git-ID-0143-f4124e immediately",
+      "Disable salesforce account acct-sal-ID-0143-fe3a16 immediately"
+    ]
+  },
+  {
+    "id": "INC-105",
+    "title": "Cross Platform Admin: Bonnie Kennedy",
+    "severity": "low",
+    "status": "review",
+    "identity": "Bonnie Kennedy",
+    "identities": [
+      "Bonnie Kennedy"
+    ],
+    "identity_ids": [
+      "ID-0104"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "okta",
+      "salesforce",
+      "servicenow"
+    ],
+    "avg_score": 3.67,
+    "max_score": 3.67,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on okta for Bonnie Kennedy",
+      "Review admin necessity on salesforce for Bonnie Kennedy",
+      "Review admin necessity on servicenow for Bonnie Kennedy",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  },
+  {
+    "id": "INC-106",
+    "title": "Cross Platform Admin: Justin Mendoza",
+    "severity": "low",
+    "status": "review",
+    "identity": "Justin Mendoza",
+    "identities": [
+      "Justin Mendoza"
+    ],
+    "identity_ids": [
+      "ID-0110"
+    ],
+    "created": "2026-06-20T18:29:55.676908",
+    "type": "cross_platform_admin",
+    "risk_types": [
+      "cross_platform_admin"
+    ],
+    "platforms": [
+      "azure_ad",
+      "okta",
+      "salesforce"
+    ],
+    "avg_score": 3.52,
+    "max_score": 3.52,
+    "signal_count": 1,
+    "narrative": "Cluster of 1 related signal(s) across 1 identity/identities. Primary pattern: cross platform admin.",
+    "remediation_steps": [
+      "Review admin necessity on azure_ad for Justin Mendoza",
+      "Review admin necessity on okta for Justin Mendoza",
+      "Review admin necessity on salesforce for Justin Mendoza",
+      "Consider implementing just-in-time (JIT) admin access"
+    ]
+  }
+]

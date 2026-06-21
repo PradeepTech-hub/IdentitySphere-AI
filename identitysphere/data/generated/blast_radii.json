@@ -1,0 +1,212 @@
+{
+  "ID-0031": {
+    "identity_id": "ID-0031",
+    "display_name": "Denise Lucas",
+    "severity": "medium",
+    "resources": 5,
+    "permissions": 6,
+    "adminRoles": 0,
+    "platforms": [
+      "active_directory",
+      "salesforce"
+    ],
+    "byPlatform": {
+      "active_directory": 2,
+      "salesforce": 3
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0031",
+    "identity": "Denise Lucas"
+  },
+  "ID-0072": {
+    "identity_id": "ID-0072",
+    "display_name": "John Douglas",
+    "severity": "high",
+    "resources": 14,
+    "permissions": 20,
+    "adminRoles": 0,
+    "platforms": [
+      "active_directory",
+      "azure_ad",
+      "salesforce",
+      "servicenow"
+    ],
+    "byPlatform": {
+      "salesforce": 4,
+      "active_directory": 3,
+      "servicenow": 4,
+      "azure_ad": 3
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0072",
+    "identity": "John Douglas"
+  },
+  "ID-0083": {
+    "identity_id": "ID-0083",
+    "display_name": "Anthony Rogers",
+    "severity": "high",
+    "resources": 12,
+    "permissions": 18,
+    "adminRoles": 0,
+    "platforms": [
+      "github",
+      "okta",
+      "salesforce",
+      "servicenow"
+    ],
+    "byPlatform": {
+      "github": 3,
+      "okta": 4,
+      "salesforce": 1,
+      "servicenow": 4
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0083",
+    "identity": "Anthony Rogers"
+  },
+  "ID-0078": {
+    "identity_id": "ID-0078",
+    "display_name": "Christopher Hernandez",
+    "severity": "high",
+    "resources": 13,
+    "permissions": 18,
+    "adminRoles": 0,
+    "platforms": [
+      "active_directory",
+      "azure_ad",
+      "okta",
+      "servicenow"
+    ],
+    "byPlatform": {
+      "servicenow": 5,
+      "active_directory": 1,
+      "azure_ad": 3,
+      "okta": 4
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0078",
+    "identity": "Christopher Hernandez"
+  },
+  "ID-0097": {
+    "identity_id": "ID-0097",
+    "display_name": "Jessica Sheppard",
+    "severity": "high",
+    "resources": 12,
+    "permissions": 18,
+    "adminRoles": 0,
+    "platforms": [
+      "active_directory",
+      "github",
+      "okta",
+      "salesforce"
+    ],
+    "byPlatform": {
+      "github": 3,
+      "okta": 4,
+      "active_directory": 2,
+      "salesforce": 3
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0097",
+    "identity": "Jessica Sheppard"
+  },
+  "ID-0003": {
+    "identity_id": "ID-0003",
+    "display_name": "Roberto Ramirez",
+    "severity": "medium",
+    "resources": 4,
+    "permissions": 4,
+    "adminRoles": 0,
+    "platforms": [
+      "github",
+      "servicenow"
+    ],
+    "byPlatform": {
+      "servicenow": 2,
+      "github": 2
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0003",
+    "identity": "Roberto Ramirez"
+  },
+  "ID-0049": {
+    "identity_id": "ID-0049",
+    "display_name": "John Odonnell",
+    "severity": "high",
+    "resources": 11,
+    "permissions": 18,
+    "adminRoles": 4,
+    "platforms": [
+      "active_directory",
+      "azure_ad",
+      "github",
+      "okta"
+    ],
+    "byPlatform": {
+      "active_directory": 2,
+      "azure_ad": 3,
+      "okta": 3,
+      "github": 3
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0049",
+    "identity": "John Odonnell"
+  },
+  "ID-0082": {
+    "identity_id": "ID-0082",
+    "display_name": "Jessica Marsh",
+    "severity": "medium",
+    "resources": 6,
+    "permissions": 7,
+    "adminRoles": 0,
+    "platforms": [
+      "active_directory",
+      "azure_ad",
+      "okta"
+    ],
+    "byPlatform": {
+      "active_directory": 1,
+      "azure_ad": 1,
+      "okta": 4
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0082",
+    "identity": "Jessica Marsh"
+  },
+  "ID-0032": {
+    "identity_id": "ID-0032",
+    "display_name": "John Lee",
+    "severity": "low",
+    "resources": 2,
+    "permissions": 3,
+    "adminRoles": 0,
+    "platforms": [
+      "salesforce"
+    ],
+    "byPlatform": {
+      "salesforce": 2
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0032",
+    "identity": "John Lee"
+  },
+  "ID-0011": {
+    "identity_id": "ID-0011",
+    "display_name": "Linda Morales",
+    "severity": "medium",
+    "resources": 5,
+    "permissions": 7,
+    "adminRoles": 0,
+    "platforms": [
+      "okta",
+      "salesforce"
+    ],
+    "byPlatform": {
+      "salesforce": 3,
+      "okta": 2
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0011",
+    "identity": "Linda Morales"
+  }
+}

@@ -11,10 +11,12 @@ from pydantic import BaseModel, Field
 
 class Platform(str, Enum):
     AD = "active_directory"
+    AZURE = "azure_ad"
     AWS = "aws_iam"
     OKTA = "okta"
     GITHUB = "github"
     SALESFORCE = "salesforce"
+    SERVICENOW = "servicenow"
 
 
 class IdentityType(str, Enum):

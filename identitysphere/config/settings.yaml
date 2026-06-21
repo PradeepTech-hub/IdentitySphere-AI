@@ -17,10 +17,18 @@ data_generation:
 
 platforms:
   - active_directory
+  - azure_ad
   - aws_iam
   - okta
-  - github
   - salesforce
+  - servicenow
+
+duplicate_injector:
+  fragment_count: 15
+
+incidents:
+  dbscan_eps: 0.45
+  dbscan_min_samples: 2
 
 identity_resolver:
   email_match_weight: 1.0
@@ -58,10 +66,11 @@ risk_engine:
     random_state: 42
 
   context_adjustments:
-    on_call_discount: 0.4
+    on_call_discount: 0.55
     recent_role_change_days: 14
-    recent_role_change_discount: 0.3
-    manager_approved_discount: 0.2
+    recent_role_change_discount: 0.45
+    manager_approved_discount: 0.50
+    false_positive_trap_discount: 0.60
 
 behavioral:
   audit_window_days: 30

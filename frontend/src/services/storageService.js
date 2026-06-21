@@ -1,3 +1,5 @@
+import { getPlatformCache } from './dataService';
+
 const KEYS = {
   IDENTITIES: 'is_identities',
   RISK_EVENTS: 'is_risk_events',
@@ -119,8 +121,12 @@ export function seedIfNeeded() {
   write(KEYS.SEEDED, true);
 }
 
-// Identities
-export function getIdentities() { return read(KEYS.IDENTITIES) || []; }
+// Identities — prefer live pipeline data when PlatformDataProvider has loaded
+export function getIdentities() {
+  const live = getPlatformCache()?.identities;
+  if (live?.length) return live;
+  return read(KEYS.IDENTITIES) || SEED_IDENTITIES;
+}
 export function saveIdentities(data) { write(KEYS.IDENTITIES, data); }
 export function addIdentity(identity) {
   const list = getIdentities();
@@ -135,15 +141,33 @@ export function updateIdentity(personId, updates) {
 }
 
 // Risk Events
-export function getRiskEvents() { return read(KEYS.RISK_EVENTS) || []; }
+export function getRiskEvents() {
+  const live = getPlatformCache()?.risk_events;
+  if (live?.length) return live;
+  return read(KEYS.RISK_EVENTS) || SEED_RISK_EVENTS;
+}
 export function saveRiskEvents(data) { write(KEYS.RISK_EVENTS, data); }
 
 // Blast Radii
-export function getBlastRadii() { return read(KEYS.BLAST_RADII) || []; }
+export function getBlastRadii() {
+  const live = getPlatformCache()?.blast_radii;
+  if (live?.length) return live;
+  return read(KEYS.BLAST_RADII) || SEED_BLAST_RADII;
+}
 export function saveBlastRadii(data) { write(KEYS.BLAST_RADII, data); }
 
-// Incidents
-export function getIncidents() { return read(KEYS.INCIDENTS) || []; }
+// Incidents — merge pipeline clusters with local workflow overrides
+export function getIncidents() {
+  const live = getPlatformCache()?.incidents;
+  if (live?.length) {
+    const overrides = read(KEYS.INCIDENTS) || [];
+    const overrideMap = Object.fromEntries(overrides.map((i) => [i.id, i.status]));
+    return live.map((inc) =>
+      overrideMap[inc.id] ? { ...inc, status: overrideMap[inc.id] } : inc
+    );
+  }
+  return read(KEYS.INCIDENTS) || SEED_INCIDENTS;
+}
 export function saveIncidents(data) { write(KEYS.INCIDENTS, data); }
 
 // Lifecycle

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
 import GlassCard from '../../components/shared/GlassCard';
 import { getRiskEvents, getIdentities, getLifecycleEvents } from '../../services/storageService';
+import { fetchCopilotChat } from '../../services/dataService';
 
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 
@@ -241,17 +242,26 @@ export default function Copilot() {
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  const send = (text) => {
+  const send = async (text) => {
     const q = text || input;
     if (!q.trim()) return;
     setMessages(prev => [...prev, { role: 'user', content: q }]);
     setInput('');
     setTyping(true);
-    setTimeout(() => {
+    try {
+      const identities = getIdentities();
+      const matched = identities.find(i =>
+        q.toLowerCase().includes(i.display_name?.toLowerCase()) ||
+        q.toLowerCase().includes(i.person_id?.toLowerCase())
+      );
+      const data = await fetchCopilotChat(q, matched?.person_id || null);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+    } catch {
       const response = generateResponse(q);
       setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    } finally {
       setTyping(false);
-    }, 800 + Math.random() * 700);
+    }
   };
 
   return (

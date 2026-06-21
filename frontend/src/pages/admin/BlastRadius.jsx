@@ -11,6 +11,8 @@ import SeverityBadge from '../../components/shared/SeverityBadge';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { getIdentities, getRiskEvents } from '../../services/storageService';
+import { usePlatformData } from '../../context/PlatformDataContext';
+import { fetchBlastRadius } from '../../services/dataService';
 
 
 const COLORS = { active_directory: '#00a4ef', aws_iam: '#ff9900', okta: '#007dc1', salesforce: '#00a1e0' };
@@ -67,8 +69,9 @@ function computeForIdentity(identity) { return computeBlastRadius(identity, null
 export default function BlastRadius() {
   const navigate = useNavigate();
   const location = useLocation();
-  const identities = useMemo(() => getIdentities().filter(i => i.status !== 'Disabled' && i.status !== 'Offboarded'), []);
-  const risks = useMemo(() => getRiskEvents(), []);
+  const { data } = usePlatformData();
+  const identities = useMemo(() => getIdentities().filter(i => i.status !== 'Disabled' && i.status !== 'Offboarded'), [data]);
+  const risks = useMemo(() => getRiskEvents(), [data]);
 
   const preSelected = useMemo(() => {
     const pid = location.state?.personId;
@@ -100,15 +103,39 @@ export default function BlastRadius() {
     ).slice(0, 12);
   }, [searchQuery, identities]);
 
-  const selectAndAnalyze = (identity) => {
+  const selectAndAnalyze = async (identity) => {
     setSelected(identity);
     setShowDropdown(false);
     setSearchQuery('');
     setSimResult(null);
     setBreakdownItem(null);
-    const br = computeForIdentity(identity);
-    setAnalysis(br);
     setSimPlatform(identity.platforms?.[0] || '');
+
+    try {
+      const apiBr = await fetchBlastRadius(identity.person_id);
+      if (apiBr?.resources != null) {
+        setAnalysis({
+          identity: apiBr.display_name || identity.display_name,
+          id: identity.person_id,
+          department: identity.department,
+          severity: apiBr.severity,
+          resources: apiBr.resources ?? apiBr.reachable_resources,
+          permissions: apiBr.permissions ?? apiBr.reachable_permissions,
+          adminRoles: apiBr.adminRoles ?? apiBr.reachable_admin_roles,
+          platforms: apiBr.platforms ?? apiBr.impacted_platforms ?? identity.platforms,
+          byPlatform: apiBr.byPlatform ?? apiBr.resource_by_platform ?? {},
+          sensitiveAssets: apiBr.sensitiveAssets ?? apiBr.admin_resources ?? [],
+          riskScore: identity.risk_score,
+          isAdmin: identity.is_admin,
+          mfaComplete: identity.mfa_complete,
+          status: identity.status,
+        });
+        return;
+      }
+    } catch {
+      /* fallback to client heuristic */
+    }
+    setAnalysis(computeForIdentity(identity));
   };
 
   const runSimulation = () => {

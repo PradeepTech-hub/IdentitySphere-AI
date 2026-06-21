@@ -34,6 +34,9 @@ from identitysphere.core.scoring import ScoringEngine
 from identitysphere.core.graph import AttackGraph
 from identitysphere.core.blast_radius import BlastRadiusEngine
 from identitysphere.core.export import DatasetExporter
+from identitysphere.core.duplicate_injector import inject_cross_platform_duplicates
+from identitysphere.core.incidents import IncidentClusterEngine
+from identitysphere.core.export_api_artifacts import ApiArtifactExporter
 from identitysphere.models.events import RiskEvent
 from identitysphere.utils.logging_config import setup_logging
 
@@ -120,7 +123,10 @@ class IdentitySpherePipeline:
         # Stage 3: Resolve
         stage_start = time.time()
         logger.info("[3/9] Resolving cross-platform identities...")
-        resolved = self.resolver.resolve(self.ingest_engine.identities)
+        identities_for_resolve = inject_cross_platform_duplicates(
+            self.ingest_engine.identities, config=self.config
+        )
+        resolved = self.resolver.resolve(identities_for_resolve)
         self.run_metrics["resolve_time"] = time.time() - stage_start
         logger.info("  Resolution result: %d -> %d identities",
                      self.resolver.resolution_result.total_identities_before,
@@ -215,12 +221,32 @@ class IdentitySpherePipeline:
             sev_counts[br.severity] = sev_counts.get(br.severity, 0) + 1
         logger.info("  Blast radius: %d assessed, severity dist: %s", len(blast_radii), sev_counts)
 
+        # Stage 10: Incident clustering (DBSCAN)
+        stage_start = time.time()
+        logger.info("[10/10] Clustering incidents with DBSCAN...")
+        incident_engine = IncidentClusterEngine(self.config)
+        incident_clusters = incident_engine.cluster(
+            detection_result.risk_events, scoring_result, resolved
+        )
+        self.run_metrics["incident_cluster_time"] = time.time() - stage_start
+
+        api_exporter = ApiArtifactExporter(export_dir)
+        api_exporter.export_all(
+            detection_result.risk_events,
+            scoring_result,
+            incident_clusters,
+            resolved,
+            attack_graph,
+            blast_radii,
+        )
+
         self.run_metrics["total_time"] = time.time() - pipeline_start
 
         report = self._build_report(
             resolved, profiles, detection_result, anomaly_dist,
             behavioral_profiles, scoring_result,
             attack_graph, blast_radii, whatif_sample,
+            incident_clusters,
         )
 
         self._print_report(report)
@@ -239,6 +265,7 @@ class IdentitySpherePipeline:
         attack_graph: Any | None = None,
         blast_radii: dict | None = None,
         whatif_sample: Any | None = None,
+        incident_clusters: list | None = None,
     ) -> dict[str, Any]:
         top_risks = self._get_top_unique_risks(detection_result.risk_events, 10)
         risks_by_type = self.detection_engine.get_risks_by_type()
@@ -317,6 +344,7 @@ class IdentitySpherePipeline:
                 else [self._format_risk_event(e, resolved) for e in top_risks]
             ),
             "compliance_mapping": self._build_compliance_mapping(risks_by_type),
+            "incident_clusters": IncidentClusterEngine().to_dict_list(incident_clusters or []),
             "timing": self.run_metrics,
         }
         return report

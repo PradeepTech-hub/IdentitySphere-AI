@@ -16,15 +16,15 @@ import {
   getReviewHistory, saveReviewHistory,
 } from '../../services/storageService';
 
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 const STATUS_STYLES = {
   approved: { label: 'Approved', color: 'text-green-400', bg: 'bg-green-500/10', icon: CheckCircle },
   revoked: { label: 'Revoked', color: 'text-red-400', bg: 'bg-red-500/10', icon: XCircle },
   escalated: { label: 'Escalated', color: 'text-orange-400', bg: 'bg-orange-500/10', icon: ArrowUpRight },
   pending: { label: 'Pending', color: 'text-yellow-400', bg: 'bg-yellow-500/10', icon: Clock },
 };
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', github: 'GitHub', salesforce: 'Salesforce' };
+const ROLE_MAP = { active_directory: { admin: 'Domain Admin', user: 'Domain User' }, aws_iam: { admin: 'AdministratorAccess', user: 'ReadOnlyAccess' }, okta: { admin: 'Org Admin', user: 'SSO User' }, salesforce: { admin: 'System Administrator', user: 'Standard User' } };
 const HIGH_RISK_ROLES = ['Domain Admin', 'AdministratorAccess', 'Org Admin', 'System Administrator', 'Owner', 'PowerUserAccess'];
-const ROLE_MAP = { active_directory: { admin: 'Domain Admin', user: 'Domain User' }, aws_iam: { admin: 'AdministratorAccess', user: 'ReadOnlyAccess' }, okta: { admin: 'Org Admin', user: 'SSO User' }, github: { admin: 'Owner', user: 'Contributor' }, salesforce: { admin: 'System Administrator', user: 'Standard User' } };
 
 function getWhyFlagged(id) {
   const r = [];

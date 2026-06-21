@@ -12,14 +12,14 @@ import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { getIdentities, getRiskEvents } from '../../services/storageService';
 
-const COLORS = { active_directory: '#00a4ef', aws_iam: '#ff9900', okta: '#007dc1', github: '#f0f6fc', salesforce: '#00a1e0' };
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', github: 'GitHub', salesforce: 'Salesforce' };
+
+const COLORS = { active_directory: '#00a4ef', aws_iam: '#ff9900', okta: '#007dc1', salesforce: '#00a1e0' };
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 
 const RESOURCE_MAP = {
   active_directory: ['domain-controller', 'dns-server', 'file-server', 'gpo-management', 'certificate-authority'],
   aws_iam: ['iam-console', 'ec2-instances', 's3-prod-data', 'kms-keys', 'lambda-functions', 'rds-databases'],
   okta: ['sso-config', 'api-tokens', 'mfa-policies', 'user-provisioning', 'app-integrations'],
-  github: ['private-repos', 'org-settings', 'actions-secrets', 'deploy-keys', 'packages'],
   salesforce: ['crm-data', 'user-management', 'reports', 'apex-classes', 'api-access'],
 };
 

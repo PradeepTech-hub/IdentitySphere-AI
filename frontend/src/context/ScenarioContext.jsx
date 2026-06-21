@@ -30,7 +30,7 @@ const SCENARIO_CONFIGS = {
   token_abuse: {
     riskType: 'token_abuse', severity: 'high', score: 63.8,
     name: 'svc-deploy-bot (SIM)', dept: 'IT Operations',
-    platforms: ['github'], title: 'PAT token 540 days old, anomalous API usage',
+    platforms: ['salesforce'], title: 'PAT token 540 days old, anomalous API usage',
     tokenAgeDays: 540, isAdmin: false, status: 'Active', type: 'Service',
   },
   cross_platform_admin: {
@@ -187,7 +187,7 @@ function getCopilotExplanation(type, s) {
     dormant_admin: `${s.identity} holds AdministratorAccess on AWS IAM but has not logged in for ${s.dormancyDays} days. This dormant admin account represents a significant attack surface - if credentials are compromised, an attacker gains full AWS control with no active monitoring. The behavioral engine flagged this as anomalous (dormancy score: 100/100). Blast radius: ${s.blastRadius?.resources || 8} resources across ${s.blastRadius?.platforms || 1} platform(s).`,
     offboarding_failure: `${s.identity} was terminated ${s.gapDays} days ago but accounts remain active on ${s.platforms.join(', ')}. This violates NIST AC-2 (Account Management) and represents a MITRE T1078 (Valid Accounts) risk. Any post-termination access should be investigated for data exfiltration.`,
     privilege_escalation: `${s.identity} received an Org Admin role on Okta outside the approved change window, without manager approval. This matches MITRE T1098 (Account Manipulation) and suggests either a compromised admin account or insider threat.`,
-    token_abuse: `${s.identity} has a GitHub Personal Access Token that is ${s.tokenAgeDays} days old with anomalous API volume (8,500 calls/24h). This matches MITRE T1550 (Use Alternate Authentication Material). Token should be rotated immediately.`,
+    token_abuse: `${s.identity} has a Salesforce Personal Access Token that is ${s.tokenAgeDays} days old with anomalous API volume (8,500 calls/24h). This matches MITRE T1550 (Use Alternate Authentication Material). Token should be rotated immediately.`,
     cross_platform_admin: `${s.identity} holds admin privileges on ${s.platforms.length} platforms (${s.platforms.join(', ')}) without on-call justification. This creates a toxic combination where compromise of one platform cascades across the enterprise. Violates NIST AC-6 (Least Privilege).`,
   };
   return explanations[type] || 'Risk detected. See details for evidence.';
@@ -198,7 +198,7 @@ function getRemediation(type, s) {
     dormant_admin: ['Disable AWS IAM login profile immediately', 'Delete access keys', 'Remove from AdministratorAccess policy', 'Enable CloudTrail alert for this identity'],
     offboarding_failure: [`Disable account on ${s.platforms.join(', ')}`, 'Revoke all active sessions and tokens', 'Audit access logs since termination date', 'Update offboarding automation to prevent recurrence'],
     privilege_escalation: ['Revoke Org Admin role on Okta immediately', 'Investigate who granted the role (check audit logs)', 'Review all changes made with elevated privileges', 'Lock account pending investigation'],
-    token_abuse: ['Revoke the stale GitHub PAT immediately', 'Create new token with 90-day expiry', 'Review API logs for unauthorized operations', 'Enforce token rotation policy'],
+    token_abuse: ['Revoke the stale Salesforce PAT immediately', 'Create new token with 90-day expiry', 'Review API logs for unauthorized operations', 'Enforce token rotation policy'],
     cross_platform_admin: ['Implement JIT (Just-In-Time) admin access', 'Remove standing admin on at least 2 platforms', 'Enable break-glass procedure for emergencies', 'Add compensating controls (session recording)'],
   };
   return steps[type] || ['Investigate and remediate per organizational policy'];

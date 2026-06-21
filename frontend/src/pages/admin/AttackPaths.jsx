@@ -22,7 +22,6 @@ const PLATFORM_LABELS = {
   active_directory: 'Active Directory',
   aws_iam: 'AWS IAM',
   okta: 'Okta',
-  github: 'GitHub',
   salesforce: 'Salesforce',
 };
 
@@ -30,7 +29,6 @@ const PLATFORM_COLORS = {
   active_directory: '#00a4ef',
   aws_iam: '#ff9900',
   okta: '#007dc1',
-  github: '#f0f6fc',
   salesforce: '#00a1e0',
 };
 
@@ -38,7 +36,6 @@ const ROLE_MAP = {
   active_directory: ['Domain Admin', 'Server Admin', 'Helpdesk Operator', 'User'],
   aws_iam: ['AdministratorAccess', 'PowerUserAccess', 'ReadOnlyAccess', 'ViewOnlyAccess'],
   okta: ['Org Admin', 'App Admin', 'Group Admin', 'SSO User'],
-  github: ['Owner', 'Admin', 'Maintainer', 'Contributor'],
   salesforce: ['System Administrator', 'Standard User', 'Report Viewer', 'Read Only'],
 };
 
@@ -46,7 +43,6 @@ const RESOURCE_MAP = {
   active_directory: ['domain-controller', 'dns-server', 'file-server', 'gpo-management'],
   aws_iam: ['iam:*', 'ec2:*', 's3://prod-data', 'kms:*'],
   okta: ['api-tokens', 'sso-config', 'mfa-policy', 'user-provisioning'],
-  github: ['repos:private', 'org-settings', 'actions-secrets', 'deploy-keys'],
   salesforce: ['setup', 'user-management', 'reports', 'apex-classes'],
 };
 

@@ -15,7 +15,6 @@ import {
   addIdentity, getIdentities, updateIdentity,
 } from '../../services/storageService';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', github: 'GitHub', salesforce: 'Salesforce' };
 
 const LIFECYCLE_STATES = {
   joiner: { label: 'Joiner', icon: UserPlus, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
@@ -24,20 +23,21 @@ const LIFECYCLE_STATES = {
 };
 
 const BASELINE_ACCESS = {
-  Engineering: { platforms: ['active_directory', 'aws_iam', 'okta', 'github'], roles: ['Developer', 'Read-Only', 'SSO User', 'Contributor'], groups: ['Engineering-Team', 'VPN-Users', 'Okta-Engineering'] },
+  Engineering: { platforms: ['active_directory', 'aws_iam', 'okta', 'salesforce'], roles: ['Developer', 'Read-Only', 'SSO User', 'Contributor'], groups: ['Engineering-Team', 'VPN-Users', 'Okta-Engineering'] },
   Finance: { platforms: ['active_directory', 'okta', 'salesforce'], roles: ['Finance-User', 'SSO User', 'Report-Viewer'], groups: ['Finance-Team', 'VPN-Users', 'Okta-Finance'] },
   Sales: { platforms: ['active_directory', 'okta', 'salesforce'], roles: ['Sales-User', 'SSO User', 'CRM-User'], groups: ['Sales-Team', 'VPN-Users', 'Okta-Sales'] },
   Marketing: { platforms: ['active_directory', 'okta', 'salesforce'], roles: ['Marketing-User', 'SSO User', 'Campaign-Viewer'], groups: ['Marketing-Team', 'VPN-Users', 'Okta-Marketing'] },
   Security: { platforms: ['active_directory', 'aws_iam', 'okta'], roles: ['Security-Analyst', 'SSO User', 'Security-Viewer'], groups: ['Security-Team', 'VPN-Users', 'Okta-Security'] },
   'IT Operations': { platforms: ['active_directory', 'aws_iam', 'okta'], roles: ['IT-Support', 'SSO User', 'Infra-Viewer'], groups: ['IT-Ops-Team', 'VPN-Users', 'Okta-IT'] },
   Legal: { platforms: ['active_directory', 'okta'], roles: ['Legal-User', 'SSO User'], groups: ['Legal-Team', 'VPN-Users', 'Okta-Legal'] },
-  Product: { platforms: ['active_directory', 'okta', 'github'], roles: ['Product-User', 'SSO User', 'Viewer'], groups: ['Product-Team', 'VPN-Users', 'Okta-Product'] },
+  Product: { platforms: ['active_directory', 'okta', 'salesforce'], roles: ['Product-User', 'SSO User', 'Viewer'], groups: ['Product-Team', 'VPN-Users', 'Okta-Product'] },
   HR: { platforms: ['active_directory', 'okta'], roles: ['HR-User', 'SSO User'], groups: ['HR-Team', 'VPN-Users', 'Okta-HR'] },
-  DevOps: { platforms: ['active_directory', 'aws_iam', 'okta', 'github'], roles: ['DevOps-Engineer', 'PowerUser', 'SSO User', 'Maintainer'], groups: ['DevOps-Team', 'VPN-Users', 'Okta-DevOps'] },
+  DevOps: { platforms: ['active_directory', 'aws_iam', 'okta', 'salesforce'], roles: ['DevOps-Engineer', 'PowerUser', 'SSO User', 'Maintainer'], groups: ['DevOps-Team', 'VPN-Users', 'Okta-DevOps'] },
 };
 
 const DEPARTMENTS = Object.keys(BASELINE_ACCESS);
 
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 const STATUS_STYLES = {
   completed: { label: 'Completed', color: 'text-green-400', bg: 'bg-green-500/10', icon: CheckCircle },
   in_progress: { label: 'In Progress', color: 'text-blue-400', bg: 'bg-blue-500/10', icon: Clock },

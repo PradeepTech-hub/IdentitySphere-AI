@@ -6,9 +6,10 @@ import PlatformIcon from '../../components/shared/PlatformIcon';
 import { useAuth } from '../../context/AuthContext';
 import { getIdentities } from '../../services/storageService';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub' };
-const ROLE_MAP = { active_directory: 'Domain User', aws_iam: 'ReadOnlyAccess', okta: 'SSO User', github: 'Contributor', salesforce: 'Standard User' };
-const PLATFORM_DESC = { active_directory: 'Corporate directory, file shares, and Windows resources', aws_iam: 'Cloud infrastructure, compute, and storage services', okta: 'Single sign-on and application portal', github: 'Source code repositories and CI/CD pipelines', salesforce: 'Customer relationship management and reports' };
+
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
+const ROLE_MAP = { active_directory: 'Domain User', aws_iam: 'ReadOnlyAccess', okta: 'SSO User', salesforce: 'Standard User' };
+const PLATFORM_DESC = { active_directory: 'Corporate directory and Windows resources', aws_iam: 'Cloud infrastructure and storage', okta: 'Single sign-on portal', salesforce: 'CRM and business applications' };
 
 export default function EmployeeApps() {
   const { user } = useAuth();

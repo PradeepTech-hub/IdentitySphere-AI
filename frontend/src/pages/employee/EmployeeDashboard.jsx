@@ -11,15 +11,14 @@ import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { useAuth } from '../../context/AuthContext';
 import { getIdentities, getAccessRequests, saveAccessRequests } from '../../services/storageService';
 
-const PLATFORMS = ['active_directory', 'aws_iam', 'okta', 'salesforce', 'github'];
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub' };
+const PLATFORMS = ['active_directory', 'aws_iam', 'okta', 'salesforce'];
 const ROLES = {
   active_directory: ['Read-Only User', 'Helpdesk Operator', 'Server Admin'],
   aws_iam: ['ViewOnlyAccess', 'ReadOnlyAccess', 'PowerUserAccess'],
   okta: ['SSO User', 'Group Admin', 'App Admin'],
   salesforce: ['Read Only', 'Standard User', 'Report Viewer'],
-  github: ['Viewer', 'Contributor', 'Maintainer'],
 };
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };const ROLE_MAP = { active_directory: 'Domain User', aws_iam: 'ReadOnlyAccess', okta: 'SSO User', salesforce: 'Standard User' };
 const DURATIONS = [{ label: '1 Day', days: 1 }, { label: '7 Days', days: 7 }, { label: '14 Days', days: 14 }, { label: '30 Days', days: 30 }];
 const STATUS_STYLES = {
   pending: { label: 'Pending', color: 'text-yellow-400', bg: 'bg-yellow-500/10', icon: Clock },
@@ -28,7 +27,6 @@ const STATUS_STYLES = {
   expired: { label: 'Expired', color: 'text-slate-400', bg: 'bg-slate-500/10', icon: Clock },
 };
 
-const ROLE_MAP = { active_directory: 'Domain User', aws_iam: 'ReadOnlyAccess', okta: 'SSO User', github: 'Contributor', salesforce: 'Standard User' };
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();

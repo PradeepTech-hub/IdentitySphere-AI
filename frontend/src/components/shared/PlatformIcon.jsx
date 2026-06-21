@@ -2,7 +2,6 @@ const PLATFORM_COLORS = {
   active_directory: '#00a4ef',
   aws_iam: '#ff9900',
   okta: '#007dc1',
-  github: '#f0f6fc',
   salesforce: '#00a1e0',
   identity: '#00d4ff',
 };
@@ -10,7 +9,6 @@ const PLATFORM_LABELS = {
   active_directory: 'AD',
   aws_iam: 'AWS',
   okta: 'Okta',
-  github: 'GH',
   salesforce: 'SF',
   identity: 'ID',
 };

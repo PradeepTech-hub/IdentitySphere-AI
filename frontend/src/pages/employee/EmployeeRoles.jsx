@@ -6,9 +6,10 @@ import PlatformIcon from '../../components/shared/PlatformIcon';
 import { useAuth } from '../../context/AuthContext';
 import { getIdentities } from '../../services/storageService';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub' };
-const ROLE_MAP = { active_directory: { admin: 'Domain Admin', user: 'Domain User' }, aws_iam: { admin: 'AdministratorAccess', user: 'ReadOnlyAccess' }, okta: { admin: 'Org Admin', user: 'SSO User' }, github: { admin: 'Owner', user: 'Contributor' }, salesforce: { admin: 'System Administrator', user: 'Standard User' } };
-const GROUP_MAP = { active_directory: 'VPN-Users', aws_iam: 'Cloud-Users', okta: 'SSO-Users', github: 'Dev-Team', salesforce: 'CRM-Users' };
+
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
+const ROLE_MAP = { active_directory: { admin: 'Domain Admin', user: 'Domain User' }, aws_iam: { admin: 'AdministratorAccess', user: 'ReadOnlyAccess' }, okta: { admin: 'Org Admin', user: 'SSO User' }, salesforce: { admin: 'System Administrator', user: 'Standard User' } };
+const GROUP_MAP = { active_directory: 'VPN-Users', aws_iam: 'Cloud-Users', okta: 'SSO-Users', salesforce: 'CRM-Users' };
 
 export default function EmployeeRoles() {
   const { user } = useAuth();

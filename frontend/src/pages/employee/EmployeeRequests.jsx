@@ -7,9 +7,8 @@ import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { useAuth } from '../../context/AuthContext';
 import { getAccessRequests, saveAccessRequests } from '../../services/storageService';
 
-const PLATFORMS = ['active_directory', 'aws_iam', 'okta', 'salesforce', 'github'];
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub' };
-const ROLES = { active_directory: ['Read-Only User', 'Helpdesk Operator', 'Server Admin'], aws_iam: ['ViewOnlyAccess', 'ReadOnlyAccess', 'PowerUserAccess'], okta: ['SSO User', 'Group Admin', 'App Admin'], salesforce: ['Read Only', 'Standard User', 'Report Viewer'], github: ['Viewer', 'Contributor', 'Maintainer'] };
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
+const PLATFORMS = ['active_directory', 'aws_iam', 'okta', 'salesforce'];
 const DURATIONS = [{ label: '1 Day', days: 1 }, { label: '7 Days', days: 7 }, { label: '14 Days', days: 14 }, { label: '30 Days', days: 30 }];
 const STATUS_STYLES = { pending: { label: 'Pending', color: 'text-yellow-400', bg: 'bg-yellow-500/10', icon: Clock }, approved: { label: 'Approved', color: 'text-green-400', bg: 'bg-green-500/10', icon: CheckCircle }, rejected: { label: 'Rejected', color: 'text-red-400', bg: 'bg-red-500/10', icon: XCircle }, expired: { label: 'Expired', color: 'text-slate-400', bg: 'bg-slate-500/10', icon: Clock } };
 

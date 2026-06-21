@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, X, Clock, Key, CheckCircle, XCircle } from 'lucide-react';
 import Sidebar from './Sidebar';
@@ -7,11 +7,13 @@ import PlatformIcon from '../shared/PlatformIcon';
 import { useAuth } from '../../context/AuthContext';
 import { getAccessRequests } from '../../services/storageService';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub' };
 
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 export default function DashboardLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [dismissedIds, setDismissedIds] = useState(() => {
     try { return JSON.parse(localStorage.getItem('is_dismissed_notifs') || '[]'); } catch { return []; }

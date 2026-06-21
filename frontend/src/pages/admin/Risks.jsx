@@ -12,7 +12,8 @@ import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { getIdentities, getRiskEvents, getLifecycleEvents } from '../../services/storageService';
 import { useScenario } from '../../context/ScenarioContext';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', github: 'GitHub', salesforce: 'Salesforce' };
+
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
 
 const ROOT_CAUSES = {
   cross_platform_admin: 'Admin privileges granted on multiple platforms without justification or periodic review',

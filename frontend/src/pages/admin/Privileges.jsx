@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };const PLATFORM_COLORS = { active_directory: '#00a4ef', aws_iam: '#ff9900', okta: '#007dc1', salesforce: '#00a1e0' };
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -9,8 +10,6 @@ import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import { getIdentities } from '../../services/storageService';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', github: 'GitHub', salesforce: 'Salesforce' };
-const PLATFORM_COLORS = { active_directory: '#00a4ef', aws_iam: '#ff9900', okta: '#007dc1', github: '#f0f6fc', salesforce: '#00a1e0' };
 
 export default function Privileges() {
   const navigate = useNavigate();

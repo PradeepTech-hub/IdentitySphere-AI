@@ -7,7 +7,6 @@ import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { useAuth } from '../../context/AuthContext';
 import { getIdentities } from '../../services/storageService';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', github: 'GitHub' };
 
 export default function EmployeeSecurity() {
   const { user } = useAuth();

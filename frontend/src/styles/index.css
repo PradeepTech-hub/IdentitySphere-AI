@@ -291,3 +291,29 @@ body {
 .react-flow__controls { background: #0d111a !important; border: 1px solid rgba(227,25,55,0.18) !important; border-radius: 12px !important; }
 .react-flow__controls-button { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; fill: #8B949E !important; }
 .react-flow__controls-button:hover { background: rgba(227,25,55,0.1) !important; fill: #E31937 !important; }
+
+/* ─── RESPONSIVE ─── */
+
+/* Prevent horizontal overflow globally */
+html, body, #root { max-width: 100vw; overflow-x: hidden; }
+
+/* Responsive tables — horizontal scroll on small screens */
+.responsive-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.responsive-table table { min-width: 640px; }
+
+/* Mobile typography scale */
+@media (max-width: 640px) {
+  .dashboard-theme h1 { font-size: 1.25rem !important; }
+  .dashboard-theme h2 { font-size: 1.1rem !important; }
+  .dashboard-theme h3 { font-size: 0.875rem !important; }
+  .font-orbitron { letter-spacing: 0.03em; }
+}
+
+/* ReactFlow responsive height */
+@media (max-width: 768px) {
+  .react-flow { min-height: 300px; }
+}
+
+/* Recharts responsive */
+.recharts-wrapper { max-width: 100% !important; }
+.recharts-surface { max-width: 100%; }

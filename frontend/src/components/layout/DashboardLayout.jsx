@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, X, Clock, CheckCircle, XCircle } from 'lucide-react';
-import Sidebar from './Sidebar';
+import { Bell, X, Clock, CheckCircle, XCircle, Menu } from 'lucide-react';
+import Sidebar, { useSidebar } from './Sidebar';
 import SphereBackground from '../shared/SphereBackground';
 import { useAuth } from '../../context/AuthContext';
 import { getAccessRequests } from '../../services/storageService';
@@ -92,19 +92,26 @@ export default function DashboardLayout() {
   const topBarLabel = ROLE_TOP_BAR[user?.role] || ROLE_TOP_BAR.admin;
   const hasNotificationBell = isAdmin || isEmployee || isExecutive || isContractor;
 
+  const { toggle: toggleSidebar } = useSidebar();
+
   return (
     <div className="min-h-screen relative">
       <SphereBackground />
 
       <Sidebar />
 
-      <div className="fixed top-0 left-64 right-0 z-40 h-14 flex items-center justify-between px-6 gap-3"
+      {/* Top bar: left-0 on mobile, left-64 on desktop */}
+      <div className="fixed top-0 left-0 lg:left-64 right-0 z-40 h-14 flex items-center justify-between px-3 sm:px-6 gap-3"
         style={{ background: 'rgba(5,6,13,0.92)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(227,25,55,0.18)' }}>
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-orbitron font-bold uppercase tracking-[0.2em] text-red-400/90">{topBarLabel}</span>
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-blink" />
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {/* Hamburger — visible below 1024px */}
+          <button onClick={toggleSidebar} className="lg:hidden p-2 -ml-1 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors shrink-0">
+            <Menu size={20} />
+          </button>
+          <span className="text-[9px] sm:text-[10px] font-orbitron font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] text-red-400/90 truncate">{topBarLabel}</span>
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-blink shrink-0" />
           {user?.name && (
-            <span className="text-[10px] text-slate-500 hidden sm:inline ml-1 lowercase">
+            <span className="text-[10px] text-slate-500 hidden md:inline ml-1 lowercase truncate">
               · {user.email}
             </span>
           )}
@@ -127,7 +134,7 @@ export default function DashboardLayout() {
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
                 <motion.div initial={{ opacity: 0, y: -8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                  className="absolute right-0 top-full mt-2 w-96 max-h-[480px] overflow-y-auto rounded-xl z-50"
+                  className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-96 max-h-[480px] overflow-y-auto rounded-xl z-50"
                   style={{ background: 'rgba(8,10,18,0.98)', border: '1px solid rgba(227,25,55,0.2)', backdropFilter: 'blur(20px)', boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}>
                   <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
                     <span className="text-sm font-semibold text-white font-orbitron tracking-wide">Notifications</span>
@@ -182,7 +189,7 @@ export default function DashboardLayout() {
         )}
       </div>
 
-      <main className="ml-64 pt-14 min-h-screen relative z-10">
+      <main className="ml-0 lg:ml-64 pt-14 min-h-screen relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -190,7 +197,7 @@ export default function DashboardLayout() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3 }}
-            className="p-5 dashboard-theme"
+            className="p-3 sm:p-4 lg:p-5 dashboard-theme"
           >
             <Outlet />
           </motion.div>

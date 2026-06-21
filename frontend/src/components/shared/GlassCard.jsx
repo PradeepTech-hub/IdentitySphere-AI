@@ -15,7 +15,7 @@ export default function GlassCard({
   id,
 }) {
   const hasNoPadding = className.includes('p-0') || className.includes('!p-0');
-  const padding = hasNoPadding ? '' : (compact ? 'p-3.5' : 'p-5');
+  const padding = hasNoPadding ? '' : (compact ? 'p-2.5 sm:p-3.5' : 'p-3 sm:p-5');
 
   return (
     <motion.div

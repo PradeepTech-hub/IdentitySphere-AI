@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ScenarioProvider } from './context/ScenarioContext';
+import { SidebarProvider } from './components/layout/Sidebar';
 
 import Landing from './pages/landing/Landing';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -99,7 +100,9 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <ScenarioProvider>
-          <AppRoutes />
+          <SidebarProvider>
+            <AppRoutes />
+          </SidebarProvider>
         </ScenarioProvider>
       </AuthProvider>
     </BrowserRouter>

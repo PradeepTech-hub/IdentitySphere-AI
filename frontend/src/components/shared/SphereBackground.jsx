@@ -44,7 +44,7 @@ export default function SphereBackground() {
 
     resize();
     window.addEventListener('resize', resize);
-    for (let i = 0; i < 100; i++) particles.push(new Particle());
+    for (let i = 0; i < 40; i++) particles.push(new Particle());
 
     function drawConnections() {
       for (let i = 0; i < particles.length; i++) {

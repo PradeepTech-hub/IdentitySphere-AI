@@ -82,16 +82,17 @@ function buildAttackGraph(identity, riskEvent, blastRadius) {
 
   nodes.push({
     id: 'attacker',
-    position: { x: 50, y: 220 },
-    data: { label: `Attacker compromises\n${identity.display_name}@${entryPlatform.replace('_', '')}` },
+    position: { x: 50, y: 200 },
+    data: { label: `🎯 Attacker compromises\n${identity.display_name}` },
     style: {
-      background: '#1e293b', color: entryColor, border: `2px solid ${entryColor}`,
-      borderRadius: 12, padding: 16, fontSize: 12, width: 190, textAlign: 'center',
-      boxShadow: `0 0 12px ${entryColor}33`,
+      background: '#1e293b', color: entryColor, border: `3px solid ${entryColor}`,
+      borderRadius: 16, padding: '18px 24px', fontSize: 13, fontWeight: 700,
+      width: 220, textAlign: 'center',
+      boxShadow: `0 0 24px ${entryColor}44, 0 0 48px ${entryColor}18`,
     },
   });
 
-  let xOffset = 300;
+  let xOffset = 320;
   const adminPlatforms = [];
 
   platforms.forEach((platform, pIdx) => {
@@ -110,28 +111,31 @@ function buildAttackGraph(identity, riskEvent, blastRadius) {
       id: nodeId,
       position: { x: xOffset, y: yPos },
       data: {
-        label: `${PLATFORM_LABELS[platform] || platform}\n${assignedRole}`,
+        label: `🖥️ ${PLATFORM_LABELS[platform] || platform}\n${assignedRole}`,
         _detail: { platform, role: assignedRole, isAdmin: isAdminRole },
       },
       style: {
-        background: '#1e293b', color: nodeColor, border: `2px solid ${nodeColor}`,
-        borderRadius: 12, padding: 14, fontSize: 12, width: 180, textAlign: 'center',
+        background: '#1e293b', color: nodeColor, border: `2.5px solid ${nodeColor}`,
+        borderRadius: 14, padding: '16px 20px', fontSize: 12, fontWeight: 600,
+        width: 200, textAlign: 'center',
+        boxShadow: isAdminRole ? `0 0 16px ${nodeColor}33` : 'none',
       },
     });
 
-    const edgeLabel = pIdx === 0 ? 'compromised' : 'lateral_movement';
+    const edgeLabel = pIdx === 0 ? '⚡ compromised' : '→ lateral movement';
     const edgeSource = pIdx === 0 ? 'attacker' : `platform-${platforms[pIdx - 1]}`;
 
     edges.push({
       id: `e-${edgeSource}-${nodeId}`,
       source: edgeSource, target: nodeId,
       animated: true,
-      label: edgeLabel.replace('_', ' '),
-      style: { stroke: pIdx === 0 ? entryColor : '#eab308', strokeWidth: 2 },
-      labelStyle: { fontSize: 10, fill: '#94a3b8' },
+      label: edgeLabel,
+      style: { stroke: pIdx === 0 ? entryColor : '#eab308', strokeWidth: 2.5 },
+      labelStyle: { fontSize: 10, fill: '#94a3b8', fontWeight: 500 },
+      labelBgStyle: { fill: '#0d111a', fillOpacity: 0.9 },
     });
 
-    xOffset += 240;
+    xOffset += 280;
   });
 
   if (adminPlatforms.length > 0) {
@@ -141,16 +145,17 @@ function buildAttackGraph(identity, riskEvent, blastRadius) {
 
     nodes.push({
       id: 'target',
-      position: { x: xOffset, y: 220 },
+      position: { x: xOffset, y: 200 },
       data: {
-        label: `${criticalResource}\nFULL COMPROMISE`,
+        label: `💀 ${criticalResource}\nFULL COMPROMISE`,
         _detail: { platform: targetPlatform, resource: criticalResource },
       },
       style: {
-        background: '#450a0a', color: '#fca5a5', border: '2px solid #ef4444',
-        borderRadius: 12, padding: 16, fontSize: 12, fontWeight: 700,
-        width: 180, textAlign: 'center',
-        boxShadow: '0 0 20px rgba(239,68,68,0.3)',
+        background: 'linear-gradient(135deg, #450a0a, #7f1d1d)', color: '#fca5a5',
+        border: '3px solid #ef4444',
+        borderRadius: 16, padding: '18px 24px', fontSize: 13, fontWeight: 700,
+        width: 220, textAlign: 'center',
+        boxShadow: '0 0 30px rgba(239,68,68,0.4), 0 0 60px rgba(239,68,68,0.15)',
       },
     });
 
@@ -329,17 +334,32 @@ export default function AttackPaths() {
     setSelectedNode(node);
   }, []);
 
+  const [viewMode, setViewMode] = useState('simple');
   const hasAttackPath = selectedIdentity && (selectedIdentity.is_admin || (selectedIdentity.platforms?.length || 0) >= 2 || riskEvent);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <Route className="w-7 h-7 text-sg-red" />
-          Cyber Attack Path Visualization
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">Identity-driven privilege escalation and lateral movement analysis</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+            <Route className="w-7 h-7 text-sg-red" />
+            Cyber Attack Path Visualization
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">Identity-driven privilege escalation and lateral movement analysis</p>
+        </div>
+        {selectedIdentity && hasAttackPath && (
+          <div className="flex gap-1 p-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(227,25,55,0.15)' }}>
+            <button onClick={() => setViewMode('simple')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === 'simple' ? 'bg-red-500/20 text-red-400' : 'text-slate-400 hover:text-white'}`}>
+              Simplified View
+            </button>
+            <button onClick={() => setViewMode('technical')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === 'technical' ? 'bg-red-500/20 text-red-400' : 'text-slate-400 hover:text-white'}`}>
+              Technical Graph
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Identity Selector + Filters */}
@@ -452,24 +472,70 @@ export default function AttackPaths() {
       {/* Attack Graph */}
       {selectedIdentity ? (
         hasAttackPath ? (
-          <GlassCard hover={false} className="p-0 overflow-hidden" style={{ height: 500 }}>
-            <ReactFlow
-              nodes={graphNodes}
-              edges={graphEdges}
-              onNodeClick={handleNodeClick}
-              fitView
-              fitViewOptions={{ padding: 0.25 }}
-              panOnDrag
-              zoomOnScroll
-              minZoom={0.3}
-              maxZoom={2}
-              className="bg-navy-950"
-              proOptions={{ hideAttribution: true }}
-            >
-              <Background color="#E3193708" gap={30} />
-              <Controls className="bg-navy-800 border border-white/10 rounded-xl" />
-            </ReactFlow>
-          </GlassCard>
+          <>
+            {/* ── SIMPLIFIED FLOW VIEW ── */}
+            {viewMode === 'simple' && (
+              <GlassCard hover={false}>
+                <div className="overflow-x-auto pb-2">
+                  <div className="flex items-stretch gap-0 min-w-[600px]">
+                    {(() => {
+                      const id = selectedIdentity;
+                      const platforms = id.platforms || [];
+                      const entryPlatform = platforms[0] || 'okta';
+                      const targetPlatform = platforms[platforms.length - 1] || entryPlatform;
+                      const targetResource = (RESOURCE_MAP[targetPlatform] || ['critical-resource'])[0];
+                      const steps = [
+                        { num: 1, label: 'Compromised Identity', detail: `${id.display_name}\n${PLATFORM_LABELS[entryPlatform] || entryPlatform}`, sub: `Risk: ${id.risk_score ?? 0}`, color: '#ef4444', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.35)', icon: '🎯' },
+                        ...(platforms.length > 1 ? [{ num: 2, label: 'Lateral Movement', detail: `Cross-platform bridge\n${platforms.slice(0, 3).map(p => PLATFORM_LABELS[p] || p).join(' → ')}`, sub: `${platforms.length} platforms`, color: '#f97316', bg: 'rgba(249,115,22,0.08)', border: 'rgba(249,115,22,0.35)', icon: '🔀' }] : []),
+                        ...(id.is_admin ? [{ num: platforms.length > 1 ? 3 : 2, label: 'Privilege Escalation', detail: `${ROLE_MAP[targetPlatform]?.[0] || 'Admin'}\n${PLATFORM_LABELS[targetPlatform] || targetPlatform}`, sub: 'Admin access gained', color: '#eab308', bg: 'rgba(234,179,8,0.08)', border: 'rgba(234,179,8,0.35)', icon: '⚡' }] : []),
+                        { num: (platforms.length > 1 ? 2 : 1) + (id.is_admin ? 2 : 1), label: 'Critical Resource', detail: `${targetResource}\nFULL COMPROMISE`, sub: `${blastRadius?.resources || platforms.length * 3} resources exposed`, color: '#ef4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.5)', icon: '💀' },
+                      ];
+                      return steps.map((step, i) => (
+                        <div key={i} className="flex items-stretch flex-1 min-w-[140px]">
+                          <div className="flex-1 rounded-xl p-4 text-center relative" style={{ background: step.bg, border: `2px solid ${step.border}`, boxShadow: `0 0 20px ${step.color}22` }}>
+                            <div className="text-2xl mb-2">{step.icon}</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: step.color }}>Step {step.num}</div>
+                            <div className="text-xs font-bold text-white mb-1">{step.label}</div>
+                            <div className="text-[11px] text-slate-400 whitespace-pre-line leading-relaxed">{step.detail}</div>
+                            <div className="text-[10px] mt-2 font-semibold" style={{ color: step.color }}>{step.sub}</div>
+                          </div>
+                          {i < steps.length - 1 && (
+                            <div className="flex items-center px-1 shrink-0">
+                              <div className="flex flex-col items-center gap-0.5">
+                                <ChevronRight size={20} className="text-slate-500" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+              </GlassCard>
+            )}
+
+            {/* ── TECHNICAL GRAPH VIEW ── */}
+            {viewMode === 'technical' && (
+              <GlassCard hover={false} className="p-0 overflow-hidden" style={{ height: 'calc(100vh - 420px)', minHeight: 400, maxHeight: 700 }}>
+                <ReactFlow
+                  nodes={graphNodes}
+                  edges={graphEdges}
+                  onNodeClick={handleNodeClick}
+                  fitView
+                  fitViewOptions={{ padding: 0.4, maxZoom: 1.2 }}
+                  panOnDrag
+                  zoomOnScroll
+                  minZoom={0.2}
+                  maxZoom={2.5}
+                  className="bg-navy-950"
+                  proOptions={{ hideAttribution: true }}
+                >
+                  <Background color="#E3193708" gap={30} />
+                  <Controls className="bg-navy-800 border border-white/10 rounded-xl" />
+                </ReactFlow>
+              </GlassCard>
+            )}
+          </>
         ) : (
           <GlassCard hover={false}>
             <div className="flex flex-col items-center gap-4 py-12">

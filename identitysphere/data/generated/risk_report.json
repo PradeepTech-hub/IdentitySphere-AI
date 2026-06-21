@@ -1,0 +1,375 @@
+{
+  "generated_at": "2026-06-21T12:25:18.785991",
+  "success_metrics": {
+    "identity_coverage": "100.0%",
+    "identity_coverage_met": true,
+    "risk_scenarios_detected": 8,
+    "alert_consolidation_ratio": "90.1%",
+    "risk_explainability": "All scores expose factor contributions and suppression audit trail"
+  },
+  "top_risky_identities": [
+    {
+      "identity_id": "ID-0068",
+      "display_name": "Manish Joshi",
+      "department": "Finance",
+      "risk_type": "composite",
+      "severity": "high",
+      "score": 59.14,
+      "raw_score": 59.14,
+      "suppression_multiplier": 1.0,
+      "title": "Composite risk: Manish Joshi (HIGH - 59.14/100)",
+      "factors": {
+        "privilege_breadth": 15.07,
+        "cross_platform_exposure": 11.43,
+        "dormancy": 0.12,
+        "detector_severity": 25.0,
+        "behavioral_anomaly": 7.52
+      },
+      "suppressions_applied": [],
+      "affected_platforms": [
+        "okta",
+        "aws_iam",
+        "salesforce",
+        "active_directory",
+        "servicenow"
+      ],
+      "remediation_steps": [
+        "Review cross-platform admin necessity; implement JIT access",
+        "Address critical/high detector findings immediately"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 10
+    },
+    {
+      "identity_id": "ID-0085",
+      "display_name": "Pallavi Pillai",
+      "department": "Sales",
+      "risk_type": "composite",
+      "severity": "high",
+      "score": 56.14,
+      "raw_score": 56.14,
+      "suppression_multiplier": 1.0,
+      "title": "Composite risk: Pallavi Pillai (HIGH - 56.14/100)",
+      "factors": {
+        "privilege_breadth": 14.71,
+        "cross_platform_exposure": 8.57,
+        "dormancy": 0.04,
+        "detector_severity": 25.0,
+        "behavioral_anomaly": 7.82
+      },
+      "suppressions_applied": [],
+      "affected_platforms": [
+        "salesforce",
+        "github",
+        "active_directory",
+        "servicenow",
+        "aws_iam"
+      ],
+      "remediation_steps": [
+        "Review cross-platform admin necessity; implement JIT access",
+        "Address critical/high detector findings immediately"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 9
+    },
+    {
+      "identity_id": "ID-0030",
+      "display_name": "Neha Kulkarni",
+      "department": "HR",
+      "risk_type": "composite",
+      "severity": "high",
+      "score": 54.74,
+      "raw_score": 54.74,
+      "suppression_multiplier": 1.0,
+      "title": "Composite risk: Neha Kulkarni (HIGH - 54.74/100)",
+      "factors": {
+        "privilege_breadth": 14.59,
+        "cross_platform_exposure": 5.71,
+        "dormancy": 0.78,
+        "detector_severity": 25.0,
+        "behavioral_anomaly": 8.66
+      },
+      "suppressions_applied": [],
+      "affected_platforms": [
+        "github",
+        "active_directory",
+        "salesforce",
+        "azure_ad",
+        "aws_iam"
+      ],
+      "remediation_steps": [
+        "Address critical/high detector findings immediately"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 8
+    },
+    {
+      "identity_id": "ID-0057",
+      "display_name": "Keerthi Menon",
+      "department": "Product",
+      "risk_type": "composite",
+      "severity": "high",
+      "score": 53.27,
+      "raw_score": 53.27,
+      "suppression_multiplier": 1.0,
+      "title": "Composite risk: Keerthi Menon (HIGH - 53.27/100)",
+      "factors": {
+        "privilege_breadth": 22.25,
+        "cross_platform_exposure": 11.43,
+        "dormancy": 0.33,
+        "detector_severity": 12.5,
+        "behavioral_anomaly": 6.76
+      },
+      "suppressions_applied": [],
+      "affected_platforms": [
+        "servicenow",
+        "active_directory",
+        "github",
+        "okta"
+      ],
+      "remediation_steps": [
+        "Conduct privilege access review and remove unnecessary permissions",
+        "Review cross-platform admin necessity; implement JIT access"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 2
+    },
+    {
+      "identity_id": "ID-0049",
+      "display_name": "Akash Verma",
+      "department": "Engineering",
+      "risk_type": "composite",
+      "severity": "high",
+      "score": 48.84,
+      "raw_score": 57.46,
+      "suppression_multiplier": 0.85,
+      "title": "Composite risk: Akash Verma (HIGH - 48.84/100)",
+      "factors": {
+        "privilege_breadth": 25.0,
+        "cross_platform_exposure": 8.57,
+        "dormancy": 0.25,
+        "detector_severity": 18.75,
+        "behavioral_anomaly": 4.89
+      },
+      "suppressions_applied": [
+        "active_admin"
+      ],
+      "affected_platforms": [
+        "aws_iam",
+        "active_directory",
+        "okta",
+        "github"
+      ],
+      "remediation_steps": [
+        "Conduct privilege access review and remove unnecessary permissions",
+        "Review cross-platform admin necessity; implement JIT access",
+        "Address critical/high detector findings immediately"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 2
+    },
+    {
+      "identity_id": "ID-0074",
+      "display_name": "Harish Pillai",
+      "department": "Finance",
+      "risk_type": "composite",
+      "severity": "high",
+      "score": 48.59,
+      "raw_score": 48.59,
+      "suppression_multiplier": 1.0,
+      "title": "Composite risk: Harish Pillai (HIGH - 48.59/100)",
+      "factors": {
+        "privilege_breadth": 13.04,
+        "cross_platform_exposure": 5.71,
+        "dormancy": 0.37,
+        "detector_severity": 25.0,
+        "behavioral_anomaly": 4.47
+      },
+      "suppressions_applied": [],
+      "affected_platforms": [
+        "github",
+        "okta",
+        "salesforce",
+        "active_directory"
+      ],
+      "remediation_steps": [
+        "Address critical/high detector findings immediately"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 8
+    },
+    {
+      "identity_id": "ID-0066",
+      "display_name": "Ramesh Gupta",
+      "department": "Engineering",
+      "risk_type": "composite",
+      "severity": "high",
+      "score": 45.94,
+      "raw_score": 57.42,
+      "suppression_multiplier": 0.8,
+      "title": "Composite risk: Ramesh Gupta (HIGH - 45.94/100)",
+      "factors": {
+        "privilege_breadth": 20.22,
+        "cross_platform_exposure": 8.57,
+        "dormancy": 0.08,
+        "detector_severity": 25.0,
+        "behavioral_anomaly": 3.55
+      },
+      "suppressions_applied": [
+        "mfa_all_platforms"
+      ],
+      "affected_platforms": [
+        "okta",
+        "github",
+        "servicenow"
+      ],
+      "remediation_steps": [
+        "Conduct privilege access review and remove unnecessary permissions",
+        "Review cross-platform admin necessity; implement JIT access",
+        "Address critical/high detector findings immediately"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 9
+    },
+    {
+      "identity_id": "ID-0060",
+      "display_name": "Nikhil Joshi",
+      "department": "Sales",
+      "risk_type": "composite",
+      "severity": "medium",
+      "score": 44.94,
+      "raw_score": 44.94,
+      "suppression_multiplier": 1.0,
+      "title": "Composite risk: Nikhil Joshi (MEDIUM - 44.94/100)",
+      "factors": {
+        "privilege_breadth": 20.93,
+        "cross_platform_exposure": 5.71,
+        "dormancy": 0.53,
+        "detector_severity": 12.5,
+        "behavioral_anomaly": 5.27
+      },
+      "suppressions_applied": [],
+      "affected_platforms": [
+        "servicenow",
+        "active_directory",
+        "salesforce",
+        "okta"
+      ],
+      "remediation_steps": [
+        "Conduct privilege access review and remove unnecessary permissions"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 2
+    },
+    {
+      "identity_id": "ID-0091",
+      "display_name": "Sarita Mishra",
+      "department": "Security",
+      "risk_type": "composite",
+      "severity": "medium",
+      "score": 43.94,
+      "raw_score": 43.94,
+      "suppression_multiplier": 1.0,
+      "title": "Composite risk: Sarita Mishra (MEDIUM - 43.94/100)",
+      "factors": {
+        "privilege_breadth": 12.56,
+        "cross_platform_exposure": 8.57,
+        "dormancy": 0.21,
+        "detector_severity": 18.75,
+        "behavioral_anomaly": 3.85
+      },
+      "suppressions_applied": [],
+      "affected_platforms": [
+        "salesforce",
+        "servicenow",
+        "active_directory"
+      ],
+      "remediation_steps": [
+        "Review cross-platform admin necessity; implement JIT access",
+        "Address critical/high detector findings immediately"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 4
+    },
+    {
+      "identity_id": "SVC-0023",
+      "display_name": "svc-batch-dev",
+      "department": "IT Operations",
+      "risk_type": "composite",
+      "severity": "medium",
+      "score": 43.67,
+      "raw_score": 43.67,
+      "suppression_multiplier": 1.0,
+      "title": "Composite risk: svc-batch-dev (MEDIUM - 43.67/100)",
+      "factors": {
+        "privilege_breadth": 0.0,
+        "cross_platform_exposure": 0.0,
+        "dormancy": 15.0,
+        "detector_severity": 18.75,
+        "behavioral_anomaly": 9.92
+      },
+      "suppressions_applied": [],
+      "affected_platforms": [
+        "servicenow",
+        "salesforce"
+      ],
+      "remediation_steps": [
+        "Investigate dormant account; disable if no longer needed",
+        "Address critical/high detector findings immediately",
+        "Investigate anomalous behavioral pattern; verify account ownership"
+      ],
+      "compliance_refs": [
+        "NIST AC-2",
+        "NIST AC-6",
+        "CIS 5",
+        "CIS 6"
+      ],
+      "evidence_count": 4
+    }
+  ]
+}

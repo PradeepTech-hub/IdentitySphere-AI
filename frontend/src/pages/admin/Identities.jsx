@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Users, Shield, AlertTriangle, Eye, ChevronLeft, ChevronRight, Database, UserCheck, UserX, Clock, Skull } from 'lucide-react';

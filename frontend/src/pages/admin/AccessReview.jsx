@@ -238,6 +238,27 @@ export default function AccessReview() {
         ))}
       </div>
 
+      {/* Employee Access Requests — shown at top for visibility */}
+      {pendingRequests.length > 0 && (
+        <GlassCard hover={false} className="border-blue-500/20" glow="red">
+          <h3 className="text-sm font-semibold text-blue-400 mb-3 flex items-center gap-2"><Key size={14} /> Employee Access Requests ({pendingRequests.length})</h3>
+          <div className="space-y-2">
+            {pendingRequests.map((req) => (
+              <div key={req.id} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-center px-4 py-2.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(59,130,246,0.12)' }}>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2"><span className="text-sm text-white font-medium">{req.employeeName}</span><span className="text-[10px] text-slate-500">→</span><span className="text-sm text-blue-400">{req.role}</span><PlatformIcon platform={req.platform} size="sm" /></div>
+                  <p className="text-[10px] text-slate-500 mt-0.5">{req.durationDays}d | {req.justification}</p>
+                </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleRequestAction(req.id, 'approved')} className="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 text-[10px] font-semibold border border-green-500/20 hover:bg-green-500/20">Approve</motion.button>
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleRequestAction(req.id, 'rejected')} className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-[10px] font-semibold border border-red-500/20 hover:bg-red-500/20">Reject</motion.button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      )}
+
       {/* Compact User Cards */}
       <div className="space-y-2">
         {filteredGroups.length === 0 ? (
@@ -422,27 +443,6 @@ export default function AccessReview() {
           </>
         )}
       </AnimatePresence>
-
-      {/* Employee Requests */}
-      {pendingRequests.length > 0 && (
-        <GlassCard hover={false} className="border-blue-500/20">
-          <h3 className="text-sm font-semibold text-blue-400 mb-3 flex items-center gap-2"><Key size={14} /> Employee Access Requests ({pendingRequests.length})</h3>
-          <div className="space-y-2">
-            {pendingRequests.map((req, i) => (
-              <div key={req.id} className="flex items-center gap-4 px-4 py-2.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(59,130,246,0.12)' }}>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2"><span className="text-sm text-white font-medium">{req.employeeName}</span><span className="text-[10px] text-slate-500">→</span><span className="text-sm text-blue-400">{req.role}</span><PlatformIcon platform={req.platform} size="sm" /></div>
-                  <p className="text-[10px] text-slate-500 mt-0.5">{req.durationDays}d | {req.justification}</p>
-                </div>
-                <div className="flex gap-1.5 shrink-0">
-                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleRequestAction(req.id, 'approved')} className="px-2.5 py-1 rounded bg-green-500/10 text-green-400 text-[10px] font-semibold border border-green-500/20 hover:bg-green-500/20">Approve</motion.button>
-                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleRequestAction(req.id, 'rejected')} className="px-2.5 py-1 rounded bg-red-500/10 text-red-400 text-[10px] font-semibold border border-red-500/20 hover:bg-red-500/20">Reject</motion.button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
-      )}
 
       {/* History */}
       {reviewHistory.length > 0 && (

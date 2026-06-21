@@ -48,9 +48,26 @@ from identitysphere.models.offboarding import (
     PlatformDisableRecord,
 )
 
-fake = Faker()
+fake = Faker('en_IN')
 Faker.seed(42)
 random.seed(42)
+
+INDIAN_FIRST_NAMES = [
+    'Aarav', 'Aditya', 'Akash', 'Amit', 'Ananya', 'Anjali', 'Arjun', 'Ashwin',
+    'Deepak', 'Devika', 'Gaurav', 'Harish', 'Ishaan', 'Jaya', 'Karthik', 'Kavya',
+    'Lakshmi', 'Manish', 'Meera', 'Mohan', 'Naveen', 'Neha', 'Nikhil', 'Nisha',
+    'Pooja', 'Pradeep', 'Priya', 'Rahul', 'Rajesh', 'Rakesh', 'Ravi', 'Rohit',
+    'Sandeep', 'Shreya', 'Sneha', 'Suraj', 'Swathi', 'Tanvi', 'Varun', 'Vikram',
+    'Vinay', 'Vivek', 'Yogesh', 'Sanjay', 'Divya', 'Ganesh', 'Harini', 'Janaki',
+    'Keerthi', 'Manoj', 'Nandini', 'Pallavi', 'Ramesh', 'Sarita', 'Shanti', 'Suresh',
+    'Tejas', 'Usha', 'Venkat', 'Vasudha',
+]
+INDIAN_LAST_NAMES = [
+    'Agarwal', 'Bhat', 'Chakraborty', 'Desai', 'Gowda', 'Gupta', 'Hegde', 'Iyer',
+    'Jain', 'Joshi', 'Kulkarni', 'Kumar', 'Mehta', 'Menon', 'Mishra', 'Nair',
+    'Pandey', 'Patel', 'Patil', 'Rao', 'Reddy', 'Sharma', 'Shetty', 'Singh',
+    'Srinivasan', 'Verma', 'Yadav', 'Pillai', 'Murthy', 'Naik', 'Kamath', 'Bose',
+]
 
 ALL_PLATFORMS = list(Platform)
 
@@ -320,10 +337,10 @@ class SyntheticDataGenerator:
 
         for i in range(self.num_identities):
             category = self._assign_anomaly_category(i, self.num_identities)
-            email = fake.email()
-            first = fake.first_name()
-            last = fake.last_name()
+            first = random.choice(INDIAN_FIRST_NAMES)
+            last = random.choice(INDIAN_LAST_NAMES)
             display_name = f"{first} {last}"
+            email = f"{first.lower()}.{last.lower()}@enterprise.co.in"
             dept = random.choice(DEPARTMENTS)
             title = random.choice(TITLES.get(dept, ["Employee"]))
             iid = f"ID-{i:04d}"
@@ -455,7 +472,7 @@ class SyntheticDataGenerator:
         for i in range(self.num_service_accounts):
             iid = f"SVC-{i:04d}"
             platform = random.choice(ALL_PLATFORMS)
-            svc_name = f"svc-{fake.word()}-{fake.word()}"
+            svc_name = f"svc-{random.choice(['cicd','monitor','etl','backup','deploy','sync','batch','alert','scan','report'])}-{random.choice(['prod','staging','dev','infra','data','ops'])}"
             category = "token_abuse" if random.random() < 0.15 else "normal"
 
             identity = Identity(
@@ -497,8 +514,8 @@ class SyntheticDataGenerator:
             iid = f"EXT-{i:04d}"
             identity = Identity(
                 identity_id=iid,
-                display_name=fake.name(),
-                email=fake.email(),
+                display_name=f"{random.choice(INDIAN_FIRST_NAMES)} {random.choice(INDIAN_LAST_NAMES)}",
+                email=f"ext-{random.choice(INDIAN_FIRST_NAMES).lower()}.{random.choice(INDIAN_LAST_NAMES).lower()}@vendor.co.in",
                 identity_type=IdentityType.EXTERNAL,
                 department="External",
                 hr_status=IdentityStatus.ACTIVE,
@@ -508,7 +525,7 @@ class SyntheticDataGenerator:
             account = PlatformAccount(
                 platform=platform,
                 account_id=acct_id,
-                username=fake.user_name(),
+                username=f"{identity.display_name.split()[0].lower()}.{identity.display_name.split()[-1].lower()[:4]}",
                 email=identity.email,
                 status=IdentityStatus.ACTIVE,
                 last_login=now - timedelta(days=random.randint(1, 180)),

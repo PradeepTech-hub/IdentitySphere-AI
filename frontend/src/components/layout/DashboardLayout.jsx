@@ -192,25 +192,9 @@ export default function DashboardLayout() {
       </div>
 
       <main className="ml-0 lg:ml-64 pt-14 min-h-screen relative z-10">
-        {dataLoading && (
-          <div className="px-3 sm:px-4 lg:px-6 xl:px-8 pt-3">
-            <div className="text-xs text-amber-400/90 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
-              Loading live pipeline data from API… (dashboard shows cached data meanwhile)
-            </div>
-          </div>
-        )}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3 }}
-            className="p-3 sm:p-4 lg:p-6 xl:p-8 dashboard-theme max-w-[1600px]"
-          >
-            <Outlet />
-          </motion.div>
-        </AnimatePresence>
+        <div className="p-3 sm:p-4 lg:p-6 xl:p-8 dashboard-theme max-w-[1600px]">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

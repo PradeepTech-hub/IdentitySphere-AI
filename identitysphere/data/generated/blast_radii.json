@@ -1,212 +1,212 @@
 {
-  "ID-0031": {
-    "identity_id": "ID-0031",
-    "display_name": "Denise Lucas",
-    "severity": "medium",
-    "resources": 5,
-    "permissions": 6,
+  "ID-0068": {
+    "identity_id": "ID-0068",
+    "display_name": "Manish Joshi",
+    "severity": "high",
+    "resources": 11,
+    "permissions": 16,
     "adminRoles": 0,
     "platforms": [
       "active_directory",
+      "aws_iam",
+      "okta",
       "salesforce"
     ],
     "byPlatform": {
-      "active_directory": 2,
-      "salesforce": 3
+      "okta": 4,
+      "aws_iam": 2,
+      "salesforce": 4,
+      "active_directory": 1
     },
     "sensitiveAssets": [],
-    "id": "ID-0031",
-    "identity": "Denise Lucas"
+    "id": "ID-0068",
+    "identity": "Manish Joshi"
   },
-  "ID-0072": {
-    "identity_id": "ID-0072",
-    "display_name": "John Douglas",
+  "ID-0085": {
+    "identity_id": "ID-0085",
+    "display_name": "Pallavi Pillai",
+    "severity": "high",
+    "resources": 9,
+    "permissions": 13,
+    "adminRoles": 0,
+    "platforms": [
+      "active_directory",
+      "github",
+      "salesforce"
+    ],
+    "byPlatform": {
+      "salesforce": 3,
+      "github": 5,
+      "active_directory": 1
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0085",
+    "identity": "Pallavi Pillai"
+  },
+  "ID-0030": {
+    "identity_id": "ID-0030",
+    "display_name": "Neha Kulkarni",
+    "severity": "high",
+    "resources": 9,
+    "permissions": 12,
+    "adminRoles": 0,
+    "platforms": [
+      "active_directory",
+      "github",
+      "salesforce"
+    ],
+    "byPlatform": {
+      "github": 2,
+      "active_directory": 3,
+      "salesforce": 4
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0030",
+    "identity": "Neha Kulkarni"
+  },
+  "ID-0057": {
+    "identity_id": "ID-0057",
+    "display_name": "Keerthi Menon",
     "severity": "high",
     "resources": 14,
     "permissions": 20,
-    "adminRoles": 0,
+    "adminRoles": 4,
     "platforms": [
       "active_directory",
-      "azure_ad",
-      "salesforce",
-      "servicenow"
-    ],
-    "byPlatform": {
-      "salesforce": 4,
-      "active_directory": 3,
-      "servicenow": 4,
-      "azure_ad": 3
-    },
-    "sensitiveAssets": [],
-    "id": "ID-0072",
-    "identity": "John Douglas"
-  },
-  "ID-0083": {
-    "identity_id": "ID-0083",
-    "display_name": "Anthony Rogers",
-    "severity": "high",
-    "resources": 12,
-    "permissions": 18,
-    "adminRoles": 0,
-    "platforms": [
       "github",
-      "okta",
-      "salesforce",
-      "servicenow"
-    ],
-    "byPlatform": {
-      "github": 3,
-      "okta": 4,
-      "salesforce": 1,
-      "servicenow": 4
-    },
-    "sensitiveAssets": [],
-    "id": "ID-0083",
-    "identity": "Anthony Rogers"
-  },
-  "ID-0078": {
-    "identity_id": "ID-0078",
-    "display_name": "Christopher Hernandez",
-    "severity": "high",
-    "resources": 13,
-    "permissions": 18,
-    "adminRoles": 0,
-    "platforms": [
-      "active_directory",
-      "azure_ad",
       "okta",
       "servicenow"
     ],
     "byPlatform": {
       "servicenow": 5,
-      "active_directory": 1,
-      "azure_ad": 3,
-      "okta": 4
+      "active_directory": 4,
+      "github": 2,
+      "okta": 3
     },
     "sensitiveAssets": [],
-    "id": "ID-0078",
-    "identity": "Christopher Hernandez"
-  },
-  "ID-0097": {
-    "identity_id": "ID-0097",
-    "display_name": "Jessica Sheppard",
-    "severity": "high",
-    "resources": 12,
-    "permissions": 18,
-    "adminRoles": 0,
-    "platforms": [
-      "active_directory",
-      "github",
-      "okta",
-      "salesforce"
-    ],
-    "byPlatform": {
-      "github": 3,
-      "okta": 4,
-      "active_directory": 2,
-      "salesforce": 3
-    },
-    "sensitiveAssets": [],
-    "id": "ID-0097",
-    "identity": "Jessica Sheppard"
-  },
-  "ID-0003": {
-    "identity_id": "ID-0003",
-    "display_name": "Roberto Ramirez",
-    "severity": "medium",
-    "resources": 4,
-    "permissions": 4,
-    "adminRoles": 0,
-    "platforms": [
-      "github",
-      "servicenow"
-    ],
-    "byPlatform": {
-      "servicenow": 2,
-      "github": 2
-    },
-    "sensitiveAssets": [],
-    "id": "ID-0003",
-    "identity": "Roberto Ramirez"
+    "id": "ID-0057",
+    "identity": "Keerthi Menon"
   },
   "ID-0049": {
     "identity_id": "ID-0049",
-    "display_name": "John Odonnell",
-    "severity": "high",
-    "resources": 11,
-    "permissions": 18,
+    "display_name": "Akash Verma",
+    "severity": "critical",
+    "resources": 15,
+    "permissions": 21,
     "adminRoles": 4,
     "platforms": [
       "active_directory",
-      "azure_ad",
+      "aws_iam",
       "github",
       "okta"
     ],
     "byPlatform": {
-      "active_directory": 2,
-      "azure_ad": 3,
+      "aws_iam": 4,
+      "active_directory": 4,
       "okta": 3,
-      "github": 3
+      "github": 4
     },
     "sensitiveAssets": [],
     "id": "ID-0049",
-    "identity": "John Odonnell"
+    "identity": "Akash Verma"
   },
-  "ID-0082": {
-    "identity_id": "ID-0082",
-    "display_name": "Jessica Marsh",
-    "severity": "medium",
-    "resources": 6,
-    "permissions": 7,
+  "ID-0074": {
+    "identity_id": "ID-0074",
+    "display_name": "Harish Pillai",
+    "severity": "high",
+    "resources": 11,
+    "permissions": 17,
     "adminRoles": 0,
     "platforms": [
-      "active_directory",
-      "azure_ad",
-      "okta"
-    ],
-    "byPlatform": {
-      "active_directory": 1,
-      "azure_ad": 1,
-      "okta": 4
-    },
-    "sensitiveAssets": [],
-    "id": "ID-0082",
-    "identity": "Jessica Marsh"
-  },
-  "ID-0032": {
-    "identity_id": "ID-0032",
-    "display_name": "John Lee",
-    "severity": "low",
-    "resources": 2,
-    "permissions": 3,
-    "adminRoles": 0,
-    "platforms": [
-      "salesforce"
-    ],
-    "byPlatform": {
-      "salesforce": 2
-    },
-    "sensitiveAssets": [],
-    "id": "ID-0032",
-    "identity": "John Lee"
-  },
-  "ID-0011": {
-    "identity_id": "ID-0011",
-    "display_name": "Linda Morales",
-    "severity": "medium",
-    "resources": 5,
-    "permissions": 7,
-    "adminRoles": 0,
-    "platforms": [
+      "github",
       "okta",
       "salesforce"
     ],
     "byPlatform": {
-      "salesforce": 3,
+      "github": 4,
+      "okta": 4,
+      "salesforce": 3
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0074",
+    "identity": "Harish Pillai"
+  },
+  "ID-0066": {
+    "identity_id": "ID-0066",
+    "display_name": "Ramesh Gupta",
+    "severity": "high",
+    "resources": 13,
+    "permissions": 23,
+    "adminRoles": 0,
+    "platforms": [
+      "github",
+      "okta",
+      "servicenow"
+    ],
+    "byPlatform": {
+      "okta": 4,
+      "github": 5,
+      "servicenow": 4
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0066",
+    "identity": "Ramesh Gupta"
+  },
+  "ID-0060": {
+    "identity_id": "ID-0060",
+    "display_name": "Nikhil Joshi",
+    "severity": "high",
+    "resources": 11,
+    "permissions": 17,
+    "adminRoles": 4,
+    "platforms": [
+      "active_directory",
+      "okta",
+      "salesforce",
+      "servicenow"
+    ],
+    "byPlatform": {
+      "servicenow": 4,
+      "active_directory": 4,
+      "salesforce": 1,
       "okta": 2
     },
     "sensitiveAssets": [],
-    "id": "ID-0011",
-    "identity": "Linda Morales"
+    "id": "ID-0060",
+    "identity": "Nikhil Joshi"
+  },
+  "ID-0091": {
+    "identity_id": "ID-0091",
+    "display_name": "Sarita Mishra",
+    "severity": "high",
+    "resources": 10,
+    "permissions": 17,
+    "adminRoles": 0,
+    "platforms": [
+      "active_directory",
+      "salesforce",
+      "servicenow"
+    ],
+    "byPlatform": {
+      "salesforce": 4,
+      "servicenow": 4,
+      "active_directory": 2
+    },
+    "sensitiveAssets": [],
+    "id": "ID-0091",
+    "identity": "Sarita Mishra"
+  },
+  "SVC-0023": {
+    "identity_id": "SVC-0023",
+    "display_name": "svc-batch-dev",
+    "severity": "low",
+    "resources": 0,
+    "permissions": 0,
+    "adminRoles": 0,
+    "platforms": [],
+    "byPlatform": {},
+    "sensitiveAssets": [],
+    "id": "SVC-0023",
+    "identity": "svc-batch-dev"
   }
 }

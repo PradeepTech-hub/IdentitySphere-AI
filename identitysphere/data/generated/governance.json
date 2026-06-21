@@ -8,14 +8,27 @@
       "role": "admin",
       "durationDays": 7,
       "justification": "test",
-      "status": "pending",
+      "status": "approved",
       "createdAt": "2026-06-20T21:38:20.107070+00:00",
-      "expiresAt": null,
-      "reviewedBy": null,
-      "reviewedAt": null
+      "expiresAt": "2026-06-28T11:50:26.253981+00:00",
+      "reviewedBy": "Pradeepshetty M003",
+      "reviewedAt": "2026-06-21T11:50:26.250629+00:00"
     }
   ],
-  "review_history": [],
+  "review_history": [
+    {
+      "id": "HIST-1782042626287",
+      "reviewId": "REQ-1781991500107",
+      "identity": "employee",
+      "platform": "okta",
+      "role": "admin",
+      "action": "approved",
+      "reviewer": "Pradeepshetty M003",
+      "timestamp": "2026-06-21T11:50:26.287Z",
+      "riskBefore": null,
+      "riskAfter": null
+    }
+  ],
   "review_statuses": {},
   "identity_overrides": {}
 }

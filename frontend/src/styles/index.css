@@ -330,6 +330,12 @@ body {
 /* Prevent horizontal overflow globally */
 html, body, #root { max-width: 100vw; overflow-x: hidden; }
 
+/* Global word wrapping — prevent text overflow in cards/tables/chat */
+.dashboard-theme { overflow-wrap: break-word; word-break: break-word; }
+.dashboard-theme pre, .dashboard-theme code { overflow-x: auto; max-width: 100%; }
+.dashboard-theme table td, .dashboard-theme table th { overflow-wrap: break-word; }
+.glass-card { min-width: 0; }
+
 /* Responsive tables — horizontal scroll on small screens */
 .responsive-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .responsive-table table { min-width: 640px; }

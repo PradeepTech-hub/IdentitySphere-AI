@@ -10,7 +10,7 @@ const KEYS = {
   ACCESS_REVIEWS: 'is_access_reviews',
   ACCESS_REQUESTS: 'is_access_requests',
   REVIEW_HISTORY: 'is_review_history',
-  SEEDED: 'is_seeded_v3',
+  SEEDED: 'is_seeded_v4',
 };
 
 function read(key) {

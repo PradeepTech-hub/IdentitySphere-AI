@@ -249,16 +249,24 @@ export default function Copilot() {
     setInput('');
     setTyping(true);
     try {
+      let response;
       const identities = getIdentities();
       const matched = identities.find(i =>
         q.toLowerCase().includes(i.display_name?.toLowerCase()) ||
         q.toLowerCase().includes(i.person_id?.toLowerCase())
       );
-      const data = await fetchCopilotChat(q, matched?.person_id || null);
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-    } catch {
-      const response = generateResponse(q);
+      try {
+        const data = await fetchCopilotChat(q, matched?.person_id || null);
+        if (data.response && data.response.length > 100 && !data.response.includes('Ask about a specific person by name')) {
+          response = data.response;
+        }
+      } catch { /* API unavailable */ }
+      if (!response) {
+        response = generateResponse(q);
+      }
       setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    } catch {
+      setMessages(prev => [...prev, { role: 'assistant', content: generateResponse(q) }]);
     } finally {
       setTyping(false);
     }
@@ -283,7 +291,8 @@ export default function Copilot() {
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-red-500/20' : 'bg-white/5'}`}>
                     {m.role === 'user' ? <User size={14} className="text-red-400" /> : <Bot size={14} className="text-red-400" />}
                   </div>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bg-red-500/10 text-red-100 border border-red-500/20' : 'bg-white/[0.03] text-slate-300 border border-white/5'}`}>
+                  <div className={`max-w-[80%] min-w-0 rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bg-red-500/10 text-red-100 border border-red-500/20' : 'bg-white/[0.03] text-slate-300 border border-white/5'}`}
+                    style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                     {m.content.split('\n').map((line, j) => (
                       <p key={j} className={j > 0 ? 'mt-1.5' : ''}>
                         {line.split(/(\*\*[^*]+\*\*)/).map((part, k) =>

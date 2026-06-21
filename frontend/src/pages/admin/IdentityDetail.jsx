@@ -162,15 +162,35 @@ export default function IdentityDetail() {
           }
         }
 
-        if (!found.remediation_steps?.length) {
+        {
           const steps = [];
           identityRisks.forEach((r) => (r.remediation_steps || []).forEach((s) => steps.push(s)));
           if (riskEvent?.remediation_steps) steps.push(...riskEvent.remediation_steps);
-          found.remediation_steps = [...new Set(steps)].slice(0, 8);
+          if (isAdmin && platforms.length >= 2) steps.push('Review admin justification across all platforms — remove unnecessary admin roles', 'Implement JIT (Just-In-Time) access for elevated privileges', 'Enable break-glass procedure for emergency admin access only');
+          if (isAdmin) steps.push(`Apply least privilege principle on ${platforms.map(p => PLATFORM_LABELS[p] || p).join(', ')}`, 'Add compensating controls: session recording and alerting for admin sessions');
+          if (!found.mfa_complete) steps.push('Enable MFA on all active platform accounts immediately', 'Enforce organization-wide MFA enrollment policy', 'Verify MFA enrollment completion within 48 hours');
+          if ((found.max_dormancy_days || 0) > 90) steps.push(`Investigate dormant access (${found.max_dormancy_days} days inactive) — disable if not needed`, 'Review account ownership and verify business justification', 'Remove all unused permissions from dormant accounts');
+          if (found.status === 'Orphaned') steps.push('Disable all platform accounts immediately — identity is orphaned', 'Revoke all active sessions and API tokens across platforms', 'Audit access logs since HR termination date for data exfiltration');
+          if (found.status === 'Dormant') steps.push('Verify account ownership — disable if user is no longer active', 'Suspend credentials and rotate passwords/tokens');
+          identityRisks.forEach((r) => {
+            if (r.type === 'token_abuse') steps.push('Revoke stale API tokens immediately', 'Create new tokens with 90-day expiry policy', 'Review API call logs for unauthorized operations');
+            if (r.type === 'sod_violation') steps.push('Resolve SoD conflict — separate duties across different accounts', 'Review toxic role combinations and remove one conflicting role');
+            if (r.type === 'offboarding_gap') steps.push(`Complete offboarding on remaining platforms: ${r.platforms?.join(', ') || 'all'}`, 'Update offboarding automation to prevent future gaps');
+          });
+          if (steps.length === 0 && (found.risk_score || 0) > 30) steps.push('Continue monitoring — periodic review recommended', 'Review access rights during next quarterly certification');
+          found.remediation_steps = [...new Set(steps)].slice(0, 10);
         }
 
-        if (!found.compliance_refs?.length && riskEvent?.compliance_refs) {
-          found.compliance_refs = riskEvent.compliance_refs;
+        {
+          const refs = [];
+          identityRisks.forEach((r) => (r.compliance_refs || []).forEach((c) => refs.push(c)));
+          if (riskEvent?.compliance_refs) refs.push(...riskEvent.compliance_refs);
+          if (isAdmin) { refs.push('NIST AC-6 (Least Privilege)', 'CIS Control 6 (Access Control)'); }
+          if (!found.mfa_complete) { refs.push('NIST IA-4 (Identifier Management)'); }
+          if (found.status === 'Orphaned') { refs.push('NIST AC-2 (Account Management)', 'MITRE T1078 (Valid Accounts)'); }
+          if (platforms.length >= 3) { refs.push('GDPR Art. 32 (Security of Processing)'); }
+          refs.push('NIST AC-2 (Account Management)');
+          found.compliance_refs = [...new Set(refs)];
         }
 
         found.identity_risks = identityRisks;
@@ -1278,7 +1298,9 @@ function TimelineTab({ identity: id }) {
             <XAxis dataKey="date" tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
             <YAxis domain={[0, 100]} tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} width={30} />
             <Tooltip contentStyle={{ background: '#0a0f1f', border: '1px solid rgba(227,25,55,0.3)', borderRadius: 12, fontSize: 12, color: '#f1f5f9' }} />
-            <Area type="monotone" dataKey="score" stroke="#ef4444" fill="url(#riskEvoGrad)" strokeWidth={2} dot={{ r: 3, fill: '#ef4444', strokeWidth: 0 }} />
+            <Area type="monotone" dataKey="score" stroke="#ef4444" fill="url(#riskEvoGrad)" strokeWidth={2}
+              dot={{ r: 3, fill: '#ef4444', strokeWidth: 0 }}
+              activeDot={{ r: 6, fill: '#ef4444', stroke: '#fff', strokeWidth: 2, style: { filter: 'drop-shadow(0 0 6px #ef4444)', cursor: 'pointer' } }} />
           </AreaChart>
         </ChartContainer>
         <div className="flex items-center justify-between mt-2">
@@ -1358,67 +1380,63 @@ function TimelineTab({ identity: id }) {
    ══════════════════════════════════════════════════════════════════════ */
 function RemediationTab({ identity: id }) {
   const steps = id.remediation_steps || [];
+  const currentScore = id.risk_score || 0;
+  const projectedScore = Math.max(0, Math.round(currentScore * (steps.length > 5 ? 0.35 : steps.length > 2 ? 0.55 : 0.75)));
+  const reductionPct = currentScore > 0 ? Math.round(((currentScore - projectedScore) / currentScore) * 100) : 0;
 
   return (
     <div className="space-y-6">
-      <GlassCard hover={false} delay={0.05}>
+      {/* Risk Reduction Summary */}
+      {steps.length > 0 && currentScore > 0 && (
+        <div className="grid grid-cols-3 gap-4">
+          <GlassCard hover={false}>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Current Risk</p>
+            <p className="text-2xl font-bold text-red-400">{currentScore}</p>
+          </GlassCard>
+          <GlassCard hover={false}>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">After Remediation</p>
+            <p className="text-2xl font-bold text-emerald-400">{projectedScore}</p>
+          </GlassCard>
+          <GlassCard hover={false}>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Risk Reduction</p>
+            <p className="text-2xl font-bold text-amber-400">{reductionPct}%</p>
+          </GlassCard>
+        </div>
+      )}
+
+      <GlassCard hover={false}>
         <h3 className="text-sm text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
           <Wrench size={14} className="text-red-400" /> Remediation Action Plan
         </h3>
 
         {steps.length > 0 ? (
-          <div className="space-y-4">
-            {steps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.08 * i }}
-                className="flex items-start gap-4 rounded-xl p-4"
-                style={{
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(227,25,55,0.12)',
-                }}
-              >
-                {/* Step number badge */}
-                <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(227,25,55,0.2), rgba(227,25,55,0.08))',
-                    border: '1px solid rgba(227,25,55,0.3)',
-                    color: '#E31937',
-                  }}
-                >
-                  {i + 1}
-                </div>
-
-                <div className="flex-1">
-                  <p className="text-sm text-slate-200 leading-relaxed">{step}</p>
-                </div>
-
-                {/* Action indicator */}
-                <div className="shrink-0">
-                  <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-                  >
-                    <Target size={12} className="text-slate-500" />
+          <div className="space-y-3">
+            {steps.map((step, i) => {
+              const priority = i < 2 ? 'Critical' : i < 5 ? 'High' : 'Medium';
+              const prColor = priority === 'Critical' ? 'text-red-400 bg-red-500/10 border-red-500/20' : priority === 'High' ? 'text-orange-400 bg-orange-500/10 border-orange-500/20' : 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
+              return (
+                <div key={i} className="flex items-start gap-3 rounded-xl p-3.5"
+                  style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(227,25,55,0.12)' }}>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
+                    style={{ background: 'linear-gradient(135deg, rgba(227,25,55,0.2), rgba(227,25,55,0.08))', border: '1px solid rgba(227,25,55,0.3)', color: '#E31937' }}>
+                    {i + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-slate-200 leading-relaxed">{step}</p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold border ${prColor}`}>{priority}</span>
+                      <span className="text-[10px] text-slate-500">Est. risk reduction: ~{Math.round((currentScore * (i < 2 ? 0.15 : i < 5 ? 0.08 : 0.04)))} pts</span>
+                    </div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4 py-12">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <CheckCircle size={48} className="text-emerald-400" />
-            </motion.div>
-            <p className="text-lg text-emerald-400 font-semibold">No remediation actions required</p>
-            <p className="text-sm text-slate-500">This identity meets current security standards</p>
+            <CheckCircle size={48} className="text-emerald-400" />
+            <p className="text-lg text-emerald-400 font-semibold">Low risk — no urgent remediation required</p>
+            <p className="text-sm text-slate-500">Risk score: {currentScore}/100 — within acceptable threshold</p>
           </div>
         )}
       </GlassCard>

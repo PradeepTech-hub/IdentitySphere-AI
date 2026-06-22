@@ -54,7 +54,7 @@ Built as the **Option A** implementation for the *Identity Sprawl & Privileged A
 | **Backend** | Python 3.11, FastAPI, NetworkX, scikit-learn, Pandas, NumPy |
 | **Frontend** | React 19, Vite 8, Tailwind CSS 4, Recharts, ReactFlow, Framer Motion, Three.js |
 | **ML/AI** | Isolation Forest (scikit-learn), DBSCAN clustering, weighted identity resolution |
-| **Data** | Faker-generated synthetic data, YAML-configurable parameters |
+| **Data** | Enterprise-scale synthetic identity dataset (370 identities, 7 platforms, 800 audit events) generated using configurable simulation pipelines |
 | **Deployment** | Vercel (frontend), Uvicorn (API server) |
 
 ## Getting Started

@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="logo.png" alt="IdentitySphere AI" width="120" />
-</p>
+
 
 <h1 align="center">IdentitySphere AI</h1>
 

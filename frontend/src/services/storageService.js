@@ -81,6 +81,59 @@ const SEED_INCIDENTS = [
   { id: 'INC-006', title: 'Privilege escalation: Arjun Reddy', severity: 'high', status: 'resolved', identity: 'Arjun Reddy', created: '2026-06-17T14:00:00', type: 'privilege_escalation' },
 ];
 
+const SEED_OFFBOARDING_GAPS = [
+  {
+    person_id: 'ID-0023', display_name: 'Meera Iyer', termination_date: '2026-06-02T10:00:00',
+    offboarding_status: 'partial', days_since_termination: 20, gap_count: 2, severity: 'critical',
+    type: 'offboarding_gap',
+    title: 'Offboarding gap: Meera Iyer — 2 platform(s) still active (20d since termination)',
+    active_platforms: ['active_directory', 'salesforce'],
+    disabled_platforms: [],
+    remediation_steps: ['Immediately disable account on Active Directory', 'Immediately disable account on Salesforce', 'Audit access logs since termination date', 'Update offboarding automation runbook'],
+    compliance_refs: ['NIST AC-2', 'MITRE T1078', 'GDPR Art. 32', 'CIS 5'],
+  },
+  {
+    person_id: 'ID-0009', display_name: 'Sneha Kulkarni', termination_date: '2026-05-15T14:00:00',
+    offboarding_status: 'partial', days_since_termination: 38, gap_count: 3, severity: 'critical',
+    type: 'offboarding_gap',
+    title: 'Offboarding gap: Sneha Kulkarni — 3 platform(s) still active (38d since termination)',
+    active_platforms: ['active_directory', 'okta', 'salesforce'],
+    disabled_platforms: [],
+    remediation_steps: ['Immediately disable account on Active Directory', 'Immediately disable account on Okta', 'Immediately disable account on Salesforce', 'Audit access logs since termination date', 'Update offboarding automation runbook'],
+    compliance_refs: ['NIST AC-2', 'MITRE T1078', 'GDPR Art. 32', 'CIS 5'],
+  },
+  {
+    person_id: 'ID-0007', display_name: 'Vikram Patel', termination_date: '2026-06-10T09:00:00',
+    offboarding_status: 'partial', days_since_termination: 12, gap_count: 2, severity: 'critical',
+    type: 'offboarding_gap',
+    title: 'Offboarding gap: Vikram Patel — 2 platform(s) still active (12d since termination)',
+    active_platforms: ['okta', 'salesforce'],
+    disabled_platforms: ['active_directory'],
+    remediation_steps: ['Immediately disable account on Okta', 'Immediately disable account on Salesforce', 'Audit access logs since termination date', 'Update offboarding automation runbook'],
+    compliance_refs: ['NIST AC-2', 'MITRE T1078', 'GDPR Art. 32', 'CIS 5'],
+  },
+  {
+    person_id: 'ID-0004', display_name: 'Ananya Rao', termination_date: '2026-06-16T11:30:00',
+    offboarding_status: 'partial', days_since_termination: 6, gap_count: 1, severity: 'high',
+    type: 'offboarding_gap',
+    title: 'Offboarding gap: Ananya Rao — 1 platform(s) still active (6d since termination)',
+    active_platforms: ['salesforce'],
+    disabled_platforms: ['active_directory', 'okta'],
+    remediation_steps: ['Immediately disable account on Salesforce', 'Audit access logs since termination date', 'Update offboarding automation runbook'],
+    compliance_refs: ['NIST AC-2', 'MITRE T1078', 'GDPR Art. 32', 'CIS 5'],
+  },
+  {
+    person_id: 'ID-0019', display_name: 'Harish Shetty', termination_date: '2026-06-18T08:00:00',
+    offboarding_status: 'partial', days_since_termination: 4, gap_count: 2, severity: 'high',
+    type: 'offboarding_gap',
+    title: 'Offboarding gap: Harish Shetty — 2 platform(s) still active (4d since termination)',
+    active_platforms: ['aws_iam', 'okta'],
+    disabled_platforms: ['active_directory'],
+    remediation_steps: ['Immediately disable account on Aws Iam', 'Immediately disable account on Okta', 'Audit access logs since termination date', 'Update offboarding automation runbook'],
+    compliance_refs: ['NIST AC-2', 'MITRE T1078', 'GDPR Art. 32', 'CIS 5'],
+  },
+];
+
 const SEED_LIFECYCLE = [
   { id: 'JML-001', type: 'joiner', identity: 'Karthik Nair', department: 'Engineering', date: '2026-06-19', status: 'completed', platforms: ['active_directory', 'okta', 'salesforce'], actions: ['AD account created', 'Okta SSO configured', 'Salesforce access granted'], approver: 'Pradeep M' },
   { id: 'JML-002', type: 'mover', identity: 'Rakesh Jain', department: 'Sales', newDepartment: 'Marketing', date: '2026-06-18', status: 'completed', platforms: ['active_directory', 'okta', 'salesforce'], actions: ['AD group updated Sales→Marketing', 'Okta apps reassigned', 'SF role changed'], approver: 'Pradeep M' },
@@ -148,6 +201,13 @@ export function getRiskEvents() {
   return read(KEYS.RISK_EVENTS) || SEED_RISK_EVENTS;
 }
 export function saveRiskEvents(data) { write(KEYS.RISK_EVENTS, data); }
+
+// Offboarding Gaps
+export function getOffboardingGaps() {
+  const live = getPlatformCache()?.offboarding_gaps;
+  if (live?.length) return live;
+  return SEED_OFFBOARDING_GAPS;
+}
 
 // Blast Radii
 export function getBlastRadii() {

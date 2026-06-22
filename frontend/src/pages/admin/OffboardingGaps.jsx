@@ -7,7 +7,7 @@ import SeverityBadge from '../../components/shared/SeverityBadge';
 import PlatformIcon from '../../components/shared/PlatformIcon';
 import AnimatedCounter from '../../components/shared/AnimatedCounter';
 import { usePlatformData } from '../../context/PlatformDataContext';
-import { getRiskEvents } from '../../services/storageService';
+import { getRiskEvents, getOffboardingGaps } from '../../services/storageService';
 
 const PLATFORM_LABELS = {
   active_directory: 'Active Directory',
@@ -24,7 +24,11 @@ export default function OffboardingGaps() {
   const { data } = usePlatformData();
   const [filter, setFilter] = useState('all');
 
-  const gaps = useMemo(() => data?.offboarding_gaps || [], [data]);
+  const gaps = useMemo(() => {
+    const live = data?.offboarding_gaps;
+    if (live?.length) return live;
+    return getOffboardingGaps();
+  }, [data]);
   const riskEvents = useMemo(() => getRiskEvents(), [data]);
 
   const orphanedOnly = useMemo(

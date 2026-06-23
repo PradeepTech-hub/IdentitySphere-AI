@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
-import GlassCard from '../../components/shared/GlassCard';
-import { getRiskEvents, getIdentities, getLifecycleEvents } from '../../services/storageService';
+import { getRiskEvents, getIdentities } from '../../services/storageService';
 import { fetchCopilotChat } from '../../services/dataService';
 
 const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', azure_ad: 'Azure AD', github: 'GitHub', servicenow: 'ServiceNow' };
@@ -424,8 +423,21 @@ export default function Copilot() {
 
       <div className="grid lg:grid-cols-4 gap-6 min-w-0">
         <div className="lg:col-span-3 min-w-0">
-          <GlassCard hover={false} className="p-0" style={{ height: 'calc(100vh - 180px)', minHeight: 400, maxHeight: 800, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-5 space-y-4 min-w-0">
+          <div
+            className="relative rounded-xl flex flex-col"
+            style={{
+              height: 'calc(100vh - 180px)',
+              minHeight: 400,
+              maxHeight: 800,
+              overflow: 'hidden',
+              background: 'linear-gradient(145deg, rgba(8,10,18,0.82) 0%, rgba(5,6,13,0.85) 55%, rgba(13,17,26,0.80) 100%)',
+              border: '1px solid rgba(227, 25, 55, 0.22)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
+            }}
+          >
+            <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 min-w-0" style={{ overflowX: 'hidden' }}>
               {messages.map((m, i) => (
                 <div key={i} className={`flex gap-2 sm:gap-3 min-w-0 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
                   <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-red-500/20' : 'bg-white/5'}`}>
@@ -462,7 +474,7 @@ export default function Copilot() {
                 </button>
               </form>
             </div>
-          </GlassCard>
+          </div>
         </div>
 
         <div className="space-y-3">

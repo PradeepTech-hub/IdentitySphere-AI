@@ -5,13 +5,16 @@ import GlassCard from '../../components/shared/GlassCard';
 import { getRiskEvents, getIdentities, getLifecycleEvents } from '../../services/storageService';
 import { fetchCopilotChat } from '../../services/dataService';
 
-const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce' };
+const PLATFORM_LABELS = { active_directory: 'Active Directory', aws_iam: 'AWS IAM', okta: 'Okta', salesforce: 'Salesforce', azure_ad: 'Azure AD', github: 'GitHub', servicenow: 'ServiceNow' };
 
 const RESOURCE_MAP = {
   active_directory: ['domain-controller', 'dns-server', 'file-server', 'gpo-management', 'certificate-authority'],
   aws_iam: ['iam-console', 'ec2-instances', 's3-prod-data', 'kms-keys', 'lambda-functions', 'rds-databases'],
   okta: ['sso-config', 'api-tokens', 'mfa-policies', 'user-provisioning', 'app-integrations'],
   salesforce: ['crm-data', 'user-management', 'reports', 'apex-classes', 'api-access'],
+  azure_ad: ['directory-roles', 'conditional-access', 'app-registrations', 'groups', 'pim-assignments'],
+  github: ['repositories', 'actions-workflows', 'secrets', 'deploy-keys', 'org-settings'],
+  servicenow: ['incident-management', 'change-requests', 'cmdb', 'user-admin', 'workflow-editor'],
 };
 
 function calcBlast(id, exclude) {
@@ -39,32 +42,88 @@ function calcCompliance(id) {
   return { score, controls, failing };
 }
 
-const PRESET_QUERIES = [
-  'Why is Raghu Krishnan risky?',
-  'What happens if I revoke admin from Raghu Krishnan?',
-  'What happens if I enable MFA for Ananya Rao?',
-  'Show compliance impact for orphaned accounts',
-  'Explain the attack path from Okta to domain-controller',
-  'Generate remediation plan for Deepak Hegde',
-];
+function getPresetQueries() {
+  const identities = getIdentities();
+  if (!identities.length) return [
+    'Show compliance impact for orphaned accounts',
+    'Explain the attack path from Okta to domain-controller',
+    'Show top risky identities',
+  ];
+  const sorted = [...identities].sort((a, b) => (b.risk_score || 0) - (a.risk_score || 0));
+  const topRisk = sorted[0];
+  const topAdmin = sorted.find(i => i.is_admin);
+  const topMfaGap = sorted.find(i => !i.mfa_complete && (i.status || '').toLowerCase() === 'active');
+  const forRemediation = sorted.find(i => i.person_id !== topRisk?.person_id && i.person_id !== topAdmin?.person_id && i.risk_score > 0);
+
+  const queries = [];
+  if (topRisk) queries.push(`Why is ${topRisk.display_name} risky?`);
+  if (topAdmin) queries.push(`What happens if I revoke admin from ${topAdmin.display_name}?`);
+  if (topMfaGap) queries.push(`What happens if I enable MFA for ${topMfaGap.display_name}?`);
+  queries.push('Show compliance impact for orphaned accounts');
+  queries.push('Explain the attack path from Okta to domain-controller');
+  if (forRemediation) queries.push(`Generate remediation plan for ${forRemediation.display_name}`);
+  if (queries.length < 6) queries.push('Show top risky identities');
+  return queries.slice(0, 6);
+}
+
+function findIdentity(query, identities) {
+  const q = query.toLowerCase();
+  let match = identities.find(i =>
+    q.includes(i.display_name?.toLowerCase()) || q.includes(i.person_id?.toLowerCase())
+  );
+  if (match) return match;
+  const words = q.replace(/[?.,!]/g, '').split(/\s+/).filter(w => w.length > 2);
+  for (const id of identities) {
+    const nameParts = (id.display_name || '').toLowerCase().split(/\s+/);
+    if (nameParts.length >= 2 && nameParts.every(part => words.includes(part))) return id;
+  }
+  for (const id of identities) {
+    const nameParts = (id.display_name || '').toLowerCase().split(/\s+/);
+    const surname = nameParts[nameParts.length - 1];
+    if (surname && surname.length > 2 && words.includes(surname)) return id;
+  }
+  return null;
+}
+
+function getRiskFactors(id) {
+  if (id.relationships_risky?.length) {
+    return id.relationships_risky.map(r =>
+      `- **${r.label}** (${(r.severity || '').toUpperCase()}): ${r.detail}`
+    ).join('\n');
+  }
+  const factors = [];
+  if (id.is_admin) factors.push(`- **Cross-Platform Admin** (CRITICAL): Admin on ${(id.platforms || []).join(', ')}`);
+  if (!id.mfa_complete) factors.push(`- **MFA Gap** (HIGH): MFA not enabled across all platforms`);
+  if ((id.max_dormancy_days || 0) > 90) factors.push(`- **Dormant Account** (HIGH): ${id.max_dormancy_days} days inactive`);
+  if ((id.platforms?.length || 0) >= 3) factors.push(`- **Wide Platform Spread** (MEDIUM): Access on ${id.platforms.length} platforms`);
+  if (id.anomaly_category) factors.push(`- **Anomaly** (MEDIUM): ${id.anomaly_category.replace(/_/g, ' ')}`);
+  return factors.join('\n') || '- No significant risk factors detected';
+}
+
+function getScoreBreakdown(id) {
+  if (id.score_breakdown?.length) {
+    return id.score_breakdown.map(s => `- ${s.factor}: ${s.value?.toFixed?.(1) ?? s.value}`).join('\n');
+  }
+  return `- Privilege Breadth: ${id.is_admin ? 'High' : 'Low'}
+- Cross-Platform Exposure: ${(id.platforms?.length || 0)} platforms
+- Dormancy Risk: ${id.max_dormancy_days || 0} days
+- MFA Status: ${id.mfa_complete ? 'Enabled' : 'Gap detected'}`;
+}
 
 function generateResponse(query) {
   const q = query.toLowerCase();
   const identities = getIdentities();
   const risks = getRiskEvents();
 
-  const matchedIdentity = identities.find(i =>
-    q.includes(i.display_name?.toLowerCase()) || q.includes(i.person_id?.toLowerCase())
-  );
+  const matchedIdentity = findIdentity(query, identities);
 
   if (matchedIdentity) {
     const id = matchedIdentity;
-    const risk = risks.find(r => r.identityId === id.person_id);
+    const risk = risks.find(r => r.identityId === id.person_id || r.identity === id.display_name);
     const blastBefore = calcBlast(id, null);
     const compBefore = calcCompliance(id);
 
-    if (q.includes('revoke') || q.includes('what happens') || q.includes('what-if') || q.includes('remove')) {
-      const isRevokeAdmin = q.includes('admin') || q.includes('revoke');
+    if (q.includes('revoke') || q.includes('what happens') || q.includes('what-if') || q.includes('remove') || q.includes('enable') || q.includes('disable')) {
       const isMfaFix = q.includes('mfa') || q.includes('enable mfa');
 
       let afterId = { ...id };
@@ -97,7 +156,7 @@ function generateResponse(query) {
 - Compliance Score: ${compBefore.score}% (${compBefore.failing} failing controls)
 - Platforms: ${id.platforms?.map(p => PLATFORM_LABELS[p] || p).join(', ')}
 
-**After Fix:**
+**After ${isMfaFix ? 'Enabling MFA' : 'Revoking Admin'}:**
 - Risk Score: ${scoreAfter}/100 (${sevAfter})
 - Blast Radius: ${blastAfter.resources} Resources, ${blastAfter.permissions} Permissions, ${blastAfter.adminRoles} Admin Roles
 - Compliance Score: ${compAfter.score}% (${compAfter.failing} failing controls)
@@ -115,14 +174,23 @@ ${controlChanges.length > 0 ? controlChanges.join('\n') : '- No control status c
 *Evidence source: BlastRadiusEngine, ComplianceMapper, PrivilegeCalculator*`;
     }
 
-    if (q.includes('remediation') || q.includes('plan')) {
-      const steps = [];
-      if (id.is_admin) steps.push(`Remove admin privileges — reduces risk by ${Math.round((id.risk_score || 0) * 0.4)} points`);
-      if (!id.mfa_complete) steps.push(`Enable MFA — reduces risk by ${Math.round((id.risk_score || 0) * 0.15)} points`);
-      if ((id.max_dormancy_days || 0) > 90) steps.push(`Investigate ${id.max_dormancy_days}-day dormancy — disable if not needed`);
-      if (risk) steps.push(`Address ${risk.type.replace(/_/g, ' ')}: ${risk.title}`);
-      steps.push('Schedule access review with department manager');
-      steps.push('Implement JIT access for privileged operations');
+    if (q.includes('remediation') || q.includes('plan') || q.includes('fix') || q.includes('remediate')) {
+      const steps = id.remediation_steps?.length
+        ? id.remediation_steps
+        : (() => {
+            const s = [];
+            if (id.is_admin) s.push(`Remove admin privileges — reduces risk by ~${Math.round((id.risk_score || 0) * 0.4)} points`);
+            if (!id.mfa_complete) s.push(`Enable MFA — reduces risk by ~${Math.round((id.risk_score || 0) * 0.15)} points`);
+            if ((id.max_dormancy_days || 0) > 90) s.push(`Investigate ${id.max_dormancy_days}-day dormancy — disable if not needed`);
+            if (risk) s.push(`Address ${(risk.type || '').replace(/_/g, ' ')}: ${risk.title}`);
+            s.push('Schedule access review with department manager');
+            s.push('Implement JIT access for privileged operations');
+            return s;
+          })();
+
+      const compRefs = id.compliance_refs?.length
+        ? id.compliance_refs.map(c => `- ${c}`).join('\n')
+        : compBefore.controls.map(c => `- ${c.id}: ${c.name}`).join('\n') || '- No compliance gaps';
 
       const fullFixId = { ...id, is_admin: false, mfa_complete: true, max_dormancy_days: 0 };
       const compAfterFull = calcCompliance(fullFixId);
@@ -131,7 +199,10 @@ ${controlChanges.length > 0 ? controlChanges.join('\n') : '- No control status c
 
       return `**Remediation Plan: ${id.display_name} (${id.person_id})**
 
-**Current State:** Risk ${id.risk_score}/100 | ${blastBefore.resources} Resources | Compliance ${compBefore.score}%
+**Current State:** Risk ${id.risk_score}/100 (${(id.severity || 'medium').toUpperCase()}) | ${id.department || 'Unknown'} — ${id.title || 'Unknown'} | ${(id.platforms || []).length} platform(s)
+
+**Risk Factors:**
+${getRiskFactors(id)}
 
 **Recommended Actions:**
 ${steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}
@@ -139,43 +210,48 @@ ${steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}
 **After Full Remediation:**
 - Risk Score: ${id.risk_score} → ${scoreAfterFull} (-${(id.risk_score || 0) - scoreAfterFull} points)
 - Blast Radius: ${blastBefore.resources} → ${blastAfterFull.resources} Resources
-- Compliance: ${compBefore.score}% → ${compAfterFull.score}% (+${compAfterFull.score - compBefore.score}%)
+- Compliance: ${compBefore.score}% → ${compAfterFull.score}%
 
-**Compliance Controls Fixed:**
-${compBefore.controls.filter(c => !compAfterFull.controls.find(ac => ac.id === c.id)).map(c => `- ${c.id}: FAIL → PASS`).join('\n') || '- No changes'}
+**Compliance References:**
+${compRefs}
 
 *Evidence source: DetectionEngine, PrivilegeCalculator, ComplianceMapper*`;
     }
 
-    return `**${id.display_name} (${id.person_id})** - Risk Score: **${id.risk_score}/100 (${(id.severity || 'medium').toUpperCase()})**
+    return `**${id.display_name} (${id.person_id})** — Risk Score: **${id.risk_score}/100 (${(id.severity || 'medium').toUpperCase()})**
+**${id.department || 'Unknown'}** — ${id.title || 'Unknown'} — ${(id.type || 'Human')}
 
-**Key Risk Factors:**
+**Score Breakdown:**
+${getScoreBreakdown(id)}
+
+**Risk Factors:**
+${getRiskFactors(id)}
+
+**Identity Details:**
 - **Platforms (${id.platforms?.length || 0}):** ${id.platforms?.map(p => PLATFORM_LABELS[p] || p).join(', ')}
 - **Admin Access:** ${id.is_admin ? 'Yes — cross-platform admin exposure' : 'No'}
 - **MFA Complete:** ${id.mfa_complete ? 'Yes' : 'No — MFA gap detected'}
 - **Max Dormancy:** ${id.max_dormancy_days || 0} days
+- **Groups:** ${id.group_count || 0} | **Roles:** ${id.role_count || 0} | **Entitlements:** ${id.entitlement_count || 0}
 - **Blast Radius:** ${blastBefore.resources} resources, ${blastBefore.permissions} permissions, ${blastBefore.adminRoles} admin roles
 - **Compliance:** ${compBefore.score}% (${compBefore.failing} failing controls)
-${risk ? `
-**Active Finding:** ${risk.type.replace(/_/g, ' ')} — ${risk.title} (Score: ${risk.score})` : ''}
-
-**Failing Controls:**
-${compBefore.controls.map(c => `- ${c.id}: ${c.name} — ${c.status}`).join('\n') || '- All controls passing'}
+${risk ? `\n**Active Finding:** ${(risk.type || '').replace(/_/g, ' ')} — ${risk.title} (Score: ${risk.score})` : ''}
 
 *Evidence source: DetectionEngine, PrivilegeCalculator, BehavioralEngine*`;
   }
 
-  if (q.includes('orphaned')) {
-    const orphaned = identities.filter(i => i.status === 'Orphaned');
+  if (q.includes('orphaned') || q.includes('orphan')) {
+    const orphaned = identities.filter(i => (i.status || '').toLowerCase() === 'orphaned');
     const totalRiskReduction = orphaned.reduce((a, i) => a + (i.risk_score || 0), 0);
     const totalResources = orphaned.reduce((a, i) => a + calcBlast(i, null).resources, 0);
     return `**Orphaned Account Analysis**
 
 **Found ${orphaned.length} orphaned account(s):**
-${orphaned.map(i => `- ${i.display_name} (${i.person_id}) — ${i.department} — Risk: ${i.risk_score} — ${(i.platforms || []).length} platform(s)`).join('\n') || '- No orphaned accounts detected'}
+${orphaned.slice(0, 10).map(i => `- ${i.display_name} (${i.person_id}) — ${i.department || 'Unknown'} — Risk: ${i.risk_score} — ${(i.platforms || []).length} platform(s)`).join('\n') || '- No orphaned accounts detected'}
+${orphaned.length > 10 ? `\n... and ${orphaned.length - 10} more orphaned accounts` : ''}
 
 **Impact if Remediated:**
-- Total Risk Reduction: -${totalRiskReduction} points
+- Total Risk Reduction: -${Math.round(totalRiskReduction)} points
 - Resources Secured: ${totalResources}
 - Compliance Controls Fixed: NIST AC-2 (FAIL → PASS), GDPR Art.32 (FAIL → PASS)
 
@@ -198,6 +274,7 @@ ${admins.slice(0, 5).map(i => {
   const b = calcBlast(i, null);
   return `- ${i.display_name}: ${i.platforms?.map(p => PLATFORM_LABELS[p] || p).join(' → ')} (Score: ${i.risk_score}, ${b.resources} resources)`;
 }).join('\n')}
+${admins.length > 5 ? `\n... and ${admins.length - 5} more cross-platform admins` : ''}
 
 **Total Blast Radius:** ${totalBlast} resources reachable via cross-platform admins
 **Attack Pattern:** Compromise → Lateral Movement → Privilege Escalation → Resource Access
@@ -206,28 +283,83 @@ ${admins.slice(0, 5).map(i => {
 *Evidence source: AttackGraph, IdentityResolver, PrivilegeCalculator*`;
   }
 
+  if (q.includes('top') || q.includes('riskiest') || q.includes('highest risk') || q.includes('most risky') || q.includes('who is') || q.includes('who are')) {
+    const sorted = [...identities].sort((a, b) => (b.risk_score || 0) - (a.risk_score || 0));
+    const top = sorted.slice(0, 10);
+    return `**Top ${top.length} Risky Identities**
+
+${top.map((i, idx) => `${idx + 1}. **${i.display_name}** (${i.person_id}) — ${i.risk_score}/100 (${(i.severity || 'medium').toUpperCase()}) — ${i.department || 'Unknown'} — ${i.is_admin ? 'Admin' : 'User'} — MFA: ${i.mfa_complete ? 'Yes' : 'No'}`).join('\n')}
+
+**Summary:**
+- ${top.filter(i => i.is_admin).length} of top ${top.length} are admins
+- ${top.filter(i => !i.mfa_complete).length} have MFA gaps
+- Average risk score: ${Math.round(top.reduce((a, i) => a + (i.risk_score || 0), 0) / top.length)}
+
+*Evidence source: RiskScoring, DetectionEngine*`;
+  }
+
+  if (q.includes('mfa') && !matchedIdentity) {
+    const mfaGaps = identities.filter(i => !i.mfa_complete && (i.status || '').toLowerCase() === 'active');
+    const adminsWithGap = mfaGaps.filter(i => i.is_admin);
+    return `**MFA Gap Analysis**
+
+**${mfaGaps.length} active identities without complete MFA coverage**
+
+**Critical — Admins without MFA (${adminsWithGap.length}):**
+${adminsWithGap.slice(0, 5).map(i => `- ${i.display_name} (${i.person_id}) — ${i.department || 'Unknown'} — Risk: ${i.risk_score} — ${(i.platforms || []).length} platform(s)`).join('\n') || '- No admin MFA gaps'}
+${adminsWithGap.length > 5 ? `\n... and ${adminsWithGap.length - 5} more` : ''}
+
+**Total MFA Impact:**
+- Risk reduction if all MFA enabled: ~${Math.round(mfaGaps.reduce((a, i) => a + (i.risk_score || 0) * 0.15, 0))} points
+- Compliance controls fixed: NIST IA-4, ISO A.5.17
+
+*Evidence source: DetectionEngine, ComplianceMapper*`;
+  }
+
+  if (q.includes('admin') && !matchedIdentity) {
+    const admins = [...identities.filter(i => i.is_admin)].sort((a, b) => (b.risk_score || 0) - (a.risk_score || 0));
+    return `**Admin Identity Analysis**
+
+**${admins.length} identities with admin privileges**
+
+**Top Risky Admins:**
+${admins.slice(0, 8).map((i, idx) => `${idx + 1}. **${i.display_name}** — Risk: ${i.risk_score}/100 — ${(i.platforms || []).length} platforms — MFA: ${i.mfa_complete ? 'Yes' : 'No'}`).join('\n')}
+${admins.length > 8 ? `\n... and ${admins.length - 8} more admins` : ''}
+
+**Admin Risk Summary:**
+- Admins without MFA: ${admins.filter(i => !i.mfa_complete).length}
+- Admins on 3+ platforms: ${admins.filter(i => (i.platforms?.length || 0) >= 3).length}
+- Average admin risk score: ${Math.round(admins.reduce((a, i) => a + (i.risk_score || 0), 0) / (admins.length || 1))}
+
+*Evidence source: PrivilegeCalculator, DetectionEngine*`;
+  }
+
   const totalIdentities = identities.length;
-  const criticalCount = risks.filter(r => r.severity === 'critical').length;
-  const highCount = risks.filter(r => r.severity === 'high').length;
+  const criticalRisks = identities.filter(i => (i.severity || '').toLowerCase() === 'critical');
+  const highRisks = identities.filter(i => (i.severity || '').toLowerCase() === 'high');
   const adminCount = identities.filter(i => i.is_admin).length;
-  const mfaGaps = identities.filter(i => !i.mfa_complete && i.status === 'Active').length;
-  const orphanedCount = identities.filter(i => i.status === 'Orphaned').length;
-  const comp = calcCompliance({ is_admin: false, mfa_complete: true, status: 'Active', max_dormancy_days: 0 });
+  const mfaGaps = identities.filter(i => !i.mfa_complete && (i.status || '').toLowerCase() === 'active').length;
+  const orphanedCount = identities.filter(i => (i.status || '').toLowerCase() === 'orphaned').length;
+  const topNames = [...identities].sort((a, b) => (b.risk_score || 0) - (a.risk_score || 0)).slice(0, 3);
 
   return `**IdentitySphere Security Summary**
 
 **${totalIdentities} identities monitored | ${risks.length} active findings**
 
-- Critical Risks: ${criticalCount}
-- High Risks: ${highCount}
+- Critical Risks: ${criticalRisks.length}
+- High Risks: ${highRisks.length}
 - Admin Identities: ${adminCount}
 - MFA Gaps: ${mfaGaps}
 - Orphaned Accounts: ${orphanedCount}
 
+**Top Risk Identities:**
+${topNames.map(i => `- ${i.display_name} (${i.person_id}) — ${i.risk_score}/100`).join('\n')}
+
 Ask about a specific identity by name or ID for detailed analysis, or try:
+- "Why is ${topNames[0]?.display_name || 'someone'} risky?"
 - "What happens if I revoke admin from [name]?"
-- "What happens if I enable MFA for [name]?"
 - "Generate remediation plan for [name]"
+- "Show top risky identities"
 
 *All analysis uses structured evidence from IdentitySphere detectors.*`;
 }
@@ -257,10 +389,7 @@ export default function Copilot() {
     try {
       let response;
       const identities = getIdentities();
-      const matched = identities.find(i =>
-        q.toLowerCase().includes(i.display_name?.toLowerCase()) ||
-        q.toLowerCase().includes(i.person_id?.toLowerCase())
-      );
+      const matched = findIdentity(q, identities);
       try {
         const data = await fetchCopilotChat(q, matched?.person_id || null);
         if (data.response && data.response.length > 100 && !data.response.includes('Ask about a specific person by name')) {
@@ -332,7 +461,7 @@ export default function Copilot() {
 
         <div className="space-y-3">
           <p className="text-[10px] text-slate-600 uppercase tracking-wider">Suggested Questions</p>
-          {PRESET_QUERIES.map(q => (
+          {getPresetQueries().map(q => (
             <motion.button key={q} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               onClick={() => send(q)}
               className="w-full text-left p-3 rounded-xl glass border border-white/5 text-xs text-slate-400 hover:text-red-400 hover:border-red-500/20 transition-all"

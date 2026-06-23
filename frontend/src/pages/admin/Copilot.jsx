@@ -378,7 +378,13 @@ export default function Copilot() {
   const [typing, setTyping] = useState(false);
   const endRef = useRef(null);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  const msgCount = useRef(messages.length);
+  useEffect(() => {
+    if (messages.length > msgCount.current) {
+      endRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+    msgCount.current = messages.length;
+  }, [messages]);
 
   const send = async (text) => {
     const q = text || input;
@@ -418,7 +424,7 @@ export default function Copilot() {
 
       <div className="grid lg:grid-cols-4 gap-6 min-w-0">
         <div className="lg:col-span-3 min-w-0">
-          <GlassCard hover={false} className="p-0 overflow-hidden" style={{ height: 560, display: 'flex', flexDirection: 'column' }}>
+          <GlassCard hover={false} className="p-0" style={{ height: 'calc(100vh - 180px)', minHeight: 400, maxHeight: 800, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-5 space-y-4 min-w-0">
               {messages.map((m, i) => (
                 <div key={i} className={`flex gap-2 sm:gap-3 min-w-0 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>

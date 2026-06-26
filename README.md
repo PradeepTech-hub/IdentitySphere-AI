@@ -1,4 +1,9 @@
+
 <p align="center">
+    # 🎥 **Demo Video**
+
+### **▶️ Watch the IdentitySphere AI Demo Here**
+**https://drive.google.com/file/d/1S0dyvAy0S6a2OOf8r5mFLgyA4MrnQk-5/view**
   <img src="logo.png" alt="IdentitySphere AI" width="120" />
 </p>
 
@@ -28,10 +33,7 @@
   <img src="https://img.shields.io/badge/fastapi-latest-009688?logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/tailwindcss-4-38B2AC?logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" />
   <img src="https://img.shields.io/badge/license-educational-lightgrey" alt="License" />
-  # 🎥 **Demo Video**
 
-### **▶️ Watch the IdentitySphere AI Demo Here**
-**https://drive.google.com/file/d/1S0dyvAy0S6a2OOf8r5mFLgyA4MrnQk-5/view**
 </p>
 
 ---
